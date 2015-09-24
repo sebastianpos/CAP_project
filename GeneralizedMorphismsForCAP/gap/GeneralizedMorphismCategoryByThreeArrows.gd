@@ -32,11 +32,14 @@ DeclareFilter( "WasCreatedAsGeneralizedMorphismCategoryByThreeArrows" );
 DeclareProperty( "INSTALL_TODO_LIST_FOR_CanComputeIsWellDefinedForMorphisms",
                  IsCapCategory );
 
-DeclareFilter( "HasIdentitiesAsReversedArrows" );
+DeclareProperty( "HasIdentitiesAsReversedArrows",
+                 IsGeneralizedMorphismByThreeArrows );
 
-DeclareFilter( "HasIdentityAsSourceAid" );
+DeclareProperty( "HasIdentityAsSourceAid",
+                 IsGeneralizedMorphismByThreeArrows );
 
-DeclareFilter( "HasIdentityAsRangeAid" );
+DeclareProperty( "HasIdentityAsRangeAid",
+                 IsGeneralizedMorphismByThreeArrows );
 
 InstallTrueMethod( HasIdentitiesAsReversedArrows, HasIdentityAsRangeAid and HasIdentityAsSourceAid );
 
@@ -118,23 +121,8 @@ DeclareAttributeWithToDoForIsWellDefined( "PseudoInverse",
 DeclareAttributeWithToDoForIsWellDefined( "GeneralizedInverseByThreeArrows",
                                           IsCapCategoryMorphism );
 
-DeclareProperty( "IsHonest",
-                  IsGeneralizedMorphismByThreeArrows );
-
-DeclareProperty( "HasHonestSource",
-                  IsGeneralizedMorphismByThreeArrows );
-
-DeclareProperty( "HasHonestRange",
-                  IsGeneralizedMorphismByThreeArrows );
-
 DeclareAttribute( "SubcategoryMembershipFunctionForGeneralizedMorphismCategoryByThreeArrows",
                   IsCapCategory );
-
-InstallTrueMethod( IsHonest, HasHonestRange and HasHonestSource );
-
-InstallTrueMethod( HasHonestRange, IsHonest );
-
-InstallTrueMethod( HasHonestSource, IsHonest );
 
 ####################################
 ##

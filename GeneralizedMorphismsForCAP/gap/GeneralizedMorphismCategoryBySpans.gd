@@ -25,14 +25,14 @@ DeclareGlobalFunction( "INSTALL_FUNCTIONS_FOR_GENERALIZED_MORPHISM_CATEGORY_BY_S
 
 DeclareFilter( "WasCreatedAsGeneralizedMorphismCategoryBySpans" );
 
+DeclareProperty( "HasIdentityAsReversedArrow",
+                 IsGeneralizedMorphismBySpan );
+
 ####################################
 ##
 ## Attributes
 ##
 ####################################
-
-DeclareProperty( "IsHonest",
-                  IsGeneralizedMorphismBySpan );
 
 DeclareAttribute( "Arrow",
                   IsGeneralizedMorphismBySpan );

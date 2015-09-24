@@ -127,32 +127,6 @@ BindGlobal( "TheTypeOfCapCategories",
 #####################################
 
 ##
-InstallGlobalFunction( INSTALL_CAN_COMPUTE_TO_DO_LISTS,
-                       
-  function( category )
-    local i, entry_func, internal_list;
-    
-    entry_func := function( category, filter_name )
-        
-        return ToDoListEntry( [ [ category, filter_name, true ] ], function( ) InstallTrueMethod( ValueGlobal( filter_name ), CanComputeFilter( category ) ); end );
-        
-    end;
-    
-    internal_list := Concatenation( 
-                       CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST.CanComputeForAllCategories,
-                       CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST.CanComputeForSpecialCategories,
-                       CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST.MathematicalPropertiesOfCategories
-                     );
-    
-    for i in internal_list do
-        
-        AddToToDoList( entry_func( category, i ) );
-        
-    od;
-    
-end );
-
-##
 InstallGlobalFunction( CREATE_CAP_CATEGORY_FILTERS,
                        
   function( category )
@@ -189,12 +163,6 @@ InstallGlobalFunction( CREATE_CAP_CATEGORY_FILTERS,
     InstallTrueMethod( cell_filter, filter_name );
     
     SetTwoCellFilter( category, filter_name );
-    
-    filter_name := NewFilter( Concatenation( name, "CanComputeFilter" ) );
-    
-    SetCanComputeFilter( category, filter_name );
-    
-    InstallTrueMethod( filter_name, cell_filter );
     
 end );
 
@@ -474,8 +442,6 @@ InstallMethod( CreateCapCategory,
     
     CREATE_CAP_CATEGORY_FILTERS( category );
     
-    INSTALL_CAN_COMPUTE_TO_DO_LISTS( category );
-    
     AddCategoryToFamily( category, "general" );
     
     INSTALL_LOGICAL_IMPLICATIONS_HELPER( category, "General" );
@@ -484,6 +450,52 @@ InstallMethod( CreateCapCategory,
     
 end );
 
+InstallMethod( CanCompute,
+               [ IsCapCategory, IsString ],
+               
+  function( category, string )
+    local weight_list;
+    
+    if not string in RecNames( CAP_INTERNAL_METHOD_NAME_RECORD ) then
+        
+        Error( "string is not the name of an operation" );
+        
+    fi;
+    
+    weight_list := category!.derivations_weight_list;
+    
+    return not CurrentOperationWeight( weight_list, string ) = infinity;
+    
+end );
+
+##
+InstallMethod( CheckConstructivenessOfCategory,
+               [ IsCapCategory, IsString ],
+               
+  function( category, string )
+    local category_property, result_list;
+    
+    if not string in RecNames( CAP_INTERNAL_CONSTRUCTIVE_CATEGORIES_RECORD ) then
+      
+      Error( "the given string is not a property of a category" );
+    
+    fi;
+    
+    result_list := [];
+    
+    for category_property in CAP_INTERNAL_CONSTRUCTIVE_CATEGORIES_RECORD.(string) do
+      
+      if not CanCompute( category, category_property ) then
+        
+        Add( result_list, category_property );
+        
+      fi;
+      
+    od;
+    
+    return result_list;
+    
+end );
 #######################################
 ##
 ## ViewObj

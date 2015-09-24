@@ -330,6 +330,12 @@ InstallMethod( GeneralizedMorphismCategoryBySpans,
     
     SetFilterObj( generalized_morphism_category, WasCreatedAsGeneralizedMorphismCategoryBySpans );
     
+    AddPredicateImplicationFileToCategory( generalized_morphism_category,
+      Filename(
+        DirectoriesPackageLibrary( "GeneralizedMorphismsForCAP", "LogicForGeneralizedMorphismCategory" ),
+        "PredicateImplicationsForGeneralizedMorphismCategory.tex" )
+    );
+    
     Finalize( generalized_morphism_category );
     
     return generalized_morphism_category;
@@ -399,7 +405,7 @@ InstallMethod( AsGeneralizedMorphismBySpan,
     
     SetIsHonest( generalized_morphism, true );
     
-    SetFilterObj( generalized_morphism, HasIdentityAsReversedArrow );
+    SetHasIdentityAsReversedArrow( generalized_morphism, true );
     
     SetHonestRepresentative( generalized_morphism, arrow );
     
@@ -413,7 +419,7 @@ end );
 ##
 #################################
 
-InstallMethod( IsHonest,
+InstallMethod( HasIdentityAsReversedArrow,
                [ IsGeneralizedMorphismBySpan ],
                
   function( morphism )
@@ -484,12 +490,26 @@ InstallMethod( HonestRepresentative,
     
 end );
 
-InstallMethod( IsHonest,
+##
+InstallMethod( HasFullDomain,
                [ IsGeneralizedMorphismBySpan ],
                
-  function( morphism )
+  function( generalized_morphism )
     
-    return IsIsomorphism( NormalizedSpanTuple( morphism )[ 1 ] );
+    return IsEpimorphism( ReversedArrow( generalized_morphism ) );
+    
+end );
+
+##
+InstallMethod( HasFullCodomain,
+               [ IsGeneralizedMorphismBySpan ],
+               
+  function( generalized_morphism )
+    local kernel_embedding;
+    
+    kernel_embedding := KernelEmbedding( ReversedArrow( generalized_morphism ) );
+    
+    return IsZero( PreCompose( kernel_embedding, Arrow( generalized_morphism ) ) );
     
 end );
 

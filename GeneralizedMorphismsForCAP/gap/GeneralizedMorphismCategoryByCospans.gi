@@ -330,6 +330,12 @@ InstallMethod( GeneralizedMorphismCategoryByCospans,
     
     SetFilterObj( generalized_morphism_category, WasCreatedAsGeneralizedMorphismCategoryByCospans );
     
+    AddPredicateImplicationFileToCategory( generalized_morphism_category,
+      Filename(
+        DirectoriesPackageLibrary( "GeneralizedMorphismsForCAP", "LogicForGeneralizedMorphismCategory" ),
+        "PredicateImplicationsForGeneralizedMorphismCategory.tex" )
+    );
+    
     Finalize( generalized_morphism_category );
     
     return generalized_morphism_category;
@@ -399,7 +405,7 @@ InstallMethod( AsGeneralizedMorphismByCospan,
     
     SetIsHonest( generalized_morphism, true );
     
-    SetFilterObj( generalized_morphism, HasIdentityAsReversedArrow );
+    SetHasIdentityAsReversedArrow( generalized_morphism, true );
     
     return generalized_morphism;
     
@@ -411,7 +417,7 @@ end );
 ##
 #################################
 
-InstallMethod( IsHonest,
+InstallMethod( HasIdentityAsReversedArrow,
                [ IsGeneralizedMorphismByCospan ],
                
   function( morphism )
@@ -482,12 +488,26 @@ InstallMethod( HonestRepresentative,
     
 end );
 
-InstallMethod( IsHonest,
+##
+InstallMethod( HasFullCodomain,
                [ IsGeneralizedMorphismByCospan ],
                
   function( generalized_morphism )
     
-    return IsIsomorphism( NormalizedCospanTuple( generalized_morphism )[ 2 ] );
+    return IsMonomorphism( ReversedArrow( generalized_morphism ) );
+    
+end );
+
+##
+InstallMethod( HasFullDomain,
+               [ IsGeneralizedMorphismByCospan ],
+               
+  function( generalized_morphism )
+    local cokernel_projection;
+    
+    cokernel_projection := CokernelProjection( ReversedArrow( generalized_morphism ) );
+    
+    return IsZero( PreCompose( Arrow( generalized_morphism ), cokernel_projection ) );
     
 end );
 

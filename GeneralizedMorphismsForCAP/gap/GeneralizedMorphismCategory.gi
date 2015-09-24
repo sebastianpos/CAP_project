@@ -18,7 +18,7 @@ Domain := function( arg )
   
   if Length( arg ) = 1 and IsGeneralizedMorphism( arg[1] ) then
       
-      return DomainOp( arg[ 1 ] );
+      return DomainOfGeneralizedMorphism( arg[ 1 ] );
       
   fi;
   
@@ -26,9 +26,7 @@ Domain := function( arg )
   
 end;
 
-MakeReadOnlyGlobal( "Domain" );
-
-InstallMethod( DomainOp,
+InstallMethod( DomainOfGeneralizedMorphism,
                [ IsGeneralizedMorphism ],
                
   function( generalized_morphism )
@@ -64,3 +62,47 @@ InstallMethod( Codomain,
     return codomain;
     
 end );
+
+##
+InstallMethod( IsHonest,
+               [ IsGeneralizedMorphism ],
+               
+  function( generalized_morphism )
+    
+    return HasFullDomain( generalized_morphism ) and HasFullCodomain( generalized_morphism );
+    
+end );
+
+##
+InstallImmediateMethod( IsSingleValued,
+                        IsGeneralizedMorphism and HasHasFullCodomain,
+                        0,
+                        HasFullCodomain );
+
+##
+InstallImmediateMethod( HasFullCodomain,
+                        IsGeneralizedMorphism and HasIsSingleValued,
+                        0,
+                        IsSingleValued );
+
+##
+InstallImmediateMethod( IsTotal,
+                        IsGeneralizedMorphism and HasHasFullDomain,
+                        0,
+                        HasFullDomain );
+
+##
+InstallImmediateMethod( HasFullDomain,
+                        IsGeneralizedMorphism and HasIsTotal,
+                        0,
+                        IsTotal );
+
+##
+InstallMethod( IsSingleValued, 
+               [ IsGeneralizedMorphism ],
+               HasFullCodomain );
+
+##
+InstallMethod( IsTotal,
+               [ IsGeneralizedMorphism ],
+               HasFullDomain );

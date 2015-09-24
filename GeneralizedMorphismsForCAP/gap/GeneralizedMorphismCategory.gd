@@ -10,15 +10,19 @@
 #############################################################################
 
 
-DeclareFilter( "HasIdentityAsReversedArrow" );
-
 DeclareCategory( "IsGeneralizedMorphismCategoryObject",
                  IsCapCategoryObject );
 
 DeclareCategory( "IsGeneralizedMorphism",
                  IsCapCategoryMorphism );
 
-DeclareAttributeWithToDoForIsWellDefined( "DomainOp",
+####################################
+##
+## Attributes and Properties
+##
+####################################
+
+DeclareAttributeWithToDoForIsWellDefined( "DomainOfGeneralizedMorphism",
                                           IsGeneralizedMorphism );
 
 DeclareAttributeWithToDoForIsWellDefined( "Codomain",
@@ -33,3 +37,17 @@ DeclareAttribute( "DomainAssociatedMorphismCodomainTriple",
 DeclareAttributeWithToDoForIsWellDefined( "HonestRepresentative",
                                           IsGeneralizedMorphism );
 
+DeclareProperty( "IsHonest",
+                  IsGeneralizedMorphism );
+
+DeclareProperty( "HasFullDomain",
+                 IsGeneralizedMorphism );
+
+DeclareProperty( "HasFullCodomain",
+                 IsGeneralizedMorphism );
+
+DeclareProperty( "IsSingleValued",
+                 IsGeneralizedMorphism );
+
+DeclareProperty( "IsTotal",
+                 IsGeneralizedMorphism );

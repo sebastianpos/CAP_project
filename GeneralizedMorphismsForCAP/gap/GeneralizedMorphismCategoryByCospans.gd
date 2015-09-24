@@ -25,14 +25,14 @@ DeclareGlobalFunction( "INSTALL_FUNCTIONS_FOR_GENERALIZED_MORPHISM_CATEGORY_BY_C
 
 DeclareFilter( "WasCreatedAsGeneralizedMorphismCategoryByCospans" );
 
+DeclareProperty( "HasIdentityAsReversedArrow",
+                 IsGeneralizedMorphismByCospan );
+
 ####################################
 ##
 ## Attributes
 ##
 ####################################
-
-DeclareProperty( "IsHonest",
-                  IsGeneralizedMorphismByCospan );
 
 DeclareAttribute( "Arrow",
                   IsGeneralizedMorphismByCospan );

@@ -37,8 +37,6 @@ DeclareGlobalVariable( "CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST" );
 
 DeclareGlobalFunction( "CAP_INTERNAL_INSTALL_PRINT_FUNCTION" );
 
-DeclareGlobalFunction( "INSTALL_CAN_COMPUTE_TO_DO_LISTS" );
-
 DeclareGlobalVariable( "CAP_INTERNAL_DERIVATION_GRAPH" );
 
 
@@ -60,7 +58,7 @@ InstallValue( CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST,
               
               CanComputeForSpecialCategories := [
                 "CanComputeDomainAssociatedMorphismCodomainTriple",
-                "CanComputeDomain",
+                "CanComputeDomainOfGeneralizedMorphism",
                 "CanComputeCodomain",
                 "CanComputeAssociatedMorphism",
                 "CanComputePseudoInverse",
@@ -205,6 +203,8 @@ InstallValue( CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST,
                 "CanComputeAstrictionToCoimageWithGivenCoimage",
                 "CanComputeUniversalMorphismIntoCoimage",
                 "CanComputeUniversalMorphismIntoCoimageWithGivenCoimage",
+                "CanComputeMorphismFromCoimageToImage",
+                "CanComputeInverseMorphismFromCoimageToImage",
                 
                 "CanComputeTensorProductOnObjects",
                 "CanComputeTensorProductOnMorphisms",
@@ -435,9 +435,34 @@ DeclareAttribute( "MorphismFilter",
 DeclareAttribute( "TwoCellFilter",
                   IsCapCategory );
 
-## Internal Filter for the CanCompute Management.
-DeclareAttribute( "CanComputeFilter",
-                  IsCapCategory );
+#############################################
+##
+#! @Section Tool functions
+##
+#############################################
+
+
+#! @Description
+#! The argument is a category $C$ and a string $s$,
+#! which should be the name of a primitive operation, e.g., PreCompose.
+#! If applying this method is possible in $C$, the method returns <C>true</C>, <C>false</C> otherwise.
+#! If the string is not the name of a primitive operation, an error is raised.
+#! @Returns <C>true</C> or <C>false</C>
+#! @Arguments C,s
+DeclareOperation( "CanCompute",
+                  [ IsCapCategory, IsString ] );
+
+#! @Description
+#! The arguments are a category $C$ and a string $s$.
+#! If $s$ is a categorical property (e.g. <C>"IsAbelianCategory"</C>),
+#! the output is a list of strings with basic operations
+#! which are missing in $C$ to have the categorical property 
+#! constructively.
+#! If $s$ is not a categorical property, an error is raised.
+#! @Returns a list
+#! @Arguments C,s
+DeclareOperation( "CheckConstructivenessOfCategory",
+                  [ IsCapCategory, IsString ] );
 
 #############################################
 ##
@@ -453,7 +478,6 @@ DeclareAttribute( "CanComputeFilter",
 #! @Arguments c
 DeclareProperty( "IsWellDefined",
                  IsCapCategoryCell );
-
 
 ####################################
 ##
