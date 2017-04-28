@@ -69,6 +69,9 @@ InstallMethodWithCache( SemisimpleCategoryObjectConstructorWithFlatList,
                              UnderlyingFieldForHomalg, field
     );
     
+    semisimple_category_object!.OBJECT_LIST_FOR_BINARY_SEARCH_POSITION :=
+      List( normalized_semisimple_object_list, i -> i[2] );
+    
     SetFilterObj( semisimple_category_object, GivenObjectFilterForSemisimpleCategory( category ) );
     
     Add( category, semisimple_category_object );
