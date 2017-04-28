@@ -196,47 +196,34 @@ InstallMethod( Multiplicity,
                [ IsRepresentationCategoryZGradedObject, IsGZGradedIrreducibleObject ],
                
   function( semisimple_category_object, irr )
-#     local z, deg, nr, array;
-    local p;
+    local z, deg, nr, array;
     
-    p := PositionSet( semisimple_category_object!.OBJECT_LIST_FOR_BINARY_SEARCH_POSITION, irr );
+    z := irr!.UnderlyingDegree;
     
-    if p = fail then
+    if z > 0 then
         
-        return 0;
+        deg := 2*z;
         
     else
         
-        return semisimple_category_object!.SemisimpleCategoryObjectList[p][1];
+        deg := -2*z + 1;
         
     fi;
-#     
-#     z := irr!.UnderlyingDegree;
-#     
-#     if z > 0 then
-#         
-#         deg := 2*z;
-#         
-#     else
-#         
-#         deg := -2*z + 1;
-#         
-#     fi;
-#     
-#     nr := irr!.UnderlyingCharacterNumber;
-#     
-#     array := MultiplicityArray( semisimple_category_object );
-#     
-#     if IsBound( array[deg] ) and IsBound( array[deg][nr] ) then
-#         
-#         return array[deg][nr];
-#         
-#     else
-#         
-#         return 0;
-#         
-#     fi;
-#     
+    
+    nr := irr!.UnderlyingCharacterNumber;
+    
+    array := MultiplicityArray( semisimple_category_object );
+    
+    if IsBound( array[deg] ) and IsBound( array[deg][nr] ) then
+        
+        return array[deg][nr];
+        
+    else
+        
+        return 0;
+        
+    fi;
+    
 end );
 
 ##
