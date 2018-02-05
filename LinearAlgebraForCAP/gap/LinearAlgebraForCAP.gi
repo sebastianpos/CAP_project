@@ -315,6 +315,33 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_MATRIX_CATEGORY,
     end );
     
     ##
+    AddImageObject( category,
+      function( morphism )
+        
+        return VectorSpaceObject( RowRankOfMatrix( UnderlyingMatrix( morphism ) ), homalg_field );
+        
+    end );
+    
+    ##
+    AddImageEmbedding( category,
+      function( morphism )
+        local matrix;
+        
+        matrix := BasisOfRows( UnderlyingMatrix( morphism ) );
+        
+        return VectorSpaceMorphism( VectorSpaceObject( NrRows( matrix ), homalg_field ), matrix, Range( morphism ) );
+        
+    end );
+    
+    ##
+    AddCoastrictionToImage( category,
+      function( morphism )
+        
+        return Lift( morphism, ImageEmbedding( morphism ) );
+        
+    end );
+    
+    ##
     AddProjectionInFactorOfDirectSumWithGivenDirectSum( category,
       function( object_list, projection_number, direct_sum_object )
         local dim_pre, dim_post, dim_factor, number_of_objects, projection_in_factor;
