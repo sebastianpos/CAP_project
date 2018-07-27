@@ -72,3 +72,12 @@ DeclareAttribute( "CorelationWitness",
 
 DeclareAttribute( "WitnessPairForBeingCongruentToZero",
                   IsAdelmanCategoryMorphism );
+
+####################################
+##
+#! @Section Operations
+##
+####################################
+
+DeclareOperation( "HomomorphismStructureOnObjectsGeneralizedEmbedding",
+                  [ IsAdelmanCategoryObject, IsAdelmanCategoryObject ] );

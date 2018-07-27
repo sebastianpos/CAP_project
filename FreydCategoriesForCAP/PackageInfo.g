@@ -75,7 +75,8 @@ Dependencies := rec(
                            [ "CAP", ">= 2015.08.17" ],
                            [ "MatricesForHomalg", ">= 2017.05.24" ],
                            [ "Bialgebroids", ">= 2017.06.13-4" ],
-                           [ "LinearAlgebraForCAP", ">= 2017.12.30" ]
+                           [ "LinearAlgebraForCAP", ">= 2017.12.30" ],
+                           [ "GeneralizedMorphismsForCAP", ">= 2018.06.15" ]
                          ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],

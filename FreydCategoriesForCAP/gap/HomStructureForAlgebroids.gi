@@ -143,8 +143,13 @@ InstallGlobalFunction( INSTALL_HOMOMORPHISM_STRUCTURE_FOR_BIALGEBROID,
                    [ IsCapCategory and CategoryFilter( bialgebroid ) ],
                    
       function( cat )
+        local object;
         
-        return distinguished_object();
+        object := distinguished_object();
+        
+        SetIsProjective( object, true );
+        
+        return object;
         
     end );
     
