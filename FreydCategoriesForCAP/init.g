@@ -3,9 +3,6 @@
 #
 # Reading the declaration part of the package.
 #
-
-ReadPackage( "FreydCategoriesForCAP", "gap/FreydCategoriesForCAP.gd" );
-
 ReadPackage( "FreydCategoriesForCAP", "gap/CategoryOfRows.gd" );
 
 ReadPackage( "FreydCategoriesForCAP", "gap/FreydCategory.gd" );
@@ -17,3 +14,5 @@ ReadPackage( "FreydCategoriesForCAP", "gap/AdditiveClosure.gd" );
 ReadPackage( "FreydCategoriesForCAP", "gap/CokernelImageClosure.gd" );
 
 ReadPackage( "FreydCategoriesForCAP", "gap/AdelmanCategory.gd" );
+
+ReadPackage( "FreydCategoriesForCAP", "gap/FreydCategoriesForCAP.gd" );

@@ -826,6 +826,44 @@ InstallMethod( AsMorphismInFreeAbelianCategoryByFreyd,
     
 end );
 
+InstallMethod( FreeAbelianCategory,
+               [ IsString, IsList ],
+               
+  function( qpa_string, relation_list )
+    local quiver, kQ, Aoid, additive, adel;
+    
+    quiver := RightQuiver( qpa_string );;
+    
+    kQ := PathAlgebra( HomalgFieldOfRationals(), quiver );;
+    
+    Aoid := Algebroid( kQ, List( relation_list, i -> kQ.(i) ) );
+    
+    INSTALL_HOMOMORPHISM_STRUCTURE_FOR_BIALGEBROID( Aoid );;
+    
+    additive := AdditiveClosure( Aoid );
+    
+    adel := AdelmanCategory( additive );
+    
+    SetFilterObj( adel, IsFreeAbelianCategoryOverIntegers );
+    
+    return adel;
+    
+end );
+
+InstallMethod( FreeAbelianCategorySetOfGeneratingMorphisms,
+               [ IsFreeAbelianCategoryOverIntegers ],
+               
+  function(  adel )
+    local Aoid, m;
+    
+    Aoid := UnderlyingCategory( UnderlyingCategory( adel ) );
+    
+    m := SetOfGeneratingMorphisms( Aoid );;
+    
+    return List( m, mor -> AsAdelmanCategoryMorphism( AsAdditiveClosureMorphism( mor ) ) );
+    
+end );
+
 ###################################
 ##
 ## Finitely presented functors

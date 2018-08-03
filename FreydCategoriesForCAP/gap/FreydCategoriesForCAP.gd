@@ -1152,9 +1152,20 @@ DeclareOperation( "SolveLinearSystemInAdditiveCategoryWithHomomorphismStructure"
 ##
 ####################################
 
+
+DeclareCategory( "IsFreeAbelianCategoryOverIntegers",
+                 IsAdelmanCategory );
 ##
 DeclareAttribute( "AsMorphismInFreeAbelianCategoryByFreyd",
                   IsCapCategoryMorphism );
+
+##
+DeclareOperation( "FreeAbelianCategory",
+                  [ IsString, IsList ] );
+
+##
+DeclareAttribute( "FreeAbelianCategorySetOfGeneratingMorphisms",
+                  IsFreeAbelianCategoryOverIntegers );
 
 ####################################
 ##
