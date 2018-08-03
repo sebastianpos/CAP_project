@@ -1153,7 +1153,7 @@ DeclareOperation( "SolveLinearSystemInAdditiveCategoryWithHomomorphismStructure"
 ####################################
 
 ##
-DeclareAttribute( "AsMorphismInFreeAbelianCategory",
+DeclareAttribute( "AsMorphismInFreeAbelianCategoryByFreyd",
                   IsCapCategoryMorphism );
 
 ####################################

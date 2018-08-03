@@ -27,9 +27,9 @@ CapCategorySwitchLogicOff( cat );
 cat := Opposite( cat );
 CapCategorySwitchLogicOff( cat );
 
-a := AsMorphismInFreeAbelianCategory( a );
-b := AsMorphismInFreeAbelianCategory( b );
-c := AsMorphismInFreeAbelianCategory( c );
+a := AsMorphismInFreeAbelianCategoryByFreyd( a );
+b := AsMorphismInFreeAbelianCategoryByFreyd( b );
+c := AsMorphismInFreeAbelianCategoryByFreyd( c );
 
 coker_a := CokernelProjection( a );
 colift := CokernelColift( a, PreCompose( b, c ) );

@@ -32,13 +32,13 @@ CapCategorySwitchLogicOff( cat );
 cat := Opposite( cat );
 CapCategorySwitchLogicOff( cat );
 
-af := AsMorphismInFreeAbelianCategory( m[1] );
-bf := AsMorphismInFreeAbelianCategory( m[2] );
-cf := AsMorphismInFreeAbelianCategory( m[3] );
-df := AsMorphismInFreeAbelianCategory( m[4] );
-ef := AsMorphismInFreeAbelianCategory( m[5] );
-ff := AsMorphismInFreeAbelianCategory( m[6] );
-gf := AsMorphismInFreeAbelianCategory( m[7] );
+af := AsMorphismInFreeAbelianCategoryByFreyd( m[1] );
+bf := AsMorphismInFreeAbelianCategoryByFreyd( m[2] );
+cf := AsMorphismInFreeAbelianCategoryByFreyd( m[3] );
+df := AsMorphismInFreeAbelianCategoryByFreyd( m[4] );
+ef := AsMorphismInFreeAbelianCategoryByFreyd( m[5] );
+ff := AsMorphismInFreeAbelianCategoryByFreyd( m[6] );
+gf := AsMorphismInFreeAbelianCategoryByFreyd( m[7] );
 
 bn := CokernelProjection( af );
 en := CokernelColift( af, PreCompose( df, gf ) );

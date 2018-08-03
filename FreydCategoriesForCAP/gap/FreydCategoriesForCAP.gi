@@ -808,7 +808,7 @@ end );
 ##
 ####################################
 
-InstallMethod( AsMorphismInFreeAbelianCategory,
+InstallMethod( AsMorphismInFreeAbelianCategoryByFreyd,
                [ IsCapCategoryMorphism ],
                
   function( morphism )
