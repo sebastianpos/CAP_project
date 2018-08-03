@@ -838,9 +838,17 @@ InstallMethod( FreeAbelianCategory,
     
     Aoid := Algebroid( kQ, List( relation_list, i -> kQ.(i) ) );
     
-    INSTALL_HOMOMORPHISM_STRUCTURE_FOR_BIALGEBROID( Aoid );;
+    DeactivateCachingOfCategory( Aoid );
+    CapCategorySwitchLogicOff( Aoid );
+    DisableBasicOperationTypeCheck( Aoid );
+    
+    INSTALL_HOMOMORPHISM_STRUCTURE_FOR_BIALGEBROID( Aoid, true );;
     
     additive := AdditiveClosure( Aoid );
+    
+    DeactivateCachingOfCategory( additive );
+    CapCategorySwitchLogicOff( additive );
+    DisableBasicOperationTypeCheck( additive );
     
     adel := AdelmanCategory( additive );
     

@@ -34,30 +34,71 @@ end );
 ##
 InstallGlobalFunction( INSTALL_HOMOMORPHISM_STRUCTURE_FOR_BIALGEBROID,
                        
-  function( bialgebroid )
-    local object_constructor, morphism_constructor, distinguished_object, quiver_algebra, data, ring;
+  function( bialgebroid, arg... )
+    local use_integers, object_constructor, morphism_constructor, distinguished_object, quiver_algebra, data, ring, category;
     
+    if IsBound( arg[1] ) then
+        
+        use_integers := arg[1];
+        
+    else
+        
+        use_integers := false;
+        
+    fi;
+        
     quiver_algebra := UnderlyingQuiverAlgebra( bialgebroid );
     
     data := CreateHomomorphismStructureData( quiver_algebra );
     
-    ring := LeftActingDomain( quiver_algebra );
+    if use_integers then
+        
+        ring := HomalgRingOfIntegers();
+        
+        category := CategoryOfRows( ring );
+        
+        DeactivateCachingOfCategory( category );
+        CapCategorySwitchLogicOff( category );
+        DisableBasicOperationTypeCheck( category );
+        
+        object_constructor := function( size )
+            return CategoryOfRowsObject( size, category );
+        end;
     
-    object_constructor := function( size )
-      return VectorSpaceObject( size, ring );
-    end;
+        morphism_constructor := function( mat )
+            return CategoryOfRowsMorphism(
+                CategoryOfRowsObject( NrRows( mat ), category ),
+                mat,
+                CategoryOfRowsObject( NrColumns( mat ), category )
+                );
+        end;
     
-    morphism_constructor := function( mat )
-      return VectorSpaceMorphism(
-               VectorSpaceObject( NrRows( mat ), ring ),
-               mat,
-               VectorSpaceObject( NrColumns( mat ), ring )
+        distinguished_object := function()
+            return CategoryOfRowsObject( 1, category );
+        end;
+        
+    else
+        
+        ring := LeftActingDomain( quiver_algebra );
+        
+        object_constructor := function( size )
+            return VectorSpaceObject( size, ring );
+        end;
+    
+        morphism_constructor := function( mat )
+            return VectorSpaceMorphism(
+                    VectorSpaceObject( NrRows( mat ), ring ),
+                    mat,
+                    VectorSpaceObject( NrColumns( mat ), ring )
             );
-    end;
+        end;
     
-    distinguished_object := function()
-      return TensorUnit( MatrixCategory( ring ) );
-    end;
+        distinguished_object := function()
+            return TensorUnit( MatrixCategory( ring ) );
+        end;
+        
+    fi;
+    
     
     ##
     InstallMethodWithCacheFromObject( HomomorphismStructureOnObjects,
