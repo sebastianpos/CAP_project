@@ -41,6 +41,7 @@ InstallMethod( DgBoundedCochainComplexCategory,
     
     SetFilterObj( category, IsDgBoundedCochainComplexCategory );
     
+    ## in a dg sense
     SetIsAdditiveCategory( category, true );
     
     SetUnderlyingCategory( category, underlying_category );
@@ -50,6 +51,8 @@ InstallMethod( DgBoundedCochainComplexCategory,
     AddMorphismRepresentation( category, IsDgBoundedCochainMap );
     
     DisableAddForCategoricalOperations( category );
+    
+    CapCategorySwitchLogicOff( category );
     
     INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES( category );
     
@@ -61,10 +64,17 @@ end );
 
 ##
 InstallMethod( DgBoundedCochainComplex,
-                        [ IsList, IsDgBoundedCochainComplexCategory ],
+               [ IsList, IsDgBoundedCochainComplexCategory ],
                
   function( differential_list, category )
     local dg_cochain_complex;
+    
+    ## side effect: differential_list knows that it is strictly sorted
+    if not IsSSortedList( differential_list ) then
+        
+        Error( "A cochain complex must have a strictly sorted differential list" );
+        
+    fi;
     
     dg_cochain_complex := rec( );
     
@@ -85,10 +95,17 @@ InstallMethod( DgBoundedCochainMap,
   function( source, morphism_list, range, dgdeg )
     local dg_cochain_map, category;
     
+    ## side effect: morphism_list knows that it is strictly sorted
+    if not IsSSortedList( morphism_list ) then
+        
+        Error( "A cochain complex must have a strictly sorted morphism list" );
+        
+    fi;
+    
     dg_cochain_map := rec( );
     
     category := CapCategory( source );
-
+    
     ObjectifyMorphismForCAPWithAttributes( 
         dg_cochain_map, category,
         Source, source,
@@ -186,6 +203,84 @@ InstallMethod( \^,
     
 end );
 
+##
+InstallMethod( IndexList,
+               [ IsDgBoundedCochainComplex ],
+               
+  function( complex )
+    local index_list;
+    
+    index_list := List( DifferentialList( complex ), l -> l[1] );
+    
+    ## side effect: index_list knows that it is strictly sorted
+    if not IsSSortedList( index_list ) then
+        
+        Error( "A cochain complex must have a strictly sorted index list" );
+        
+    fi;
+    
+    return index_list;
+    
+end );
+
+##
+InstallMethod( IndexList,
+               [ IsDgBoundedCochainMap ],
+               
+  function( map )
+    local index_list;
+    
+    index_list := List( MorphismList( map ), l -> l[1] );
+    
+    ## side effect: index_list knows that it is strictly sorted
+    if not IsSSortedList( index_list ) then
+        
+        Error( "A cochain map must have a strictly sorted index list" );
+        
+    fi;
+    
+    return index_list;
+    
+end );
+
+##
+InstallMethod( ObjectList,
+               [ IsDgBoundedCochainComplex ],
+               
+  function( complex )
+    local differential_list, object_list, l, s;
+    
+    differential_list := DifferentialList( complex );
+    
+    object_list := [];
+    
+    for l in differential_list do
+        
+        Add( object_list, [ l[1], Source( l[2] ) ] );
+        
+    od;
+    
+    s := Size( differential_list );
+    
+    if s > 0 then
+        
+        l := differential_list[s];
+        
+        Add( object_list, [ l[1] + 1, Range( l[2] ) ] );
+        
+    fi;
+    
+    ## side effect: index_list knows that it is strictly sorted
+    if not IsSSortedList( object_list ) then
+        
+        Error( "A cochain complex must have a strictly sorted object list" );
+        
+    fi;
+    
+    return object_list;
+    
+end );
+
 ####################################
 ##
 ## Basic operations
@@ -209,8 +304,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
       IsIdenticalObj );
     
     ## Well-defined for objects and morphisms
-    type_check_is_list_int_mor := function( differential_list )
-        local index_list;
+    type_check_is_list_int_mor := function( differential_list, index_list )
         
         if not ForAll( differential_list, l -> IsList( l ) ) or
            not ForAll( differential_list, l -> Size( l ) = 2 ) or
@@ -218,20 +312,17 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
            not ForAll( differential_list, l -> IsCapCategoryMorphism( l[2] ) ) or
            not ForAll( differential_list, l -> IsIdenticalObj( CapCategory( l[2] ), underlying_category ) ) then
            
-            return [ false ];
+            return false;
             
         fi;
         
-        index_list := List( differential_list, l -> l[1] );
-        
-        if not IsDuplicateFree( index_list ) or
-           not IsSortedList( index_list )  then
+        if not IsSSortedList( index_list )  then
             
-            return [ false ];
+            return false;
             
         fi;
         
-        return [ true, index_list ];
+        return true;
         
     end;
     
@@ -242,15 +333,13 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         differential_list := DifferentialList( complex );
         
-        index_list := type_check_is_list_int_mor( differential_list );
+        index_list := IndexList( complex );
         
-        if not index_list[1] then
+        if not type_check_is_list_int_mor( differential_list, index_list ) then
             
             return false;
             
         fi;
-        
-        index_list := index_list[2];
         
         size := Size( index_list );
         
@@ -282,15 +371,13 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         morphism_list := MorphismList( map );
         
-        index_list := type_check_is_list_int_mor( morphism_list );
+        index_list := IndexList( map );
         
-        if not index_list[1] then
+        if not type_check_is_list_int_mor( morphism_list, index_list ) then
             
             return false;
             
         fi;
-        
-        index_list := index_list[2];
         
         source := Source( map );
         
@@ -307,6 +394,191 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         # all tests passed, so it is well-defined
         return true;
+        
+    end );
+    
+    ## Equality Basic Operations for Objects and Morphisms
+    ##
+    AddIsEqualForObjects( category,
+      function( complex_1, complex_2 )
+        local differential_list_1, differential_list_2, s;
+        
+        differential_list_1 := DifferentialList( complex_1 );
+        
+        differential_list_2 := DifferentialList( complex_2 );
+        
+        s := Size( differential_list_1 );
+        
+        if s <> Size( differential_list_2 ) then
+            
+            return false;
+            
+        fi;
+        
+        if not ForAll( [ 1 .. s ], i -> differential_list_1[i][1] = differential_list_2[i][1] ) then
+            
+            return false;
+            
+        fi;
+        
+        if not ForAll( [ 1 .. s ], i -> IsEqualForMorphismsOnMor( differential_list_1[i][2], differential_list_2[i][2] ) ) then
+            
+            return false;
+            
+        fi;
+        
+        return true;
+        
+    end );
+    
+    ## TODO: degree comparision
+    ##
+    AddIsEqualForMorphisms( category,
+      function( map_1, map_2 )
+        local morphism_list_1, morphism_list_2, s;
+        
+        morphism_list_1 := MorphismList( map_1 );
+        
+        morphism_list_2 := MorphismList( map_2 );
+        
+        s := Size( morphism_list_1 );
+        
+        if s <> Size( morphism_list_2 ) then
+            
+            return false;
+            
+        fi;
+        
+        if not ForAll( [ 1 .. s ], i -> morphism_list_1[i][1] = morphism_list_2[i][1] ) then
+            
+            return false;
+            
+        fi;
+        
+        if not ForAll( [ 1 .. s ], i -> IsEqualForMorphismsOnMor( morphism_list_1[i][2], morphism_list_2[i][2] ) ) then
+            
+            return false;
+            
+        fi;
+        
+        return true;
+        
+    end );
+    
+    ## TODO: degree comparision
+    ##
+    AddIsCongruentForMorphisms( category,
+      function( map_1, map_2 )
+        local morphism_list_1, morphism_list_2, index_list_1, index_list_2, i, first, first_1, first_2;
+        
+        morphism_list_1 := MorphismList( map_1 );
+        
+        morphism_list_2 := MorphismList( map_2 );
+        
+        index_list_1 := IndexList( map_1 );
+        
+        index_list_2 := IndexList( map_2 );
+        
+        for i in Difference( index_list_1, index_list_2 ) do
+            
+            first := First( morphism_list_1, l -> l[1] = i );
+            
+            if not IsZeroForMorphisms( first[2] ) then
+                
+                return false;
+                
+            fi;
+            
+        od;
+        
+        for i in Difference( index_list_2, index_list_1 ) do
+            
+            first := First( morphism_list_2, l -> l[1] = i );
+            
+            if not IsZeroForMorphisms( first[2] ) then
+                
+                return false;
+                
+            fi;
+            
+        od;
+        
+        for i in Intersection( index_list_1, index_list_2 ) do
+            
+            first_1 := First( morphism_list_1, l -> l[1] = i );
+            
+            first_2 := First( morphism_list_2, l -> l[1] = i );
+            
+            if not IsCongruentForMorphisms( first_1[2], first_2[2] ) then
+                
+                return false;
+                
+            fi;
+            
+        od;
+        
+        return true;
+        
+    end );
+    
+    ## Basic Operations for a Category
+    ##
+    AddIdentityMorphism( category,
+      
+      function( complex )
+        local object_list, l, morphism_list;
+        
+        object_list := ObjectList( complex );
+        
+        morphism_list := [];
+        
+        for l in object_list do
+            
+            Add( morphism_list, [ l[1], IdentityMorphism( l[2] ) ] );
+            
+        od;
+        
+        return DgBoundedCochainMap( complex, morphism_list, complex, 0 );
+        
+    end );
+    
+    ## TODO: add a dg version where one can specify the degree
+    ##
+    AddZeroMorphism( category,
+      function( source, range )
+        
+        return DgBoundedCochainMap( source, [ ], range, 0 );
+        
+    end );
+    
+    ##
+    AddPreCompose( category,
+      function( map_1, map_2 )
+        local index_list_1, dgdeg_1, index_list_2, morphism_list, morphism_list_1, morphism_list_2, i, first_1, first_2;
+        
+        index_list_1 := IndexList( map_1 );
+        
+        dgdeg_1 := DgDegree( map_1 );
+        
+        index_list_2 := List( IndexList( map_2 ), l -> l - dgdeg_1 );
+        
+        morphism_list_1 := MorphismList( map_1 );
+        
+        morphism_list_2 := MorphismList( map_2 );
+        
+        morphism_list := [];
+        
+        for i in Intersection( index_list_1, index_list_2 ) do
+            
+            first_1 := First( morphism_list_1, l -> l[1] = i );
+            
+            first_2 := First( morphism_list_2, l -> l[1] = i + dgdeg_1 );
+            
+            Add( morphism_list, [ i, PreCompose( first_1[2], first_2[2] ) ] );
+            
+        od;
+        
+        return DgBoundedCochainMap( Source( map_1 ), morphism_list, Range( map_2 ), DgDegree( map_1 ) + DgDegree( map_2 ) );
         
     end );
     

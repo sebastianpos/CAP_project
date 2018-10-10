@@ -35,11 +35,11 @@ DeclareAttribute( "DgBoundedCochainComplexCategory",
                   IsCapCategory );
 
 ##
-## Data structure: [ [ i, differential^i ] ], sorted by ... < i < i + 1 < ..., no duplicates
+## Data structure: [ [ i, differential^i ] ], sorted by ... < i < i + 1 < ..., no duplicates, every non-given differential is interpreted as the zero map, every non-given object is interpreted as the zero object
 DeclareOperation( "DgBoundedCochainComplex",
                   [ IsList, IsDgBoundedCochainComplexCategory ] );
 
-## Data structure: [ [ i, f^i: A^i -> B^{i + d} ] ], sorted by ... < i < i + 1 < ..., no duplicates
+## Data structure: [ [ i, f^i: A^i -> B^{i + d} ] ], sorted by ... < i < i + 1 < ..., no duplicates, every non-given map is interpreted as the zero map A^i -0-> B^{i+d}
 DeclareOperation( "DgBoundedCochainMap",
                   [ IsDgBoundedCochainComplex, IsList, IsDgBoundedCochainComplex, IsInt ] );
 
@@ -55,7 +55,16 @@ DeclareAttribute( "UnderlyingCategory",
 DeclareAttribute( "DifferentialList",
                   IsDgBoundedCochainComplex );
 
+DeclareAttribute( "IndexList",
+                  IsDgBoundedCochainComplex );
+
+DeclareAttribute( "ObjectList",
+                  IsDgBoundedCochainComplex );
+
 DeclareAttribute( "MorphismList",
+                  IsDgBoundedCochainMap );
+
+DeclareAttribute( "IndexList",
                   IsDgBoundedCochainMap );
 
 ####################################
