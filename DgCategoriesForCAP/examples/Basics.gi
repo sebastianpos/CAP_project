@@ -58,8 +58,24 @@ V11 := DirectSum( V8, V2, V1 );;
 f_0 := InjectionOfCofactorOfDirectSum( [ V1, V11 ], 1 );;
 f_1 := InjectionOfCofactorOfDirectSum( [ V3, V5 ], 1 );;
 map := DgBoundedCochainMap( com1, [ [ 0, f_0 ], [ 1, f_1 ] ], com2, -2 );;
+map2 := DgBoundedCochainMap( com1, [ [ 0, f_0 ], [ 1, f_1 ] ], com2, -2 );;
 DgDegree( map );
 #! -2
 IsWellDefinedForMorphisms( map );
+#! true
+IsEqualForObjects( com1, com2 );
+#! false
+IsCongruentForMorphisms( map, map2 );
+#! true
+id_1 := IdentityMorphism( com1 );;
+z_1_1 := ZeroMorphism( com1, com1 );;
+IsCongruentForMorphisms( id_1, z_1_1 );
+#! false
+z_1_2 := ZeroMorphism( com1, com2 );;
+IsCongruentForMorphisms( z_1_2, map );
+#! false
+IsCongruentForMorphisms( PreCompose( id_1, map ), map );
+#! true
+IsCongruentForMorphisms( PreCompose( id_1, z_1_2 ), z_1_2 );
 #! true
 #! @EndExample
