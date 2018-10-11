@@ -78,4 +78,6 @@ IsCongruentForMorphisms( PreCompose( id_1, map ), map );
 #! true
 IsCongruentForMorphisms( PreCompose( id_1, z_1_2 ), z_1_2 );
 #! true
+IsCongruentForMorphisms( -2/3*map, map*(-2/3) );
+#! true
 #! @EndExample
