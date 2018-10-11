@@ -469,7 +469,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
     ##
     AddIsCongruentForMorphisms( category,
       function( map_1, map_2 )
-        local morphism_list_1, morphism_list_2, index_list_1, index_list_2, i, first, first_1, first_2;
+        local morphism_list_1, morphism_list_2, index_list_1, index_list_2, i;
         
         morphism_list_1 := MorphismList( map_1 );
         
@@ -481,9 +481,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         for i in Difference( index_list_1, index_list_2 ) do
             
-            first := First( morphism_list_1, l -> l[1] = i );
-            
-            if not IsZeroForMorphisms( first[2] ) then
+            if not IsZeroForMorphisms( map_1^i ) then
                 
                 return false;
                 
@@ -493,9 +491,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         for i in Difference( index_list_2, index_list_1 ) do
             
-            first := First( morphism_list_2, l -> l[1] = i );
-            
-            if not IsZeroForMorphisms( first[2] ) then
+            if not IsZeroForMorphisms( map_2^i ) then
                 
                 return false;
                 
@@ -505,11 +501,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         for i in Intersection( index_list_1, index_list_2 ) do
             
-            first_1 := First( morphism_list_1, l -> l[1] = i );
-            
-            first_2 := First( morphism_list_2, l -> l[1] = i );
-            
-            if not IsCongruentForMorphisms( first_1[2], first_2[2] ) then
+            if not IsCongruentForMorphisms( map_1^i, map_2^i ) then
                 
                 return false;
                 
