@@ -31,14 +31,21 @@ DeclareCategory( "IsDgCategory",
 ##
 ####################################
 
+##
 DeclareAttribute( "DgDegree",
                   IsDgCategoryMorphism );
+
+##
+DeclareAttribute( "CommutativeRingOfDgCategory",
+                  IsDgCategory );
 
 ####################################
 ##
 #! @Section Basic operations
 ##
 ####################################
+
+## The differential acting on morphisms of a dg category
 
 DeclareAttribute( "DgDifferential",
                   IsDgCategoryMorphism );
@@ -54,3 +61,29 @@ DeclareOperation( "AddDgDifferential",
 
 DeclareOperation( "AddDgDifferential",
                   [ IsCapCategory, IsList ] );
+
+
+## Scalars acting on morphisms of a dg category
+DeclareOperation( "DgScalarMultiplication",
+                  [ IsRingElement, IsDgCategoryMorphism ] );
+
+DeclareOperation( "AddDgScalarMultiplication",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgScalarMultiplication",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgScalarMultiplication",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgScalarMultiplication",
+                  [ IsCapCategory, IsList ] );
+
+####################################
+##
+#! @Section Convenience methods
+##
+####################################
+
+DeclareOperation( "DgPreCompose",
+                  [ IsDgCategoryMorphism, IsDgCategoryMorphism ] );

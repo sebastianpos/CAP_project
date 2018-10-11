@@ -25,6 +25,12 @@ InstallMethod( DgBoundedCochainComplexCategory,
         
     fi;
     
+    if not IsLinearCategoryOverCommutativeRing( underlying_category ) then
+        
+        Error( "The underlying category has to be an a linear category over a commutative ring" );
+        
+    fi;
+    
     prerequisites := [ "PreCompose", "IsZeroForMorphisms", "ZeroObject", "ZeroMorphism" ];
     
     for oper in prerequisites do
@@ -42,7 +48,9 @@ InstallMethod( DgBoundedCochainComplexCategory,
     SetFilterObj( category, IsDgBoundedCochainComplexCategory );
     
     ## in a dg sense
-    SetIsAdditiveCategory( category, true );
+    # SetIsAdditiveCategory( category, true );
+    
+    SetCommutativeRingOfDgCategory( category, CommutativeRingOfLinearCategory( underlying_category ) );
     
     SetUnderlyingCategory( category, underlying_category );
     
@@ -431,11 +439,16 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
-    ## TODO: degree comparision
     ##
     AddIsEqualForMorphisms( category,
       function( map_1, map_2 )
         local morphism_list_1, morphism_list_2, s;
+        
+        if DgDegree( map_1 ) <> DgDegree( map_2 ) then
+            
+            return false;
+            
+        fi;
         
         morphism_list_1 := MorphismList( map_1 );
         
@@ -465,11 +478,16 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
-    ## TODO: degree comparision
     ##
     AddIsCongruentForMorphisms( category,
       function( map_1, map_2 )
         local morphism_list_1, morphism_list_2, index_list_1, index_list_2, i;
+        
+        if DgDegree( map_1 ) <> DgDegree( map_2 ) then
+            
+            return false;
+            
+        fi;
         
         morphism_list_1 := MorphismList( map_1 );
         
@@ -534,7 +552,21 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
-    ## TODO: add a dg version where one can specify the degree
+    ##
+    AddDgScalarMultiplication( category,
+      
+      function( r, map )
+        local morphism_list;
+        
+        morphism_list := MorphismList( map );
+        
+        morphism_list := List( morphism_list, l -> [ l[1], MultiplyWithElementOfCommutativeRingForMorphisms( r, l[2] ) ] );
+        
+        return DgBoundedCochainMap( Source( map ), morphism_list, Range( map ), DgDegree( map) );
+        
+    end );
+    
+    # ## TODO: add a dg version where one can specify the degree
     ##
     AddZeroMorphism( category,
       function( source, range )
@@ -544,8 +576,8 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
     end );
     
     ##
-    AddPreCompose( category,
-      function( map_1, map_2 )
+    AddPostCompose( category,
+      function( map_2, map_1 )
         local index_list_1, dgdeg_1, index_list_2, morphism_list, morphism_list_1, morphism_list_2, i, first_1, first_2;
         
         index_list_1 := IndexList( map_1 );
