@@ -89,4 +89,8 @@ IsDgZeroForMorphisms( DgDifferential( diff ) );
 #! true
 IsDgZeroForMorphisms( DgDifferential( id_1 ) );
 #! true
+IsDgClosedMorphism( id_1 );
+#! true
+IsDgClosedMorphism( map );
+#! false
 #! @EndExample

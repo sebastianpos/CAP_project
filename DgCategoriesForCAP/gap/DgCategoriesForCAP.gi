@@ -36,6 +36,19 @@ DgScalarMultiplication := rec(
   return_type := "morphism" 
 ),
 
+IsDgClosedMorphism := rec(
+  installation_name := "IsDgClosedMorphism",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ] ],
+  return_type := "bool" 
+),
+
+DgWitnessForExactnessOfMorphism := rec(
+  installation_name := "DgWitnessForExactnessOfMorphism",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ] ],
+  return_type := "morphism_or_fail",
+  io_type := [ [ "a" ], [ "a_source", "a_range" ] ] 
+),
+
 IsDgZeroForMorphisms := rec(
   installation_name := "IsDgZeroForMorphisms",
   filter_list := [ [ "morphism", IsDgCategoryMorphism ] ],
