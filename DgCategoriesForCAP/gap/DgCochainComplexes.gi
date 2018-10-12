@@ -606,6 +606,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
+    ##
     AddDgDifferential( category,
       function( map )
         local dgdeg, source, range, d_morphism_list, morphism_list, index_list, i, entry, s;
@@ -653,6 +654,14 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         return DgBoundedCochainMap( source, d_morphism_list, range, dgdeg + 1 );
       
+    end );
+    
+    ##
+    AddIsDgZeroForMorphisms( category,
+      function( map )
+        
+        return ForAll( MorphismList( map ), m -> IsZeroForMorphisms( m[2] ) );
+        
     end );
     
 end );

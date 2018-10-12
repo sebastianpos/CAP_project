@@ -35,6 +35,13 @@ DgScalarMultiplication := rec(
   end,
   return_type := "morphism" 
 ),
+
+IsDgZeroForMorphisms := rec(
+  installation_name := "IsDgZeroForMorphisms",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ] ],
+  return_type := "bool" 
+),
+
   ) );
 
 CAP_INTERNAL_INSTALL_ADDS_FROM_RECORD( DG_CATEGORIES_METHOD_NAME_RECORD );

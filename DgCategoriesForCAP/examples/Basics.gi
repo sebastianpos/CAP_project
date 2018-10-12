@@ -83,8 +83,10 @@ IsCongruentForMorphisms( -2/3*map, map*(-2/3) );
 diff := DgDifferential( map );;
 DgDegree( diff );
 #! -1
-IsZeroForMorphisms( diff );
+IsDgZeroForMorphisms( diff );
 #! false
-IsZeroForMorphisms( DgDifferential( diff ) );
+IsDgZeroForMorphisms( DgDifferential( diff ) );
+#! true
+IsDgZeroForMorphisms( DgDifferential( id_1 ) );
 #! true
 #! @EndExample

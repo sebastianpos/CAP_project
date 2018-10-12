@@ -79,6 +79,23 @@ DeclareOperation( "AddDgScalarMultiplication",
 DeclareOperation( "AddDgScalarMultiplication",
                   [ IsCapCategory, IsList ] );
 
+
+## Deciding whether a dg morphism equals the zero in any degree
+DeclareProperty( "IsDgZeroForMorphisms",
+                 IsDgCategoryMorphism );
+
+DeclareOperation( "AddIsDgZeroForMorphisms",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddIsDgZeroForMorphisms",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddIsDgZeroForMorphisms",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddIsDgZeroForMorphisms",
+                  [ IsCapCategory, IsList ] );
+
 ####################################
 ##
 #! @Section Convenience methods
