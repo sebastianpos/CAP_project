@@ -80,4 +80,11 @@ IsCongruentForMorphisms( PreCompose( id_1, z_1_2 ), z_1_2 );
 #! true
 IsCongruentForMorphisms( -2/3*map, map*(-2/3) );
 #! true
+diff := DgDifferential( map );;
+DgDegree( diff );
+#! -1
+IsZeroForMorphisms( diff );
+#! false
+IsZeroForMorphisms( DgDifferential( diff ) );
+#! true
 #! @EndExample
