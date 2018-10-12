@@ -96,6 +96,39 @@ DeclareOperation( "AddIsDgZeroForMorphisms",
 DeclareOperation( "AddIsDgZeroForMorphisms",
                   [ IsCapCategory, IsList ] );
 
+
+## Deciding whether a dg morphism is closed
+DeclareProperty( "IsDgClosedMorphism",
+                 IsDgCategoryMorphism );
+
+DeclareOperation( "AddIsDgClosedMorphism",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddIsDgClosedMorphism",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddIsDgClosedMorphism",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddIsDgClosedMorphism",
+                  [ IsCapCategory, IsList ] );
+
+## Deciding whether a dg morphism is exact and if yes, construct a witness
+DeclareAttribute( "DgWitnessForExactnessOfMorphism",
+                 IsDgCategoryMorphism );
+
+DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
+                  [ IsCapCategory, IsList ] );
+
 ####################################
 ##
 #! @Section Convenience methods
