@@ -606,4 +606,53 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
+    AddDgDifferential( category,
+      function( map )
+        local dgdeg, source, range, d_morphism_list, morphism_list, index_list, i, entry, s;
+        
+        dgdeg := DgDegree( map );
+        
+        source := Source( map );
+        
+        range := Range( map );
+        
+        d_morphism_list := [];
+        
+        morphism_list := MorphismList( map );
+        
+        if not IsEmpty( morphism_list ) then
+            
+            index_list := IndexList( map );
+            
+            i := index_list[1] - 1;
+            
+            entry := MultiplyWithElementOfCommutativeRingForMorphisms( (-1)^(dgdeg + 1), PreCompose( source^i, map^(i+1) ) );
+            
+            Add( d_morphism_list, [ i, entry ] );
+            
+            s := Size( index_list );
+            
+            for i in index_list{[1..s-1]} do
+                
+                entry := 
+                    MultiplyWithElementOfCommutativeRingForMorphisms( (-1)^(dgdeg + 1), PreCompose( source^i, map^(i+1) ) )
+                    +
+                    PreCompose( map^i, range^(i+dgdeg) );
+                
+                Add( d_morphism_list, [ i, entry ] );
+                
+            od;
+            
+            i := index_list[s];
+            
+            entry := PreCompose( map^i, range^(i+dgdeg) );
+            
+            Add( d_morphism_list, [ i, entry ] );
+            
+        fi;
+        
+        return DgBoundedCochainMap( source, d_morphism_list, range, dgdeg + 1 );
+      
+    end );
+    
 end );
