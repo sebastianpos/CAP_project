@@ -568,10 +568,10 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
     
     # ## TODO: add a dg version where one can specify the degree
     ##
-    AddZeroMorphism( category,
-      function( source, range )
+    AddDgZeroMorphism( category,
+      function( source, range, dgdeg )
         
-        return DgBoundedCochainMap( source, [ ], range, 0 );
+        return DgBoundedCochainMap( source, [ ], range, dgdeg );
         
     end );
     
@@ -661,6 +661,50 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
       function( map )
         
         return ForAll( MorphismList( map ), m -> IsZeroForMorphisms( m[2] ) );
+        
+    end );
+    
+    ##
+    AddDgAdditionForMorphisms( category,
+      function( map_1, map_2 )
+        local morphism_list;
+        
+        morphism_list := List(
+            Union( IndexList( map_1 ), IndexList( map_2 ) ),
+            i ->
+            [ i, AdditionForMorphisms( map_1^i, map_2^i ) ]
+        );
+        
+        return DgBoundedCochainMap( Source( map_1 ), morphism_list, Range( map_1 ), DgDegree( map_1 ) );
+        
+    end );
+    
+    ##
+    AddDgSubtractionForMorphisms( category,
+      function( map_1, map_2 )
+        local morphism_list;
+        
+        morphism_list := List(
+            Union( IndexList( map_1 ), IndexList( map_2 ) ),
+            i ->
+            [ i, SubtractionForMorphisms( map_1^i, map_2^i ) ]
+        );
+        
+        return DgBoundedCochainMap( Source( map_1 ), morphism_list, Range( map_1 ), DgDegree( map_1 ) );
+        
+    end );
+    
+    ##
+    AddDgAdditiveInverseForMorphisms( category,
+      
+      function( map )
+        local morphism_list;
+        
+        morphism_list := MorphismList( map );
+        
+        morphism_list := List( morphism_list, l -> [ l[1], AdditiveInverseForMorphisms( l[2] ) ] );
+        
+        return DgBoundedCochainMap( Source( map ), morphism_list, Range( map ), DgDegree( map) );
         
     end );
     

@@ -68,10 +68,10 @@ IsEqualForObjects( com1, com2 );
 IsCongruentForMorphisms( map, map2 );
 #! true
 id_1 := IdentityMorphism( com1 );;
-z_1_1 := ZeroMorphism( com1, com1 );;
+z_1_1 := DgZeroMorphism( com1, com1, 0 );;
 IsCongruentForMorphisms( id_1, z_1_1 );
 #! false
-z_1_2 := ZeroMorphism( com1, com2 );;
+z_1_2 := DgZeroMorphism( com1, com2, 0 );;
 IsCongruentForMorphisms( z_1_2, map );
 #! false
 IsCongruentForMorphisms( PreCompose( id_1, map ), map );
@@ -93,4 +93,27 @@ IsDgClosedMorphism( id_1 );
 #! true
 IsDgClosedMorphism( map );
 #! false
+z := DgZeroMorphism( Source( map ), Range( map ), DgDegree( map ) );;
+IsCongruentForMorphisms( map,
+    DgAdditionForMorphisms(
+        map,
+        z
+    )
+);
+#! true
+IsCongruentForMorphisms( map,
+    DgSubtractionForMorphisms(
+        map,
+        z
+    )
+);
+#! true
+IsCongruentForMorphisms(
+    z,
+    DgAdditionForMorphisms(
+        map,
+        DgAdditiveInverseForMorphisms( map )
+    )
+);
+#! true
 #! @EndExample

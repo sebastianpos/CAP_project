@@ -129,6 +129,70 @@ DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
 DeclareOperation( "AddDgWitnessForExactnessOfMorphism",
                   [ IsCapCategory, IsList ] );
 
+## Adding two dg morphisms having the same degree
+DeclareOperation( "DgAdditionForMorphisms",
+                  [ IsDgCategoryMorphism, IsDgCategoryMorphism ] );
+
+DeclareOperation( "AddDgAdditionForMorphisms",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgAdditionForMorphisms",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgAdditionForMorphisms",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgAdditionForMorphisms",
+                  [ IsCapCategory, IsList ] );
+
+## Subtracting two dg morphisms having the same degree
+DeclareOperation( "DgSubtractionForMorphisms",
+                  [ IsDgCategoryMorphism, IsDgCategoryMorphism ] );
+
+DeclareOperation( "AddDgSubtractionForMorphisms",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgSubtractionForMorphisms",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgSubtractionForMorphisms",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgSubtractionForMorphisms",
+                  [ IsCapCategory, IsList ] );
+
+## Taking the additive inverse of a dg morphism
+DeclareAttribute( "DgAdditiveInverseForMorphisms",
+                  IsDgCategoryMorphism );
+
+DeclareOperation( "AddDgAdditiveInverseForMorphisms",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgAdditiveInverseForMorphisms",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgAdditiveInverseForMorphisms",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgAdditiveInverseForMorphisms",
+                  [ IsCapCategory, IsList ] );
+
+## DgZeroMorphism of degree to be specified
+DeclareOperation( "DgZeroMorphism",
+                  [ IsDgCategoryObject, IsCapCategoryObject, IsInt ] );
+
+DeclareOperation( "AddDgZeroMorphism",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgZeroMorphism",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgZeroMorphism",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgZeroMorphism",
+                  [ IsCapCategory, IsList ] );
+
 ####################################
 ##
 #! @Section Convenience methods
