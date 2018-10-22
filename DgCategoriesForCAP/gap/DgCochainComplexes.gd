@@ -61,6 +61,9 @@ DeclareAttribute( "IndexList",
 DeclareAttribute( "ObjectList",
                   IsDgBoundedCochainComplex );
 
+DeclareAttribute( "ObjectIndexList",
+                  IsDgBoundedCochainComplex );
+
 DeclareAttribute( "MorphismList",
                   IsDgBoundedCochainMap );
 

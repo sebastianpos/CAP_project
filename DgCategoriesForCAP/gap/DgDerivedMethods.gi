@@ -22,3 +22,12 @@ AddDerivationToCAP( DgSubtractionForMorphisms,
     
 end : CategoryFilter := IsDgCategory,
       Description := "DgSubtractionForMorphisms(mor1, mor2) as the sum of mor1 and the additive inverse of mor2" );
+
+##
+AddDerivationToCAP( IsDgZeroForObjects,
+  function( object )
+    
+    return IsDgZeroForMorphisms( IdentityMorphism( object ) );
+    
+end : CategoryFilter := IsDgCategory,
+      Description := "IsDgZeroForObjects by checking whether the identity is zero" );

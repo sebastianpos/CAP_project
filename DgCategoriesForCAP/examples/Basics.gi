@@ -8,6 +8,8 @@ LoadPackage( "LinearAlgebraForCAP" );;
 #! @Example
 k := HomalgFieldOfRationals();;
 vec := MatrixCategory( k );;
+CapCategorySwitchLogicOff( vec );;
+DeactivateCachingOfCategory( vec );;
 V1 := TensorUnit( vec );;
 V2 := DirectSum( V1, V1 );;
 d_0 := InjectionOfCofactorOfDirectSum( [ V1, V1, V1 ], 1 );;
@@ -15,6 +17,7 @@ d_1 := ProjectionInFactorOfDirectSum( [ V1, V2 ], 2 );;
 IsZero( PreCompose( d_0, d_1 ) );
 #! true
 dg_cochain := DgBoundedCochainComplexCategory( vec );;
+DeactivateCachingOfCategory( dg_cochain );;
 com1 := DgBoundedCochainComplex( [ [ 0, d_0 ], [ 1, d_1 ] ], dg_cochain );;
 IsWellDefinedForObjects( com1 );
 #! true
@@ -78,7 +81,7 @@ IsCongruentForMorphisms( PreCompose( id_1, map ), map );
 #! true
 IsCongruentForMorphisms( PreCompose( id_1, z_1_2 ), z_1_2 );
 #! true
-IsCongruentForMorphisms( -2/3*map, map*(-2/3) );
+IsCongruentForMorphisms( (-2/3 /k)*map, map*(-2/3 /k) );
 #! true
 diff := DgDifferential( map );;
 DgDegree( diff );
@@ -113,6 +116,44 @@ IsCongruentForMorphisms(
     DgAdditionForMorphisms(
         map,
         DgAdditiveInverseForMorphisms( map )
+    )
+);
+#! true
+into_z := DgUniversalMorphismIntoZeroObject( com1, 1 );;
+from_z  := DgUniversalMorphismFromZeroObject( com2, -1 );;
+IsEqualForObjects( DgZeroObject( dg_cochain ), Range( into_z ) );
+#! true
+IsEqualForObjects( DgZeroObject( dg_cochain ), Source( from_z ) );
+#! true
+IsCongruentForMorphisms(
+    PreCompose( into_z , from_z ),
+    DgZeroMorphism( com1, com2, 0 )
+);
+#! true
+IsDgZeroForObjects( DgZeroObject( dg_cochain ) );
+#! true
+p1 := DgProjectionInFactorOfDirectSum( [ com1, com2 ], 1 );;
+p2 := DgProjectionInFactorOfDirectSum( [ com1, com2 ], 2 );;
+IsDgClosedMorphism( p1 );
+#! true
+IsDgClosedMorphism( p2 );
+#! true
+i1 := DgInjectionOfCofactorOfDirectSum( [ com1, com2 ], 1 );;
+i2 := DgInjectionOfCofactorOfDirectSum( [ com1, com2 ], 2 );;
+IsDgClosedMorphism( i1 );
+#! true
+IsDgClosedMorphism( i2 );
+#! true
+IsCongruentForMorphisms(
+    IdentityMorphism( DgDirectSum( [ com1, com2 ] ) ),
+    DgAdditionForMorphisms( PreCompose( p1, i1 ), PreCompose( p2, i2 ) )
+);
+#! true
+IsCongruentForMorphisms(
+    IdentityMorphism( com1 ),
+    PreCompose(
+        DgUniversalMorphismIntoDirectSum( [ com1, com2 ], [ IdentityMorphism( com1 ), DgZeroMorphism( com1, com2, 0 ) ] ),
+        DgUniversalMorphismFromDirectSum( [ com1, com2 ], [ IdentityMorphism( com1 ), DgZeroMorphism( com2, com1, 0 ) ] )
     )
 );
 #! true
