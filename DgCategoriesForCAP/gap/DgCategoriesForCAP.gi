@@ -55,6 +55,69 @@ IsDgZeroForMorphisms := rec(
   return_type := "bool" 
 ),
 
+DgAdditionForMorphisms := rec(
+  installation_name := "DgAdditionForMorphisms",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ], [ "morphism", IsDgCategoryMorphism ] ],
+  io_type := [ [ "a" ], [ "a_source", "a_range" ] ],
+  cache_name := "DgAdditionForMorphisms",
+  pre_function := function( morphism_1, morphism_2 )
+    local value_1, value_2;
+    
+    value_1 := IsEqualForObjects( Source( morphism_1 ), Source( morphism_2 ) );
+    
+    if value_1 = fail then
+      
+      return [ false, "cannot decide whether sources are equal" ];
+      
+    elif value_1 = false then
+      
+      return [ false, "sources are not equal" ];
+    
+    fi;
+    
+    value_2 := IsEqualForObjects( Range( morphism_1 ), Range( morphism_2 ) );
+    
+    if value_2 = fail then
+      
+      return [ false, "cannot decide whether ranges are equal" ];
+      
+    elif value_2 = false then
+      
+      return [ false, "ranges are not equal" ];
+    
+    fi;
+    
+    if not DgDegree( morphism_1 ) = DgDegree( morphism_2 ) then
+      
+      return [ false, "degrees differ" ];
+      
+    fi;
+    
+    return [ true ];
+    
+  end,
+  return_type := "morphism" ),
+
+DgSubtractionForMorphisms := rec(
+  installation_name := "DgSubtractionForMorphisms",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ], [ "morphism", IsDgCategoryMorphism ] ],
+  io_type := [ [ "a" ], [ "a_source", "a_range" ] ],
+  cache_name := "SubtractionForMorphisms",
+  pre_function := ~.DgAdditionForMorphisms.pre_function,
+  return_type := "morphism" ),
+
+DgAdditiveInverseForMorphisms := rec(
+  installation_name := "DgAdditiveInverseForMorphisms",
+  filter_list := [ [ "morphism", IsDgCategoryMorphism ] ],
+  io_type := [ [ "a" ], [ "a_source", "a_range" ] ],
+  return_type := "morphism" ),
+
+DgZeroMorphism := rec(
+  installation_name := "DgZeroMorphism",
+  filter_list := [ [ "object", IsDgCategoryObject ], [ "object", IsDgCategoryObject ], IsInt ],
+  io_type := [ [ "a", "b" ], [ "a", "b" ] ],
+  cache_name := "DgZeroMorphism",
+  return_type := "morphism" ),
   ) );
 
 CAP_INTERNAL_INSTALL_ADDS_FROM_RECORD( DG_CATEGORIES_METHOD_NAME_RECORD );
