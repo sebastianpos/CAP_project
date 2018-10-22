@@ -256,36 +256,61 @@ InstallMethod( ObjectList,
                [ IsDgBoundedCochainComplex ],
                
   function( complex )
-    local differential_list, object_list, l, s;
+    local differential_list, object_list, l, s, pair;
     
     differential_list := DifferentialList( complex );
     
     object_list := [];
     
-    for l in differential_list do
-        
-        Add( object_list, [ l[1], Source( l[2] ) ] );
-        
-    od;
-    
     s := Size( differential_list );
     
     if s > 0 then
         
-        l := differential_list[s];
+        for l in [ 1 .. s-1 ] do
+            
+            pair := differential_list[l];
+            
+            Add( object_list, [ pair[1], Source( pair[2] ) ] );
+            
+            if differential_list[l+1][1] > pair[1] + 1 then
+                
+                Add( object_list, [ pair[1] + 1, Range( pair[2] ) ] );
+                
+            fi;
+            
+        od;
         
-        Add( object_list, [ l[1] + 1, Range( l[2] ) ] );
+        pair := differential_list[s];
         
-    fi;
-    
-    ## side effect: index_list knows that it is strictly sorted
-    if not IsSSortedList( object_list ) then
+        Add( object_list, [ pair[1], Source( pair[2] ) ] );
         
-        Error( "A cochain complex must have a strictly sorted object list" );
+        Add( object_list, [ pair[1] + 1, Range( pair[2] ) ] );
+        
+        ## side effect: index_list knows that it is strictly sorted
+        if not IsSSortedList( object_list ) then
+            
+            Error( "A cochain complex must have a strictly sorted object list" );
+            
+        fi;
         
     fi;
     
     return object_list;
+    
+end );
+
+##
+InstallMethod( ObjectIndexList,
+               [ IsDgBoundedCochainComplex ],
+               
+  function( complex )
+    local object_index_list;
+    
+    object_index_list := List( ObjectList( complex ), p -> p[1] );
+    
+    SetIsSSortedList( object_index_list, true );
+    
+    return object_index_list;
     
 end );
 
@@ -708,4 +733,130 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
+    ##
+    AddDgZeroObject( category,
+      
+      function(  )
+        
+        return DgBoundedCochainComplex( [ ], category );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismIntoZeroObject( category,
+      
+      function( complex, dgdeg )
+        
+        return DgBoundedCochainMap( complex, [], DgZeroObject( category ), dgdeg );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismFromZeroObject( category,
+      
+      function( complex, dgdeg )
+        
+        return DgBoundedCochainMap( DgZeroObject( category ), [], complex, dgdeg );
+        
+    end );
+    
+    ##
+    AddDgDirectSum( category,
+      
+      function( diagram )
+        local joined_index_list, differential_list, i;
+        
+        joined_index_list := Union( List( diagram, IndexList ) );
+        
+        differential_list := [ ];
+        
+        for i in joined_index_list do
+            
+            Add( differential_list, [ i, DirectSumFunctorial( List( diagram, d -> d^i ) ) ] );
+            
+        od;
+        
+        return DgBoundedCochainComplex( differential_list, category );
+        
+    end );
+    
+    ##
+    AddDgProjectionInFactorOfDirectSum( category,
+      
+      function( diagram, k )
+        local source, range, morphism_list;
+        
+        source := DgDirectSum( diagram );
+        
+        range := diagram[k];
+        
+        morphism_list := List(
+            ObjectIndexList( range ),
+            i -> [ i, ProjectionInFactorOfDirectSum( List( diagram, d -> d[i] ), k ) ]
+        );
+        
+        return DgBoundedCochainMap( source, morphism_list, range, 0 );
+        
+    end );
+    
+    ##
+    AddDgInjectionOfCofactorOfDirectSum( category,
+      
+      function( diagram, k )
+        local source, range, morphism_list;
+        
+        range := DgDirectSum( diagram );
+        
+        source := diagram[k];
+        
+        morphism_list := List(
+            ObjectIndexList( source ),
+            i -> [ i, InjectionOfCofactorOfDirectSum( List( diagram, d -> d[i] ), k ) ]
+        );
+        
+        return DgBoundedCochainMap( source, morphism_list, range, 0 );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismFromDirectSum( category,
+      
+      function( diagram, sink )
+        local source, range, dgdeg, morphism_list;
+        
+        source := DgDirectSum( diagram );
+        
+        range := Range( sink[1] );
+        
+        dgdeg := DgDegree( sink[1] );
+        
+        morphism_list := List(
+            List( ObjectIndexList( range ), d -> d - dgdeg ),
+            i -> [ i, UniversalMorphismFromDirectSum( List( diagram, d -> d[i] ), List( sink, s -> s^i ) ) ]
+        );
+        
+        return DgBoundedCochainMap( source, morphism_list, range, dgdeg );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismIntoDirectSum( category,
+      
+      function( diagram, source_diagram )
+        local source, range, dgdeg, morphism_list;
+        
+        range := DgDirectSum( diagram );
+        
+        source := Source( source_diagram[1] );
+        
+        dgdeg := DgDegree( source_diagram[1] );
+        
+        morphism_list := List(
+            ObjectIndexList( source ),
+            i -> [ i, UniversalMorphismIntoDirectSum( List( diagram, d -> d[i] ), List( source_diagram, s -> s^i ) ) ]
+        );
+        
+        return DgBoundedCochainMap( source, morphism_list, range, dgdeg );
+        
+    end );
 end );

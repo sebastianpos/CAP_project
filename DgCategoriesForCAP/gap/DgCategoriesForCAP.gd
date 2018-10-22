@@ -96,6 +96,23 @@ DeclareOperation( "AddIsDgZeroForMorphisms",
 DeclareOperation( "AddIsDgZeroForMorphisms",
                   [ IsCapCategory, IsList ] );
 
+## Deciding whether an object is dg-isomorphic to the zero object.
+## In the particular case of a zero object, this is the same as being isomorphic to the zero object,
+## i.e., regardless of the morphism being closed and of degree 0.
+DeclareProperty( "IsDgZeroForObjects",
+                 IsDgCategoryObject );
+
+DeclareOperation( "AddIsDgZeroForObjects",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddIsDgZeroForObjects",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddIsDgZeroForObjects",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddIsDgZeroForObjects",
+                  [ IsCapCategory, IsList ] );
 
 ## Deciding whether a dg morphism is closed
 DeclareProperty( "IsDgClosedMorphism",
@@ -193,6 +210,152 @@ DeclareOperation( "AddDgZeroMorphism",
 DeclareOperation( "AddDgZeroMorphism",
                   [ IsCapCategory, IsList ] );
 
+## DgZeroObject
+DeclareAttribute( "DgZeroObject",
+                  IsDgCategory );
+
+DeclareOperation( "AddDgZeroObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgZeroObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgZeroObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgZeroObject",
+                  [ IsCapCategory, IsList ] );
+
+## DgUniversalMorphismFromZeroObject with specified degree
+DeclareOperation( "DgUniversalMorphismFromZeroObject",
+                  [ IsDgCategoryObject, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromZeroObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromZeroObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromZeroObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromZeroObject",
+                  [ IsCapCategory, IsList ] );
+
+
+## DgUniversalMorphismIntoZeroObject with specified degree
+DeclareOperation( "DgUniversalMorphismIntoZeroObject",
+                  [ IsDgCategoryObject, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoZeroObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoZeroObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoZeroObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoZeroObject",
+                  [ IsCapCategory, IsList ] );
+
+## DgDirectSum with specified degree
+DeclareOperation( "DgDirectSum",
+                  [ IsList ] );
+
+DeclareOperation( "DgDirectSum",
+                  [ IsList, IsDgCategory ] );
+
+DeclareOperation( "DgDirectSumOp",
+                  [ IsList, IsDgCategoryObject ] );
+
+DeclareOperation( "AddDgDirectSum",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgDirectSum",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgDirectSum",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgDirectSum",
+                  [ IsCapCategory, IsList ] );
+
+## DgProjectionInFactorOfDirectSum (of degree 0 and closed)
+DeclareOperation( "DgProjectionInFactorOfDirectSum",
+                  [ IsList, IsInt ] );
+
+DeclareOperation( "DgProjectionInFactorOfDirectSumOp",
+                  [ IsList, IsInt, IsDgCategoryObject ] );
+
+DeclareOperation( "AddDgProjectionInFactorOfDirectSum",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgProjectionInFactorOfDirectSum",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgProjectionInFactorOfDirectSum",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgProjectionInFactorOfDirectSum",
+                  [ IsCapCategory, IsList ] );
+
+## DgInjectionOfCofactorOfDirectSum (of degree 0 and closed)
+DeclareOperation( "DgInjectionOfCofactorOfDirectSum",
+                  [ IsList, IsInt ] );
+
+DeclareOperation( "DgInjectionOfCofactorOfDirectSumOp",
+                  [ IsList, IsInt, IsDgCategoryObject ] );
+
+DeclareOperation( "AddDgInjectionOfCofactorOfDirectSum",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgInjectionOfCofactorOfDirectSum",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgInjectionOfCofactorOfDirectSum",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgInjectionOfCofactorOfDirectSum",
+                  [ IsCapCategory, IsList ] );
+
+## DgUniversalMorphismFromDirectSum
+DeclareOperation( "DgUniversalMorphismFromDirectSum",
+                  [ IsList, IsList ] );
+
+DeclareOperation( "DgUniversalMorphismFromDirectSumOp",
+                  [ IsList, IsList, IsDgCategoryObject ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromDirectSum",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromDirectSum",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromDirectSum",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismFromDirectSum",
+                  [ IsCapCategory, IsList ] );
+
+## DgUniversalMorphismIntoDirectSum
+DeclareOperation( "DgUniversalMorphismIntoDirectSum",
+                  [ IsList, IsList ] );
+
+DeclareOperation( "DgUniversalMorphismIntoDirectSumOp",
+                  [ IsList, IsList, IsDgCategoryObject ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
+                  [ IsCapCategory, IsList ] );
 ####################################
 ##
 #! @Section Convenience methods
