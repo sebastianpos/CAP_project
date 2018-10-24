@@ -68,7 +68,8 @@ PackageDoc := rec(
 
 Dependencies := rec(
   GAP := ">= 4.9",
-  NeededOtherPackages := [ [ "CAP", ">= 2018.09.17" ] ],
+  NeededOtherPackages := [ [ "CAP", ">= 2018.09.17" ],
+                           [ "QPA", ">= 2.0" ] ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),
