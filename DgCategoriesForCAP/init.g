@@ -7,3 +7,5 @@
 ReadPackage( "DgCategoriesForCAP", "gap/DgCategoriesForCAP.gd");
 
 ReadPackage( "DgCategoriesForCAP", "gap/DgCochainComplexes.gd");
+
+ReadPackage( "DgCategoriesForCAP", "gap/DgQuivers.gd");
