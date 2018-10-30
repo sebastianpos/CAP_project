@@ -52,6 +52,15 @@ DeclareAttribute( "UnderlyingVertex",
 DeclareAttribute( "UnderlyingQuiverAlgebraElement",
                   IsDgQuiverMorphism );
 
+DeclareAttribute( "ObjectsOfDgQuiver",
+                  IsDgQuiver );
+
+DeclareAttribute( "ArrowsOfDgQuiver",
+                  IsDgQuiver );
+
+DeclareAttribute( "UnderlyingQuiverAlgebra",
+                  IsDgQuiver );
+
 ####################################
 ##
 #! @Section Preparation operations
