@@ -453,4 +453,94 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
         
     end );
     
+    ##
+    AddDgZeroMorphism( category,
+      function( source, range, dgdeg )
+        
+        return DgQuiverMorphism( source, Zero( quiver_algebra ), range, dgdeg );
+        
+    end );
+    
+    ##
+    AddDgScalarMultiplication( category,
+      
+      function( r, alpha )
+        
+        return DgQuiverMorphism( Source( alpha ), 
+                                 r * UnderlyingQuiverAlgebraElement( alpha ),
+                                 Range( alpha ),
+                                 DgDegree( alpha ) 
+        );
+        
+    end );
+    
+    ##
+    AddDgAdditionForMorphisms( category,
+      function( alpha, beta )
+        
+        return DgQuiverMorphism( Source( alpha ),
+                                UnderlyingQuiverAlgebraElement( alpha )
+                                + UnderlyingQuiverAlgebraElement( beta ),
+                                Range( alpha ),
+                                DgDegree( alpha )
+        );
+        
+    end );
+    
+    ##
+    AddDgSubtractionForMorphisms( category,
+      function( alpha, beta )
+        
+        return DgQuiverMorphism( Source( alpha ),
+                                UnderlyingQuiverAlgebraElement( alpha )
+                                - UnderlyingQuiverAlgebraElement( beta ),
+                                Range( alpha ),
+                                DgDegree( alpha )
+        );
+        
+    end );
+    
+    ##
+    AddDgAdditiveInverseForMorphisms( category,
+      
+      function( alpha )
+        
+        return DgQuiverMorphism( Source( alpha ),
+                                - UnderlyingQuiverAlgebraElement( alpha ),
+                                Range( alpha ),
+                                DgDegree( alpha )
+        );
+        
+    end );
+    
 end ); 
+
+####################################
+##
+## View
+##
+####################################
+
+##
+InstallMethod( ViewObj,
+        [ IsDgQuiverObject ],
+
+  function( v )
+    
+    ViewObj( UnderlyingVertex( v ) );
+    
+end );
+
+##
+InstallMethod( ViewObj,
+        [ IsDgQuiverMorphism ],
+
+  function( alpha )
+    
+    ViewObj( UnderlyingVertex( Source( alpha ) ) );
+    Print( "-- " );
+    ViewObj( UnderlyingQuiverAlgebraElement( alpha ) );
+    Print( " -->" );
+    ViewObj( UnderlyingVertex( Range( alpha ) ) );
+    
+end );

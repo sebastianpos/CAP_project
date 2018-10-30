@@ -591,7 +591,6 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
     
-    # ## TODO: add a dg version where one can specify the degree
     ##
     AddDgZeroMorphism( category,
       function( source, range, dgdeg )
