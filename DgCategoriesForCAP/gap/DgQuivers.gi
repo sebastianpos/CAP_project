@@ -176,7 +176,7 @@ end );
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
   
   function( category, quiver_algebra, degree, differential )
-    local paths, DG_DIFFERENTIAL_ON_PATHS, is_left_quiver, field;
+    local paths, DG_DIFFERENTIAL_ON_PATHS, DG_DEGREE_ON_PATHS, is_left_quiver, field;
     
     field := CommutativeRingOfDgCategory( category );
     
@@ -244,7 +244,15 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
     
     fi;
     
-    
+    ##
+    DG_DEGREE_ON_PATHS := function( path )
+      local arrow_list;
+      
+      arrow_list := ArrowList( path );
+      
+      return Sum( arrow_list, a -> degree[ArrowNumber(a)] );
+      
+    end;
     
     paths := PRECOMPUTE_PATHS_FOR_DG_QUIVERS( quiver_algebra );
     
@@ -274,6 +282,104 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
         fi;
         
         return UnderlyingQuiverAlgebraElement( alpha ) = UnderlyingQuiverAlgebraElement( beta );
+        
+    end );
+    
+    ##
+    AddIsWellDefinedForObjects( category,
+      function( v )
+        
+        if not IsIdenticalObj( QuiverOfAlgebra( quiver_algebra ), QuiverOfPath( UnderlyingVertex( v ) ) ) then
+            
+            return false;
+            
+        fi;
+        
+        return true;
+        
+    end );
+    
+    ##
+    AddIsWellDefinedForMorphisms( category,
+      function( alpha )
+        local element, rep, v, w, coeffs, dgdeg, paths;
+        
+        element := UnderlyingQuiverAlgebraElement( alpha );
+        
+        if not IsIdenticalObj( AlgebraOfElement( element ), quiver_algebra ) then
+            
+            return false;
+            
+        fi;
+        
+        if IsZero( element ) then # zero can be of any degree
+            
+            return true;
+            
+        fi;
+        
+        if not IsUniform( element ) then
+            
+            return false;
+            
+        fi;
+        
+        rep := element;
+        
+        if IsQuotientOfPathAlgebraElement( element ) then
+            
+            rep := Representative( element );
+            
+        fi;
+        
+        v := Source( LeadingPath( rep ) ); 
+        
+        if not ( UnderlyingVertex( Source( alpha ) ) = v ) then
+            
+            return false;
+            
+        fi;
+        
+        w := Target( LeadingPath( rep ) );
+        
+        if not ( UnderlyingVertex( Range( alpha ) ) = w ) then
+            
+            return false;
+            
+        fi;
+        
+        ## test the degree (also, test being homogeneous wrt. the degree)
+        
+        paths := Paths( element );
+        
+        if Size( paths ) > 0 then
+            
+            coeffs := Coefficients( element );
+            
+            dgdeg := Set( List( paths, DG_DEGREE_ON_PATHS ) );
+            
+            if Size( dgdeg ) > 1 then
+                
+                return false;
+                
+            elif dgdeg[1] <> DgDegree( alpha ) then
+                
+                return false;
+                
+            fi;
+            
+        else
+            
+            if DgDegree( alpha ) <> 0 then
+                
+                return false;
+                
+            fi;
+            
+        fi;
+        
+        # all tests passed, so it is well-defined
+        return true;
         
     end );
     
@@ -327,27 +433,19 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
     ##
     AddDgDifferential( category,
       function( alpha )
-        local element, v, w, basis, coeffs, i;
+        local element, paths, coeffs, i;
         
         element := UnderlyingQuiverAlgebraElement( alpha );
         
-        v := UnderlyingVertex( Source( alpha ) );
+        paths := Paths( element );
         
-        w := UnderlyingVertex( Range( alpha ) );
-        
-        basis := BasisPathsBetweenVertices( quiver_algebra, v, w );
-        
-        coeffs := CoefficientsOfPaths( basis, element );
+        coeffs := Coefficients( element );
         
         element := Zero( quiver_algebra );
         
-        for i in [ 1 .. Size( coeffs) ] do
+        for i in [ 1 .. Size( coeffs ) ] do
             
-            if not IsZero( coeffs[i] ) then
-                
-                element := element + coeffs[i] * DG_DIFFERENTIAL_ON_PATHS( basis[i] );
-                
-            fi;
+            element := element + coeffs[i] * DG_DIFFERENTIAL_ON_PATHS( paths[i] );
             
         od;
         
