@@ -116,4 +116,9 @@ IsCongruentForMorphisms(
     PostCompose( [ beta1, DgDifferential( epsilon1 ), gamma ] )
 );
 #! true
+pc := PreCompose( [ gamma, delta_bar, alpha1, beta1 ] );;
+IsDgZeroForMorphisms( pc );
+#! false
+IsDgZeroForMorphisms( DgDifferential( pc ) );
+#! true
 #! @EndExample
