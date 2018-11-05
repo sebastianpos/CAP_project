@@ -176,73 +176,64 @@ end );
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
   
   function( category, quiver_algebra, degree, differential )
-    local paths, DG_DIFFERENTIAL_ON_PATHS, DG_DEGREE_ON_PATHS, is_left_quiver, field;
+    local paths, DG_DIFFERENTIAL_ON_PATHS, DG_DEGREE_ON_PATHS, field;
     
     field := CommutativeRingOfDgCategory( category );
     
-    is_left_quiver := IsLeftQuiver( QuiverOfAlgebra( quiver_algebra) );
-    
-    if is_left_quiver then
+    # use the source-to-target specific commands to avoid case distinctions
+    #
+    DG_DIFFERENTIAL_ON_PATHS := function( path )
+        local arrow_list, n, i, element, coefficient, pre_path, d, post_path;
         
-        # use the source-to-target specific commands to avoid case distinctions
-        #
-        DG_DIFFERENTIAL_ON_PATHS := function( path )
-          local arrow_list, n, i, element, coefficient, pre_path, d, post_path;
-          
-          arrow_list := ArrowList( path ); # in source-to-target-order
-          
-          arrow_list := Reversed( arrow_list );
-          
-          n := Size( arrow_list ); # n = 0 if path is an identity path
-          
-          element := Zero( quiver_algebra );
-          
-          for i in [ 1 .. n ] do
-            
-            coefficient := (-1)^(Sum( [ 1 .. i - 1 ], j -> degree[ArrowNumber( arrow_list[j] )] mod 2 ) ) / field;
-            
-            if i > 1 then
-                
-                pre_path := arrow_list{[ 1 .. i - 1]};
-                
-                pre_path := ComposePaths( Reversed( pre_path ) );
-                
-                pre_path := PathAsAlgebraElement( quiver_algebra, pre_path );
-                
-            else
-                
-                pre_path := One( quiver_algebra );
-                
-            fi;
-            
-            d := differential[ ArrowNumber( arrow_list[i] ) ];
-            
-            if i < n then
-                
-                post_path := arrow_list{[ i + 1 .. n]};
-                
-                post_path := ComposePaths( Reversed( post_path ) );
-                
-                post_path := PathAsAlgebraElement( quiver_algebra, post_path );
-                
-            else
-                
-                post_path := One( quiver_algebra );
-                
-            fi;
-            
-            ## try to get rid of the distinction by having a source-to-target multiplication for quiver algebras
-            element := element + coefficient * (pre_path * d * post_path);
-            
-          od;
-          
-          return element;
-          
-        end;
+        arrow_list := ArrowList( path ); # in source-to-target-order
         
-    else
-    
-    fi;
+        arrow_list := Reversed( arrow_list );
+        
+        n := Size( arrow_list ); # n = 0 if path is an identity path
+        
+        element := Zero( quiver_algebra );
+        
+        for i in [ 1 .. n ] do
+        
+        coefficient := (-1)^(Sum( [ 1 .. i - 1 ], j -> degree[ArrowNumber( arrow_list[j] )] mod 2 ) ) / field;
+        
+        if i > 1 then
+            
+            pre_path := arrow_list{[ 1 .. i - 1]};
+            
+            pre_path := ComposePaths( Reversed( pre_path ) );
+            
+            pre_path := PathAsAlgebraElement( quiver_algebra, pre_path );
+            
+        else
+            
+            pre_path := One( quiver_algebra );
+            
+        fi;
+        
+        d := differential[ ArrowNumber( arrow_list[i] ) ];
+        
+        if i < n then
+            
+            post_path := arrow_list{[ i + 1 .. n]};
+            
+            post_path := ComposePaths( Reversed( post_path ) );
+            
+            post_path := PathAsAlgebraElement( quiver_algebra, post_path );
+            
+        else
+            
+            post_path := One( quiver_algebra );
+            
+        fi;
+        
+        element := element + coefficient * ComposeElements( ComposeElements( post_path, d ), pre_path );
+        
+        od;
+        
+        return element;
+        
+    end;
     
     ##
     DG_DEGREE_ON_PATHS := function( path )
@@ -394,33 +385,16 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
         
     end );
     
-    if not is_left_quiver then
+    ##
+    AddPostCompose( category,
+        function( beta, alpha )
+        local element;
         
-        ##
-        AddPostCompose( category,
-          function( beta, alpha )
-            local element;
-            
-            element := UnderlyingQuiverAlgebraElement( alpha ) * UnderlyingQuiverAlgebraElement( beta );
-            
-            return DgQuiverMorphism( Source( alpha ), element, Range( beta ), DgDegree( alpha ) + DgDegree( beta ) );
-            
-        end );
+        element := ComposeElements( UnderlyingQuiverAlgebraElement( alpha ), UnderlyingQuiverAlgebraElement( beta ) );
         
-    else
+        return DgQuiverMorphism( Source( alpha ), element, Range( beta ), DgDegree( alpha ) + DgDegree( beta ) );
         
-        ##
-        AddPostCompose( category,
-          function( beta, alpha )
-            local element;
-            
-            element := UnderlyingQuiverAlgebraElement( beta ) * UnderlyingQuiverAlgebraElement( alpha );
-            
-            return DgQuiverMorphism( Source( alpha ), element, Range( beta ), DgDegree( alpha ) + DgDegree( beta ) );
-            
-        end );
-        
-    fi;
+    end );
     
     ##
     AddIsDgZeroForMorphisms( category,
