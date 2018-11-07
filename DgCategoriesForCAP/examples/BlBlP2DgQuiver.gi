@@ -121,4 +121,29 @@ IsDgZeroForMorphisms( pc );
 #! false
 IsDgZeroForMorphisms( DgDifferential( pc ) );
 #! true
+objects := ObjectsOfDgQuiver( dgA );;
+t1 := DgAdditionForMorphisms( epsilon1, epsilon2 );
+IsCongruentForMorphisms(
+    InterpretMorphismFromDinstinguishedObjectToHomomorphismStructureAsMorphism( 
+        Source( epsilon1 ), 
+        Range( epsilon1 ),
+        InterpretMorphismAsMorphismFromDinstinguishedObjectToHomomorphismStructure( t1 )
+    ),
+    t1
+);
+#! true
+t2 := PostCompose( alpha1, delta_bar );;
+t3 := PreCompose( [ gamma_bar, t2, beta1 ] );; 
+IsCongruentForMorphisms(
+    t3,
+    InterpretMorphismFromDinstinguishedObjectToHomomorphismStructureAsMorphism(
+        Source( t3 ),
+        Range( t3 ),
+        PreCompose( 
+            InterpretMorphismAsMorphismFromDinstinguishedObjectToHomomorphismStructure( t2 ),
+            HomomorphismStructureOnMorphisms( gamma_bar, beta1 )
+        )
+    )
+);
+#! true
 #! @EndExample

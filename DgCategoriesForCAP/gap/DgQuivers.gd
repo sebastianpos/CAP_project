@@ -61,10 +61,5 @@ DeclareAttribute( "ArrowsOfDgQuiver",
 DeclareAttribute( "UnderlyingQuiverAlgebra",
                   IsDgQuiver );
 
-####################################
-##
-#! @Section Preparation operations
-##
-####################################
-
-DeclareGlobalFunction( "PRECOMPUTE_PATHS_FOR_DG_QUIVERS" );
+DeclareAttribute( "UnderlyingLinearCategory",
+                  IsDgQuiver );

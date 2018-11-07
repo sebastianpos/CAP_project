@@ -18,7 +18,7 @@ InstallMethod( DgQuiver,
                [ IsQuiverAlgebra, IsList, IsList ],
                
   function( quiver_algebra, degree, differential )
-    local category;
+    local category, vec;
     
     category := CreateCapCategory( Concatenation( "Dg quiver( ", String( quiver_algebra )," )"  ) );
     
@@ -28,9 +28,21 @@ InstallMethod( DgQuiver,
     
     SetFilterObj( category, IsDgQuiver );
     
-    SetCommutativeRingOfDgCategory( category, LeftActingDomain( quiver_algebra) );
+    SetCommutativeRingOfDgCategory( category, LeftActingDomain( quiver_algebra ) );
     
     SetUnderlyingQuiverAlgebra( category, quiver_algebra );
+    
+    ## homomorphism structure
+    
+    vec := MatrixCategory( CommutativeRingOfDgCategory( category ) );
+    
+    CapCategorySwitchLogicOff( vec );
+    
+    DeactivateCachingOfCategory( vec );
+    
+    SetUnderlyingLinearCategory( category, vec );
+    
+    SetRangeCategoryOfHomomorphismStructure( category, DgBoundedCochainComplexCategory( vec ) );
     
     AddObjectRepresentation( category, IsDgQuiverObject );
     
@@ -141,31 +153,6 @@ end );
 ##
 ####################################
 
-##
-InstallGlobalFunction( PRECOMPUTE_PATHS_FOR_DG_QUIVERS,
-               [ IsQuiverAlgebra ],
-               
-  function( quiver_algebra )
-    local quiver, vertices, basis, list, path;
-    
-    quiver := QuiverOfAlgebra( quiver_algebra );
-    
-    vertices := Vertices( quiver );
-    
-    basis := BasisPaths( CanonicalBasis( quiver_algebra ) );
-    
-    list := List( vertices, i -> List( vertices, i -> [ ] ) );
-    
-    for path in basis do
-        
-        Add( list[ VertexNumber( Source( path ) ) ][ VertexNumber( Target( path ) ) ], path );
-        
-    od;
-    
-    return list;
-    
-end );
-
 ####################################
 ##
 ## Basic operations
@@ -176,7 +163,7 @@ end );
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
   
   function( category, quiver_algebra, degree, differential )
-    local paths, DG_DIFFERENTIAL_ON_PATHS, DG_DEGREE_ON_PATHS, field;
+    local paths, DG_DIFFERENTIAL_ON_PATHS, DG_DEGREE_ON_PATHS, DG_BASIS_PATHS, DG_BASIS_PATHS_DEGREES, field;
     
     field := CommutativeRingOfDgCategory( category );
     
@@ -244,8 +231,6 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
       return Sum( arrow_list, a -> degree[ArrowNumber(a)] );
       
     end;
-    
-    paths := PRECOMPUTE_PATHS_FOR_DG_QUIVERS( quiver_algebra );
     
     AddIsEqualForCacheForObjects( category,
       IsIdenticalObj );
@@ -484,6 +469,227 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
                                 Range( alpha ),
                                 DgDegree( alpha )
         );
+        
+    end );
+    
+    ## Homomorphism structure (in cochain complexes)
+    
+    ##
+    DG_BASIS_PATHS := FunctionWithCache(
+      function( v, w, deg )
+        
+        return Filtered( BasisPathsBetweenVertices( quiver_algebra, UnderlyingVertex( v ), UnderlyingVertex( w ) ), p -> DG_DEGREE_ON_PATHS( p ) = deg );
+        
+    end );
+    
+    ##
+    DG_BASIS_PATHS_DEGREES := FunctionWithCache(
+      function( v, w )
+        local basis;
+        
+        basis := BasisPathsBetweenVertices( quiver_algebra, UnderlyingVertex( v ), UnderlyingVertex( w ) );
+        
+        return Set( List( basis, DG_DEGREE_ON_PATHS ) );
+        
+    end );
+    
+    ##
+    AddHomomorphismStructureOnObjects( category,
+      
+      function( v, w )
+        local basis_pre, basis_post, i, differential_list, field, degrees, d, obj_pre, obj_post, morphism, matrix, obj_post_hit;
+        
+        degrees := DG_BASIS_PATHS_DEGREES( v, w );
+        
+        if IsEmpty( degrees ) then
+            
+            return DgZeroObject( RangeCategoryOfHomomorphismStructure( category ) );
+            
+        fi;
+        
+        differential_list := [ ];
+        
+        field := CommutativeRingOfDgCategory( category );
+        
+        d := degrees[1];
+        
+        basis_pre := DG_BASIS_PATHS( v, w, d );
+        
+        obj_pre := VectorSpaceObject( Size( basis_pre ), field );
+        
+        obj_post_hit := false;
+        
+        for i in [ 2 .. Size( degrees - 1 ) ] do
+            
+            basis_post := DG_BASIS_PATHS( v, w, degrees[i] );
+            
+            obj_post := VectorSpaceObject( Size( basis_post ), field );
+            
+            if degrees[i] = d + 1 then
+                
+                matrix := HomalgMatrix( 
+                    List( basis_pre, p -> CoefficientsOfPaths( basis_post, DG_DIFFERENTIAL_ON_PATHS( p ) ) ),
+                    Dimension( obj_pre ),
+                    Dimension( obj_post ),
+                    field
+                );
+                
+                morphism := VectorSpaceMorphism( obj_pre, matrix, obj_post );
+                
+                Add( differential_list, [ d, morphism ] );
+                
+                obj_post_hit := true;
+                
+            else
+                
+                if not obj_post_hit then
+                    
+                    Add( differential_list, [ d, UniversalMorphismIntoZeroObject( obj_pre ) ] );
+                    
+                fi;
+                
+                obj_post_hit := false;
+                
+            fi;
+            
+            basis_pre := basis_post;
+            
+            obj_pre := obj_post;
+            
+            d := degrees[i];
+            
+        od;
+        
+        if not obj_post_hit then
+            
+            Add( differential_list, [ degrees[ Size( degrees ) ], UniversalMorphismIntoZeroObject( obj_pre ) ] );
+            
+        fi;
+        
+        return DgBoundedCochainComplex( differential_list, RangeCategoryOfHomomorphismStructure( category ) );
+        
+    end );
+    
+    ##
+    AddHomomorphismStructureOnMorphismsWithGivenObjects( category,
+      
+      function( source, alpha, beta, range )
+        local morphism_list, deg, d, v, vp, w, wp, v_wp_degs, vp_w_degs, relevant_degs, basis_pre, basis_post, obj_pre, obj_post, matrix, morphism;
+        
+        deg := DgDegree( alpha ) + DgDegree( beta );
+        
+        v := Source( alpha );
+        
+        vp := Range( alpha );
+        
+        w := Source( beta );
+        
+        wp := Range( beta );
+        
+        v_wp_degs := DG_BASIS_PATHS_DEGREES( v, wp );
+        
+        vp_w_degs := DG_BASIS_PATHS_DEGREES( vp, w );
+        
+        relevant_degs := Filtered( vp_w_degs, d -> (d + deg) in v_wp_degs );
+        
+        morphism_list := [ ];
+        
+        for d in relevant_degs do
+            
+            basis_pre := DG_BASIS_PATHS( vp, w, d );
+            
+            basis_post := DG_BASIS_PATHS( v, wp, d + deg );
+            
+            obj_pre := source[ d ];
+            
+            obj_post := range[ d + deg ];
+            
+            matrix := HomalgMatrix(
+                    List( basis_pre, p -> 
+                        CoefficientsOfPaths( basis_post,
+                            ComposeElements( UnderlyingQuiverAlgebraElement( alpha ),
+                                ComposeElements( PathAsAlgebraElement( quiver_algebra, p ) , UnderlyingQuiverAlgebraElement( beta ) )
+                            )
+                        )
+                    ),
+                    Dimension( obj_pre ),
+                    Dimension( obj_post ),
+                    field
+            );
+            
+            morphism := VectorSpaceMorphism( obj_pre, matrix, obj_post );
+            
+            Add( morphism_list, [ d, morphism ] );
+            
+        od;
+        
+        return DgBoundedCochainMap( source, morphism_list, range, deg );
+        
+    end );
+    
+    ##
+    AddDistinguishedObjectOfHomomorphismStructure( category,
+      
+      function( )
+        local differential_list;
+        
+        differential_list := [
+            [ 0, UniversalMorphismIntoZeroObject( TensorUnit( UnderlyingLinearCategory( category ) ) ) ]
+        ];
+        
+        return DgBoundedCochainComplex( differential_list, RangeCategoryOfHomomorphismStructure( category ) );
+        
+    end );
+    
+    ##
+    AddInterpretMorphismAsMorphismFromDinstinguishedObjectToHomomorphismStructure( category,
+      
+      function( alpha )
+        local distinguished_object, v, w, hom_structure, element, deg, basis, morphism;
+        
+        distinguished_object := DistinguishedObjectOfHomomorphismStructure( category );
+        
+        v := Source( alpha );
+        
+        w := Range( alpha );
+        
+        hom_structure := HomomorphismStructureOnObjects( v, w );
+        
+        element := UnderlyingQuiverAlgebraElement( alpha );
+        
+        deg := DgDegree( alpha );
+        
+        basis := DG_BASIS_PATHS( v, w, deg );
+        
+        morphism := VectorSpaceMorphism(
+            distinguished_object[0],
+            HomalgMatrix( [ CoefficientsOfPaths( basis, element ) ], 1, Size( basis ), field ),
+            hom_structure[deg]
+        );
+        
+        return DgBoundedCochainMap( 
+            distinguished_object,
+            [ [ deg, morphism ] ],
+            hom_structure,
+            deg
+        );
+        
+    end );
+    
+    ##
+    AddInterpretMorphismFromDinstinguishedObjectToHomomorphismStructureAsMorphism( category,
+      function( v, w, cochain_map )
+        local deg, coeffs, basis, element;
+        
+        deg := DgDegree( cochain_map );
+        
+        coeffs := EntriesOfHomalgMatrix( UnderlyingMatrix( cochain_map^deg ) );
+        
+        basis := DG_BASIS_PATHS( v, w, deg );
+        
+        element := QuiverAlgebraElement( quiver_algebra, coeffs, basis );
+        
+        return DgQuiverMorphism( v, element, w, deg );
         
     end );
     

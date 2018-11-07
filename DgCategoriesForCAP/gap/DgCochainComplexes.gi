@@ -859,3 +859,44 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
     end );
 end );
+
+####################################
+##
+## View
+##
+####################################
+
+##
+InstallMethod( Display,
+        [ IsDgBoundedCochainComplex ],
+
+  function( complex )
+    local pair;
+    
+    Print( "----------OBJECTS----------------\n" );
+    
+    for pair in ObjectList( complex ) do
+        
+        Print( "Degree ", String( pair[1] ), ": \n" );
+        
+        Display( pair[2] );
+        
+        Print( "\n\n" );
+        
+    od;
+    
+    Print( "----------DIFFERENTIALS----------\n" );
+    
+    for pair in DifferentialList( complex ) do
+        
+        Print( "Degree ", String( pair[1] ), ": \n" );
+        
+        Display( pair[2] );
+        
+        Print( "\n\n" );
+        
+    od;
+    
+    Print( "---------------------------------\n" );
+    
+end );
