@@ -381,6 +381,39 @@ end );
 
 ####################################
 ##
+## Dg addition
+##
+####################################
+
+##
+InstallMethod( \+,
+               [ IsDgCategoryMorphism, IsDgCategoryMorphism ],
+  function( morphism_1, morphism_2 )
+    
+    return DgAdditionForMorphisms( morphism_1, morphism_2 );
+    
+end );
+
+##
+InstallMethod( \-,
+               [ IsDgCategoryMorphism, IsDgCategoryMorphism ],
+  function( morphism_1, morphism_2 )
+    
+    return DgSubtractionForMorphisms( morphism_1, morphism_2 );
+    
+end );
+
+##
+InstallMethod( AdditiveInverse,
+               [ IsDgCategoryMorphism ],
+  function( morphism )
+    
+    return DgAdditiveInverseForMorphisms( morphism );
+    
+end );
+
+####################################
+##
 ## Ops
 ##
 ####################################

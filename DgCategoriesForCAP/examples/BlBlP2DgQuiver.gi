@@ -154,4 +154,16 @@ IsCongruentForMorphisms(
 #! true
 DgWitnessForExactnessOfMorphism( PostCompose( alpha3, delta_bar ) );
 #! fail
+IsDgZeroForMorphisms( epsilon2 - epsilon2 );
+#! true
+IsCongruentForMorphisms(
+    DgAdditionForMorphisms( DgAdditionForMorphisms( alpha1, alpha2 ), alpha3 ),
+    alpha1 + alpha2 + alpha3
+);
+#! true
+IsCongruentForMorphisms(
+    -gamma_bar,
+    DgZeroMorphism( Source( gamma_bar ), Range( gamma_bar ), DgDegree( gamma_bar ) ) - gamma_bar
+);
+#! true
 #! @EndExample
