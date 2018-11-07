@@ -693,6 +693,44 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
         
     end );
     
+    ##
+    AddDgWitnessForExactnessOfMorphism( category,
+      function( alpha )
+        local v, w, deg, cochain_map, hom_structure, lift, coeffs, basis, element;
+        
+        v := Source( alpha );
+        
+        w := Range( alpha );
+        
+        deg := DgDegree( alpha );
+        
+        cochain_map := InterpretMorphismAsMorphismFromDinstinguishedObjectToHomomorphismStructure( alpha );
+        
+        hom_structure := Range( cochain_map );
+        
+        lift := Lift( cochain_map^deg, hom_structure^(deg-1) );
+        
+        if lift = fail then
+            
+            return fail;
+            
+        fi;
+        
+        coeffs := EntriesOfHomalgMatrix( UnderlyingMatrix( lift ) );
+        
+        basis := DG_BASIS_PATHS( v, w, deg - 1 );
+        
+        element := QuiverAlgebraElement( quiver_algebra, coeffs, basis );
+        
+        return DgQuiverMorphism(
+            v,
+            element,
+            w,
+            deg -1
+        );
+        
+    end );
+    
 end ); 
 
 ####################################

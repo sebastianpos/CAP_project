@@ -122,7 +122,7 @@ IsDgZeroForMorphisms( pc );
 IsDgZeroForMorphisms( DgDifferential( pc ) );
 #! true
 objects := ObjectsOfDgQuiver( dgA );;
-t1 := DgAdditionForMorphisms( epsilon1, epsilon2 );
+t1 := DgAdditionForMorphisms( epsilon1, epsilon2 );;
 IsCongruentForMorphisms(
     InterpretMorphismFromDinstinguishedObjectToHomomorphismStructureAsMorphism( 
         Source( epsilon1 ), 
@@ -146,4 +146,12 @@ IsCongruentForMorphisms(
     )
 );
 #! true
+t4 := PostCompose( alpha1, delta_bar );;
+IsCongruentForMorphisms(
+    t4,
+    DgDifferential( DgWitnessForExactnessOfMorphism( t4 ) )
+);
+#! true
+DgWitnessForExactnessOfMorphism( PostCompose( alpha3, delta_bar ) );
+#! fail
 #! @EndExample
