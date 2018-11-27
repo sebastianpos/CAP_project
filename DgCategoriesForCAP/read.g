@@ -10,3 +10,5 @@ ReadPackage( "DgCategoriesForCAP", "gap/DgCochainComplexes.gi");
 ReadPackage( "DgCategoriesForCAP", "gap/DgDerivedMethods.gi");
 
 ReadPackage( "DgCategoriesForCAP", "gap/DgQuivers.gi");
+
+ReadPackage( "DgCategoriesForCAP", "gap/DgDirectSumCompletion.gi");
