@@ -127,9 +127,17 @@ end );
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
   
   function( category )
-    local underlying_category;
+    local underlying_category, DECOMPOSE_UNION_OF_SETS;
     
     underlying_category := UnderlyingCategory( category );
+    
+    ##
+    AddIsEqualForCacheForObjects( category,
+      IsIdenticalObj );
+    
+    ##
+    AddIsEqualForCacheForMorphisms( category,
+      IsIdenticalObj );
     
     ##
     AddIsWellDefinedForObjects( category,
@@ -223,6 +231,282 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
     end );
     
+    ##
+    AddIsEqualForObjects( category,
+      function( obj_1, obj_2 )
+        local list_1, list_2, size;
+        
+        list_1 := ObjectList( obj_1 );
+        
+        list_2 := ObjectList( obj_2 );
+        
+        size := Size( list_1 );
+        
+        return size = Size( list_2 )
+               and ForAll( [ 1 .. size ], i -> IsEqualForObjects( list_1[i], list_2[i] ) );
+        
+    end );
+    
+    ##
+    AddIsEqualForMorphisms( category,
+      function( mor_1, mor_2 )
+        local flat_1, flat_2;
+        
+        if DgDegree( mor_1 ) <> DgDegree( mor_2 ) then
+            
+            return false;
+            
+        fi;
+        
+        if not Indices( mor_1 ) = Indices( mor_2 ) then
+            
+            return false;
+            
+        fi;
+        
+        flat_1 := Flat( Entries( mor_1 ) );
+        
+        flat_2 := Flat( Entries( mor_2 ) );
+        
+        return ForAll( [ 1 .. Size( flat_1 ) ], i -> IsEqualForMorphisms( flat_1[i], flat_2[i] ) );
+        
+    end );
+    
+    DECOMPOSE_UNION_OF_SETS := function( A, B )
+        
+        return [
+            Difference( A, B ),
+            Difference( B, A ),
+            Intersection( A, B )
+        ];
+        
+    end;
+    
+    ##
+    AddIsCongruentForMorphisms( category,
+      function( mor_1, mor_2 )
+        local indices_1, indices_2, bound_1, bound_2, entries_1, entries_2, dec, i, dec_entries,
+              j_counter, j_counter_1, j_counter_2, j;
+        
+        if DgDegree( mor_1 ) <> DgDegree( mor_2 ) then
+            
+            return false;
+            
+        fi;
+        
+        indices_1 := Indices( mor_1 );
+        
+        indices_2 := Indices( mor_2 );
+        
+        bound_1 := BoundPositions( indices_1 );
+        
+        bound_2 := BoundPositions( indices_2 );
+        
+        entries_1 := Entries( mor_1 );
+        
+        entries_2 := Entries( mor_2 );
+        
+        dec := DECOMPOSE_UNION_OF_SETS( bound_1, bound_2 );
+        
+        # bound_1 - bound_2
+        
+        if ForAny(dec[1], i -> ForAny( entries_1[i], mor -> not IsDgZeroForMorphisms( mor ) ) ) then
+            
+            return false;
+            
+        fi;
+        
+        # bound_2 - bound_1
+        
+        if ForAny( dec[2], i -> ForAny( entries_2[i], mor -> not IsDgZeroForMorphisms( mor ) ) ) then
+            
+            return false;
+            
+        fi;
+        
+        # bound_1 cap bound_2
+        
+        for i in dec[3] do
+            
+            dec_entries := DECOMPOSE_UNION_OF_SETS( indices_1[i], indices_2[i] );
+            
+            ## indices_1[i] - indices_2[i]
+            
+            for j in dec_entries[1] do
+                
+                j_counter := Position( indices_1[i], j );
+                
+                if not IsDgZeroForMorphisms( entries_1[i][j_counter] ) then
+                    
+                    return false;
+                    
+                fi;
+                
+            od;
+            
+            ## indices_2[i] - indices_1[i]
+            
+            for j in dec_entries[2] do
+                
+                j_counter := Position( indices_2[i], j );
+                
+                if not IsDgZeroForMorphisms( entries_2[i][j_counter] ) then
+                    
+                    return false;
+                    
+                fi;
+                
+            od;
+            
+            ## indices_1[i] cap indices_2[i]
+            
+            for j in dec_entries[3] do
+                
+                j_counter_1 := Position( indices_1[i], j );
+                
+                j_counter_2 := Position( indices_1[i], j );
+                
+                if not IsCongruentForMorphisms( entries_1[i][j_counter_1], entries_2[i][j_counter_2] ) then
+                    
+                    return false;
+                    
+                fi;
+                
+            od;
+            
+        od;
+        
+        return true;
+        
+    end );
+    
+    ##
+    AddIdentityMorphism( category,
+      
+      function( obj )
+        local list, indices, entries;
+        
+        list := ObjectList( obj );
+        
+        indices := [ 1 .. Size( list ) ];
+        
+        entries := List( indices, i -> [ IdentityMorphism( list[i] ) ] );
+        
+        indices := List( indices, i -> [ i ] );
+        
+        return DgDirectSumCompletionMorphism(
+            obj,
+            indices,
+            entries,
+            obj,
+            0
+        );
+        
+    end );
+    
+    ##
+    AddPostCompose( category,
+      function( mor_2, mor_1 )
+        local indices_1, entries_1, indices_2, entries_2, indices_prod, entries_prod, i,
+              entries_row_i, possible_ks, j_counter, entries_row_ij, j, k,
+              k_counter, prod_ik, occurences_k, pos;
+        
+        indices_1 := Indices( mor_1 );
+        
+        indices_2 := Indices( mor_2 );
+        
+        entries_1 := Entries( mor_1 );
+        
+        entries_2 := Entries( mor_2 );
+        
+        indices_prod := [ ];
+        
+        entries_prod := [ ];
+        
+        ## i: non-empty rows of mor_1
+        for i in BoundPositions( indices_1 ) do
+            
+            entries_row_i := [ ];
+            
+            possible_ks := [ ];
+            
+            ## j: non-empty columns in the i-th row of mor_1
+            for j_counter in [ 1 .. Size( indices_1[i] ) ] do
+                
+                entries_row_ij := [ ];
+                
+                j := indices_1[i][j_counter];
+                
+                if IsBound( indices_2[j] ) then
+                    
+                    ## k: non-empty columns in the j-th row of mor_2
+                    for k_counter in [ 1 .. Size( indices_2[j]) ] do
+                        
+                        k := indices_2[j][k_counter];
+                        
+                        prod_ik := PreCompose( entries_1[i][j_counter], entries_2[j][k_counter] );
+                        
+                        Add( entries_row_ij, prod_ik );
+                        
+                        Add( possible_ks, k );
+                        
+                    od;
+                    
+                    Add( entries_row_i, entries_row_ij );
+                    
+                fi;
+                
+            od;
+            
+            possible_ks := Set( possible_ks );
+            
+            ## if this is the case, then there will be a non-empty i-th row in the product
+            if not IsEmpty( possible_ks ) then
+                
+                indices_prod[i] := possible_ks;
+                
+                entries_prod[i] := [];
+                
+                # collect 
+                
+                for k in possible_ks do
+                    
+                    occurences_k := [ ];
+                    
+                    for j_counter in [ 1 .. Size( indices_1[i] ) ] do
+                        
+                        j := indices_1[i][j_counter];
+                        
+                        pos := Position( indices_2[j], k );
+                        
+                        if pos <> fail then
+                            
+                            Add( occurences_k, entries_row_i[j_counter][pos] );
+                            
+                        fi;
+                        
+                    od;
+                    
+                    prod_ik := Iterated( occurences_k, DgAdditionForMorphisms );
+                    
+                    Add( entries_prod[i], prod_ik );
+                    
+                od;
+                
+            fi;
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism(
+            Source( mor_1 ),
+            indices_prod,
+            entries_prod,
+            Range( mor_2 ),
+            DgDegree( mor_1 ) + DgDegree( mor_2 )
+        );
+        
+    end );
+    
 end );
 
 ####################################
@@ -240,11 +524,46 @@ InstallMethod( Display,
     
     list := ObjectList( object );
     
-    Print( "The formal dg direct sum of ", Size( list ), "many objects:\n" );
+    Print( "The formal dg direct sum of ", Size( list ), " object(s):\n" );
     
     for obj in ObjectList( object ) do
         
         Display( obj );
+        
+    od;
+    
+end );
+
+##
+InstallMethod( Display,
+        [ IsDgDirectSumCompletionMorphism ],
+
+  function( morphism )
+    local i, j;
+    
+    Print( "Source:\n");
+    
+    Display( Source( morphism ) );
+    
+    Print( "\n");
+    
+    Print( "Range:\n");
+    
+    Display( Range( morphism ) );
+    
+    Print( "\n");
+    
+    Print( "Defining matrix:\n");
+    
+    for i in BoundPositions( Indices( morphism ) ) do
+        
+        for j in [ 1 .. Size( Indices( morphism )[i] ) ] do
+            
+            Print( "[", String(i), ",", String( Indices( morphism )[i][j] ), "]:\n" );
+            
+            Display( Entries( morphism )[i][j] );
+            
+        od;
         
     od;
     

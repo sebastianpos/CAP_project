@@ -762,3 +762,27 @@ InstallMethod( ViewObj,
     ViewObj( UnderlyingVertex( Range( alpha ) ) );
     
 end );
+
+##
+InstallMethod( Display,
+        [ IsDgQuiverObject ],
+
+  function( v )
+    
+    ViewObj( v );
+    
+    Print( "\n" );
+    
+end );
+
+##
+InstallMethod( Display,
+        [ IsDgQuiverMorphism ],
+
+  function( alpha )
+    
+    ViewObj( alpha );
+    
+    Print( "\n" );
+    
+end );
