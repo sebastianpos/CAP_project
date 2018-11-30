@@ -86,4 +86,28 @@ IsWellDefinedForMorphisms( PostCompose( beta, alpha ) );
 idA := IdentityMorphism( A );;
 IsCongruentForMorphisms( PostCompose( alpha, idA ), alpha );
 #! true
+IsDgZeroForMorphisms( alpha );
+#! false
+IsDgZeroForMorphisms( DgDifferential( alpha ) );
+#! true
+gamma := DgDirectSumCompletionMorphism( 
+    A,
+    [ [ 1, 2 ], [ 2 ] ],
+    [ [ DgZeroMorphism( objects[1], objects[1], 1 ), mors[1] ], [ mors[1] ] ],
+    B,
+    1
+);;
+IsEqualForMorphisms( gamma, alpha );
+#! false
+IsCongruentForMorphisms( alpha, gamma );
+#! true
+sub := DgSubtractionForMorphisms( alpha, gamma );;
+IsDgZeroForMorphisms( sub );
+#! true
+IsEqualForMorphisms( sub, DgZeroMorphism( Source( sub ), Range( sub ), 1 ) );
+#! false
+IsCongruentForMorphisms( sub, DgZeroMorphism( Source( sub ), Range( sub ), 1 ) );
+#! true
+IsEqualForMorphisms( 99 * alpha - 98 * alpha, alpha );
+#! true
 #! @EndExample

@@ -25,6 +25,8 @@ InstallMethod( DgDirectSumCompletion,
     
     SetUnderlyingCategory( category, underlying_category );
     
+    SetCommutativeRingOfDgCategory( category, CommutativeRingOfDgCategory( underlying_category ) );
+    
     AddObjectRepresentation( category, IsDgDirectSumCompletionObject );
     
     AddMorphismRepresentation( category, IsDgDirectSumCompletionMorphism );
@@ -127,9 +129,40 @@ end );
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
   
   function( category )
-    local underlying_category, DECOMPOSE_UNION_OF_SETS;
+    local underlying_category, DECOMPOSE_UNION_OF_SETS, PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION,
+          GET_INDICES, GET_ENTRIES;
     
     underlying_category := UnderlyingCategory( category );
+    
+    ##
+    GET_INDICES := function( mor, i )
+        
+        if IsBound( Indices(mor)[i] ) then
+            
+            return Indices(mor)[i];
+            
+        else
+            
+            return [];
+            
+        fi;
+        
+    end;
+    
+    ##
+    GET_ENTRIES := function( mor, i )
+        
+        if IsBound( Entries(mor)[i] ) then
+            
+            return Entries(mor)[i];
+            
+        else
+            
+            return [];
+            
+        fi;
+        
+    end;
     
     ##
     AddIsEqualForCacheForObjects( category,
@@ -364,7 +397,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
                 
                 j_counter_1 := Position( indices_1[i], j );
                 
-                j_counter_2 := Position( indices_1[i], j );
+                j_counter_2 := Position( indices_2[i], j );
                 
                 if not IsCongruentForMorphisms( entries_1[i][j_counter_1], entries_2[i][j_counter_2] ) then
                     
@@ -507,6 +540,136 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
     end );
     
+    ##
+    AddDgDifferential( category,
+      function( mor )
+        
+        return DgDirectSumCompletionMorphism(
+            Source( mor ),
+            Indices( mor ),
+            List( Entries( mor ), row -> List( row, DgDifferential ) ),
+            Range( mor ),
+            DgDegree( mor ) + 1
+        );
+        
+    end );
+    
+    ##
+    AddIsDgZeroForMorphisms( category,
+      function( mor )
+        
+        return ForAll( Entries( mor ), row -> ForAll( row, m -> IsDgZeroForMorphisms( m ) ) );
+        
+    end );
+    
+    PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION := function( mor_1, mor_2, oper )
+        local bound, indices, entries, b, indices_1, indices_2, j, pos_1, pos_2, entry;
+        
+        bound := Union( BoundPositions( Indices( mor_1 ) ), BoundPositions( Indices( mor_2 ) ) );
+        
+        indices := [];
+        
+        entries := [];
+        
+        for b in bound do
+            
+            ## compute indices of addition
+            indices_1 := GET_INDICES( mor_1, b );
+            
+            indices_2 := GET_INDICES( mor_2, b );
+            
+            indices[b] := Union( indices_1, indices_2 );
+            
+            entries[b] := [];
+            
+            for j in indices[b] do
+                
+                pos_1 := Position( indices_1, j );
+                
+                pos_2 := Position( indices_2, j );
+                
+                if pos_1 <> fail then
+                    
+                    if pos_2 <> fail then
+                        
+                        entry := oper( Entries( mor_1 )[b][pos_1], Entries( mor_2 )[b][pos_2]  );
+                        
+                    else
+                        
+                        entry := Entries( mor_1 )[b][pos_1];
+                        
+                    fi;
+                    
+                else
+                    
+                    entry := Entries( mor_2 )[b][pos_2];
+                    
+                fi;
+                
+                Add( entries[b], entry );
+                
+            od;
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism(
+            Source( mor_1 ),
+            indices,
+            entries,
+            Range( mor_1 ),
+            DgDegree( mor_1 )
+        );
+        
+    end;
+    
+    ##
+    AddDgAdditionForMorphisms( category,
+      function( mor_1, mor_2 )
+        
+        return PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION(
+            mor_1, mor_2, DgAdditionForMorphisms
+        );
+        
+    end );
+    
+    ##
+    AddDgSubtractionForMorphisms( category,
+      function( mor_1, mor_2 )
+        
+        return PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION(
+            mor_1, mor_2, DgSubtractionForMorphisms
+        );
+        
+    end );
+    
+    ##
+    AddDgZeroMorphism( category,
+      function( source, range, dgdeg )
+        
+        return DgDirectSumCompletionMorphism(
+            source,
+            [ ],
+            [ ],
+            range,
+            dgdeg
+        );
+        
+    end );
+    
+    ##
+    AddDgScalarMultiplication( category,
+      function( r, mor )
+        
+        return DgDirectSumCompletionMorphism(
+            Source( mor ),
+            Indices( mor ),
+            List( Entries( mor ), row -> List( row, alpha -> DgScalarMultiplication( r, alpha ) ) ),
+            Range( mor ),
+            DgDegree( mor )
+        );
+        
+    end );
+    
 end );
 
 ####################################
@@ -540,6 +703,8 @@ InstallMethod( Display,
 
   function( morphism )
     local i, j;
+    
+    Print( "Degree: ", String( DgDegree( morphism ) ), "\n\n" );
     
     Print( "Source:\n");
     
