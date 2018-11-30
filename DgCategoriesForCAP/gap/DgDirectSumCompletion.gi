@@ -670,6 +670,123 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
     end );
     
+    ##
+    AddDgZeroObject( category,
+      function( )
+        
+        return DgDirectSumCompletionObject( [ ], category );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismIntoZeroObject( category,
+      function( obj, dgdeg )
+        
+        return DgDirectSumCompletionMorphism(
+            obj,
+            [ ],
+            [ ],
+            DgZeroObject( category ),
+            dgdeg
+        );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismFromZeroObject( category,
+      function( obj, dgdeg )
+        
+        return DgDirectSumCompletionMorphism(
+            DgZeroObject( category ),
+            [ ],
+            [ ],
+            obj,
+            dgdeg
+        );
+        
+    end );
+    
+    ##
+    AddDgDirectSum( category,
+      function( diagram )
+        
+        return DgDirectSumCompletionObject(
+            Concatenation( List( diagram, ObjectList ) ), category
+        );
+        
+    end );
+    
+    ##
+    AddDgProjectionInFactorOfDirectSum( category,
+      function( diagram, k )
+        local source, range, indices, entries, pre, list, i, i_counter;
+        
+        source := DgDirectSum( diagram );
+        
+        range := diagram[k];
+        
+        indices := [ ];
+        
+        entries := [ ];
+        
+        pre := Sum( List( [ 1 .. k - 1 ], i -> Size( ObjectList( diagram[i] ) ) ) );
+        
+        list := ObjectList( range );
+        
+        for i in [ pre + 1 .. pre + Size( list ) ] do
+            
+            i_counter := i - pre;
+            
+            indices[i] := [ i_counter ];
+            
+            entries[i] := [ IdentityMorphism( list[ i_counter ] ) ];
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism( 
+            source, 
+            indices,
+            entries,
+            range, 
+            0 
+        );
+        
+    end );
+    
+    ##
+    AddDgInjectionOfCofactorOfDirectSum( category,
+      function( diagram, k )
+        local source, range, indices, entries, pre, list, i;
+        
+        range := DgDirectSum( diagram );
+        
+        source := diagram[k];
+        
+        indices := [ ];
+        
+        entries := [ ];
+        
+        pre := Sum( List( [ 1 .. k - 1 ], i -> Size( ObjectList( diagram[i] ) ) ) );
+        
+        list := ObjectList( source );
+        
+        for i in [ 1 .. Size( list ) ] do
+            
+            indices[i] := [ pre + i ];
+            
+            entries[i] := [ IdentityMorphism( list[ i ] ) ];
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism( 
+            source, 
+            indices,
+            entries,
+            range, 
+            0 
+        );
+        
+    end );
 end );
 
 ####################################

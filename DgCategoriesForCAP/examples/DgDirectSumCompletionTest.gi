@@ -110,4 +110,10 @@ IsCongruentForMorphisms( sub, DgZeroMorphism( Source( sub ), Range( sub ), 1 ) )
 #! true
 IsEqualForMorphisms( 99 * alpha - 98 * alpha, alpha );
 #! true
+IsDgZeroForMorphisms( DgUniversalMorphismFromZeroObject( A, 3 ) );
+#! true
+IsDgZeroForMorphisms( DgUniversalMorphismIntoZeroObject(  B, -5 ) );
+#! true
+IsEqualForMorphisms( IdentityMorphism( B ), PreCompose( DgInjectionOfCofactorOfDirectSum( [ A, B, C ], 2 ), DgProjectionInFactorOfDirectSum( [ A, B, C ], 2 ) ) );
+#! true
 #! @EndExample
