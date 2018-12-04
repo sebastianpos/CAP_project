@@ -787,6 +787,103 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         );
         
     end );
+    
+    ##
+    AddDgUniversalMorphismFromDirectSum( category,
+      function( diagram, sink )
+        local source, range, dgdeg, indices, entries, n, i, indices_sink, entries_sink, b;
+        
+        source := DgDirectSum( diagram );
+        
+        range := Range( sink[1] );
+        
+        dgdeg := DgDegree( sink[1] );
+        
+        indices := ShallowCopy( Indices( sink[1] ) );
+        
+        entries := ShallowCopy( Entries( sink[1] ) );
+        
+        n := Size( ObjectList( diagram[1] ) );
+        
+        for i in [ 2 .. Size( sink ) ] do
+            
+            indices_sink := Indices( sink[i] );
+            
+            entries_sink := Entries( sink[i] );
+            
+            for b in BoundPositions( indices_sink ) do
+                
+                indices[n + b] := indices_sink[b];
+                
+                entries[n + b] := entries_sink[b];
+                
+            od;
+            
+            n := n + Size( ObjectList( diagram[i] ) );
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism(
+            source,
+            indices,
+            entries,
+            range,
+            dgdeg
+        );
+        
+    end );
+    
+    ##
+    AddDgUniversalMorphismIntoDirectSum( category,
+      function( diagram, source_diagram )
+        local source, range, dgdeg, indices, entries, morphism_list, b, i, n, bound;
+        
+        range := DgDirectSum( diagram );
+        
+        source := Source( source_diagram[1] );
+        
+        dgdeg := DgDegree( source_diagram[1] );
+        
+        bound := Union( List( List( source_diagram, Indices ), BoundPositions ) );
+        
+        entries := [];
+        
+        indices := [];
+        
+        for b in bound do
+            
+            entries[b] := [];
+            
+            indices[b] := [];
+            
+            n := 0;
+        
+            for i in [ 1 .. Size( source_diagram ) ] do
+                
+                if IsBound( Entries( source_diagram[i] )[b] ) then
+                    
+                    Append( entries[b], Entries( source_diagram[i] )[b] );
+                    
+                    Append( indices[b], List( Indices( source_diagram[i] )[b], j -> j + n ) );
+                    
+                fi;
+                
+                n := n + Size( ObjectList( diagram[i] ) );
+                
+            od;
+            
+        od;
+        
+        return DgDirectSumCompletionMorphism(
+            source,
+            indices,
+            entries,
+            range,
+            dgdeg
+        );
+        
+    end );
+    
 end );
 
 ####################################

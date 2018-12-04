@@ -116,4 +116,10 @@ IsDgZeroForMorphisms( DgUniversalMorphismIntoZeroObject(  B, -5 ) );
 #! true
 IsEqualForMorphisms( IdentityMorphism( B ), PreCompose( DgInjectionOfCofactorOfDirectSum( [ A, B, C ], 2 ), DgProjectionInFactorOfDirectSum( [ A, B, C ], 2 ) ) );
 #! true
+pi1 := DgProjectionInFactorOfDirectSum( [ A, B ], 1 );;
+pi2 := DgProjectionInFactorOfDirectSum( [ A, B ], 2 );;
+iota1 := DgInjectionOfCofactorOfDirectSum( [ A, B ], 1 );;
+iota2 := DgInjectionOfCofactorOfDirectSum( [ A, B ], 2 );;
+IsDgZeroForMorphisms( DgUniversalMorphismFromDirectSum( [ A, B ], [ iota1, iota2 ] ) - DgUniversalMorphismIntoDirectSum( [ A, B ], [ pi1, pi2 ] ) );
+#! true
 #! @EndExample
