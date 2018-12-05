@@ -130,7 +130,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
   
   function( category )
     local underlying_category, DECOMPOSE_UNION_OF_SETS, PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION,
-          GET_INDICES, GET_ENTRIES;
+          GET_INDICES, GET_ENTRIES, B, prerequisites;
     
     underlying_category := UnderlyingCategory( category );
     
@@ -883,6 +883,44 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         );
         
     end );
+        
+    ## Homomorphism structure
+    if HasRangeCategoryOfHomomorphismStructure( underlying_category ) and IsDgCategory( RangeCategoryOfHomomorphismStructure( underlying_category ) ) then
+        
+        B := RangeCategoryOfHomomorphismStructure( underlying_category );
+        
+        prerequisites := [
+            "DgDirectSum"
+        ];
+        
+        if ForAll( prerequisites, oper -> CanCompute( B, oper ) ) then
+            
+            ##
+            AddHomomorphismStructureOnObjects( category,
+                function( obj_1, obj_2 )
+                local obj_list, v, w;
+                
+                obj_list := [];
+                
+                for v in ObjectList( obj_1 ) do
+                    
+                    for w in ObjectList( obj_2 ) do
+                        
+                        Add( obj_list, HomomorphismStructureOnObjects( v, w ) );
+                        
+                    od;
+                    
+                od;
+                
+                return DgDirectSum( obj_list );
+                
+            end );
+            
+        fi;
+        
+    fi;
+        
+    
     
 end );
 
