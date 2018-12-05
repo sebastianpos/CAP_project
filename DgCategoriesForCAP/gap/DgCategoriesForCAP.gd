@@ -356,6 +356,26 @@ DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
 
 DeclareOperation( "AddDgUniversalMorphismIntoDirectSum",
                   [ IsCapCategory, IsList ] );
+
+## DgMorphismBetweenDirectSums
+DeclareOperation( "DgMorphismBetweenDirectSums",
+                  [ IsList ] );
+
+DeclareOperation( "DgMorphismBetweenDirectSums",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryObject, IsInt ] );
+
+DeclareOperation( "AddDgMorphismBetweenDirectSums",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddDgMorphismBetweenDirectSums",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddDgMorphismBetweenDirectSums",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddDgMorphismBetweenDirectSums",
+                  [ IsCapCategory, IsList ] );
+
 ####################################
 ##
 #! @Section Convenience methods

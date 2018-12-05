@@ -324,6 +324,71 @@ DgUniversalMorphismIntoDirectSum := rec(
     
   end,
   return_type := "morphism" ),
+  
+  DgMorphismBetweenDirectSums := rec(
+    installation_name := "DgMorphismBetweenDirectSums",
+    filter_list := [ [ "object", IsDgCategoryObject ], IsList, [ "object", IsDgCategoryObject ], IsInt ],
+    io_type := [ [ "S", "mat", "T", "d" ], [ "S", "T" ] ],
+    cache_name := "DgMorphismBetweenDirectSums",
+    pre_function := function( S, mat, T, dgdeg )
+      local size, entry, mor, source;
+      
+      if IsEmpty( mat ) then
+          
+          return [ true ];
+          
+      fi;
+      
+      if not ForAll( mat, entry -> IsList( entry ) ) then
+          
+          return [ false, "2nd argument has to be a list of lists" ];
+          
+      fi;
+      
+      if ForAll( mat, entry -> IsEmpty( entry ) ) then
+          
+          return [ true ];
+          
+      fi;
+      
+      size := Size( mat[1] );
+      
+      if not ForAll( [ 2 .. Size( mat ) ], i -> Size( mat[i] ) = size ) then
+          
+          return [ false, "the lists in the 2nd argument have to be of equal sizes" ];
+          
+      fi;
+      
+      if not ForAll( mat, entry -> ForAll( entry, mor -> IsDgCategoryMorphism( mor ) ) ) then
+          
+          return [ false, "the lists in the 2nd argument have to consists of dg category morphisms" ];
+          
+      fi;
+      
+      if not ForAll( mat, entry -> ForAll( entry, mor -> DgDegree( mor ) = dgdeg ) ) then
+          
+          return [ false, "the given morphisms must have equal degrees" ];
+          
+      fi;
+      
+      for entry in mat do
+          
+          mor := entry[1];
+          
+          source := Source( mor );
+          
+          if not ForAll( [ 2 .. Size( entry ) ], i -> IsEqualForObjects( Source( entry[i] ), source ) ) then
+              
+              return [ false, "morphisms in the same row must have equal sources" ];
+              
+          fi;
+          
+      od;
+      
+      return [ true ];
+      
+    end,
+    return_type := "morphism" ),
   ) );
 
 CAP_INTERNAL_INSTALL_ADDS_FROM_RECORD( DG_CATEGORIES_METHOD_NAME_RECORD );
@@ -481,5 +546,43 @@ InstallMethod( DgUniversalMorphismIntoDirectSum,
   function( diagram, source )
     
     return DgUniversalMorphismIntoDirectSumOp( diagram, source, diagram[1] );
+    
+end );
+
+####################################
+##
+## Conveniences
+##
+####################################
+
+##
+InstallMethod( DgMorphismBetweenDirectSums,
+               [ IsList ],
+               
+  function( morphism_matrix )
+    local nr_rows, nr_cols, dg;
+    
+    nr_rows := Size( morphism_matrix );
+    
+    if nr_rows = 0 then
+        
+        Error( "The given matrix must not be empty" );
+        
+    fi;
+    
+    nr_cols := Size( morphism_matrix[1] );
+    
+    if nr_cols = 0 then
+        
+        Error( "The given matrix must not be empty" );
+        
+    fi;
+    
+    return DgMorphismBetweenDirectSums(
+             DgDirectSum( List( morphism_matrix, row -> Source( row[1] ) ) ),
+             morphism_matrix,
+             DgDirectSum( List( morphism_matrix[1], col -> Range( col ) ) ),
+             DgDegree( morphism_matrix[1][1] )
+           );
     
 end );

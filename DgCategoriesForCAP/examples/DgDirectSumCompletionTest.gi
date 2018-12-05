@@ -122,4 +122,8 @@ iota1 := DgInjectionOfCofactorOfDirectSum( [ A, B ], 1 );;
 iota2 := DgInjectionOfCofactorOfDirectSum( [ A, B ], 2 );;
 IsDgZeroForMorphisms( DgUniversalMorphismFromDirectSum( [ A, B ], [ iota1, iota2 ] ) - DgUniversalMorphismIntoDirectSum( [ A, B ], [ pi1, pi2 ] ) );
 #! true
+IsWellDefined( DgMorphismBetweenDirectSums( [ [ alpha, alpha ], [ alpha, gamma ] ] ) );
+#! true
+IsDgZeroForMorphisms( DgMorphismBetweenDirectSums( DgDirectSum( [ A, B ] ), [], DgDirectSum( [ C, C, C ] ), 1 ) );
+#! true
 #! @EndExample
