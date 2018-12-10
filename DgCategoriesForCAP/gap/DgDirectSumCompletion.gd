@@ -63,3 +63,6 @@ DeclareAttribute( "Entries",
 
 DeclareAttribute( "Indices",
                   IsDgDirectSumCompletionMorphism );
+
+DeclareAttribute( "EntriesAsListListOfMorphisms",
+                  IsDgDirectSumCompletionMorphism );

@@ -126,4 +126,6 @@ IsWellDefined( DgMorphismBetweenDirectSums( [ [ alpha, alpha ], [ alpha, gamma ]
 #! true
 IsDgZeroForMorphisms( DgMorphismBetweenDirectSums( DgDirectSum( [ A, B ] ), [], DgDirectSum( [ C, C, C ] ), 1 ) );
 #! true
+IsWellDefinedForMorphisms( HomomorphismStructureOnMorphisms( alpha, -IdentityMorphism( Range( alpha ) ) ) );
+#! true
 #! @EndExample

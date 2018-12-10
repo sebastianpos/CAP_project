@@ -852,7 +852,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_COCHAIN_COMPLEXES,
         
         morphism_list := List(
             ObjectIndexList( source ),
-            i -> [ i, UniversalMorphismIntoDirectSum( List( diagram, d -> d[i] ), List( source_diagram, s -> s^i ) ) ]
+            i -> [ i, UniversalMorphismIntoDirectSum( List( diagram, d -> d[i + dgdeg] ), List( source_diagram, s -> s^i ) ) ]
         );
         
         return DgBoundedCochainMap( source, morphism_list, range, dgdeg );

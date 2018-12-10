@@ -17,7 +17,7 @@ InstallMethod( DgDirectSumCompletion,
                [ IsDgCategory ],
                
   function( underlying_category )
-    local category, prerequisites, oper;
+    local category, oper;
     
     category := CreateCapCategory( Concatenation( "Dg direct sum completion( ", Name( underlying_category )," )"  ) );
     
@@ -109,13 +109,66 @@ InstallMethod( AsDgDirectSumCompletionMorphism,
     
     entries := [ [ morphism ] ];
     
-    DgDirectSumCompletionMorphism(
+    return DgDirectSumCompletionMorphism(
         AsDgDirectSumCompletionObject( Source( morphism ) ),
         indices,
         entries,
         AsDgDirectSumCompletionObject( Range( morphism ) ),
         dgdeg
     );
+    
+end );
+
+##
+InstallMethod( EntriesAsListListOfMorphisms,
+               [ IsDgDirectSumCompletionMorphism ],
+               
+  function( morphism )
+    local source_list, range_list, indices, entries, listlist, dgdeg, i, j, j_counter;
+    
+    source_list := ObjectList( Source( morphism ) );
+    
+    range_list := ObjectList( Range( morphism ) );
+    
+    listlist := [];
+    
+    indices := Indices( morphism );
+    
+    entries := Entries( morphism );
+    
+    dgdeg := DgDegree( morphism );
+    
+    for i in [ 1 .. Size( source_list ) ] do
+        
+        if IsBound( indices[i] ) then
+            
+            listlist[i] := [];
+            
+            for j in [ 1 .. Size( range_list ) ] do
+                
+                j_counter := Position( indices[i], j );
+                
+                if j_counter = fail then
+                    
+                    Add( listlist[i], DgZeroMorphism( source_list[i], range_list[j], dgdeg ) );
+                    
+                else
+                    
+                    Add( listlist[i], entries[i][j_counter] );
+                    
+                fi;
+                
+            od;
+            
+        else
+            
+            listlist[i] := List( [ 1 .. Size( range_list ) ], j -> DgZeroMorphism( source_list[i], range_list[j], dgdeg ) );
+            
+        fi;
+        
+    od;
+    
+    return listlist;
     
 end );
 
@@ -130,7 +183,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
   
   function( category )
     local underlying_category, DECOMPOSE_UNION_OF_SETS, PERFORM_BINARY_OPERATOR_ON_MORPHISMS_FOR_DG_DIRECT_SUM_COMPLETION,
-          GET_INDICES, GET_ENTRIES, B, prerequisites;
+          GET_INDICES, GET_ENTRIES, B, prerequisites_B, prerequisites_underlying_category;
     
     underlying_category := UnderlyingCategory( category );
     
@@ -670,6 +723,20 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
     end );
     
+        ##
+    AddDgAdditiveInverseForMorphisms( category,
+      function( mor )
+        
+        return DgDirectSumCompletionMorphism(
+            Source( mor ),
+            Indices( mor ),
+            List( Entries( mor ), row -> List( row, alpha -> DgAdditiveInverseForMorphisms( alpha ) ) ),
+            Range( mor ),
+            DgDegree( mor )
+        );
+        
+    end );
+    
     ##
     AddDgZeroObject( category,
       function( )
@@ -889,15 +956,20 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
         B := RangeCategoryOfHomomorphismStructure( underlying_category );
         
-        prerequisites := [
+        prerequisites_B := [
             "DgDirectSum"
         ];
         
-        if ForAll( prerequisites, oper -> CanCompute( B, oper ) ) then
+        prerequisites_underlying_category := [
+            "HomomorphismStructureOnObjects"
+        ];
+        
+        if ForAll( prerequisites_B, oper -> CanCompute( B, oper ) )
+           and ForAll( prerequisites_underlying_category, oper -> CanCompute( underlying_category, oper ) ) then
             
             ##
             AddHomomorphismStructureOnObjects( category,
-                function( obj_1, obj_2 )
+              function( obj_1, obj_2 )
                 local obj_list, v, w;
                 
                 obj_list := [];
@@ -918,6 +990,51 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
             
         fi;
         
+        prerequisites_B := [
+            "DgMorphismBetweenDirectSums"
+        ];
+        
+        prerequisites_underlying_category := [
+            "HomomorphismStructureOnMorphismsWithGivenObjects"
+        ];
+        
+        if ForAll( prerequisites_B, oper -> CanCompute( B, oper ) )
+           and ForAll( prerequisites_underlying_category, oper -> CanCompute( underlying_category, oper ) ) then
+            
+            ##
+            AddHomomorphismStructureOnMorphismsWithGivenObjects( category,
+              function( source, alpha, beta, range )
+                local j_list, l_list, i_list, k_list, alpha_listlist, beta_listlist, listlist;
+                
+                j_list := ObjectList( Range( alpha ) );
+                
+                l_list := ObjectList( Source( beta ) );
+                
+                i_list := ObjectList( Source( alpha ) );
+                
+                k_list := ObjectList( Range( beta ) );
+                
+                alpha_listlist := EntriesAsListListOfMorphisms( alpha );
+                
+                beta_listlist := EntriesAsListListOfMorphisms( beta );
+                
+                listlist := 
+                  List( Cartesian( [ 1 .. Size( j_list ) ], [ 1 .. Size( l_list ) ] ), jl ->
+                    List( Cartesian( [ 1 .. Size( i_list ) ],  [ 1 .. Size( k_list ) ] ), ik ->
+                        HomomorphismStructureOnMorphisms( alpha_listlist[ik[1]][jl[1]], beta_listlist[jl[2],ik[2]] )
+                    )
+                  );
+                
+                return DgMorphismBetweenDirectSums(
+                    source,
+                    listlist,
+                    range,
+                    DgDegree( alpha ) + DgDegree( beta )
+                );
+                
+            end );
+            
+        fi;
     fi;
         
     
