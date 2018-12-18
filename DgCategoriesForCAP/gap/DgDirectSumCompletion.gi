@@ -723,7 +723,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_DIRECT_SUM_COMPLETION,
         
     end );
     
-        ##
+    ##
     AddDgAdditiveInverseForMorphisms( category,
       function( mor )
         
