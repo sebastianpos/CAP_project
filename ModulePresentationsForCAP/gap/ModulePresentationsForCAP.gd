@@ -73,6 +73,8 @@ DeclareGlobalFunction( "ADD_EVALUATION_MORPHISM_LEFT" );
 
 DeclareGlobalFunction( "ADD_COEVALUATION_MORPHISM_LEFT" );
 
+DeclareGlobalFunction( "ADD_ASSOCIATOR_LEFT" );
+
 
 DeclareGlobalFunction( "ADD_FUNCTIONS_FOR_RIGHT_PRESENTATION" );
 
@@ -108,6 +110,10 @@ DeclareGlobalFunction( "ADD_EVALUATION_MORPHISM_RIGHT" );
 
 DeclareGlobalFunction( "ADD_COEVALUATION_MORPHISM_RIGHT" );
 
+DeclareGlobalFunction( "ADD_ASSOCIATOR_RIGHT" );
+
+
+DeclareGlobalFunction( "ADD_UNITOR" );
 
 DeclareGlobalFunction( "ADD_IS_WELL_DEFINED_FOR_OBJECTS" );
 
@@ -122,6 +128,8 @@ DeclareGlobalFunction( "ADD_ADDITIVE_INVERSE_FOR_MORPHISMS" );
 DeclareGlobalFunction( "ADD_IS_IDENTICAL_FOR_MORPHISMS" );
 
 DeclareGlobalFunction( "ADD_TENSOR_PRODUCT_ON_MORPHISMS" );
+
+DeclareGlobalFunction( "ADD_EPIMORPHISM_FROM_SOME_PROJECTIVE_OBJECT" );
 
 DeclareGlobalFunction( "ADD_LIFT_AND_COLIFT_LEFT" );
 

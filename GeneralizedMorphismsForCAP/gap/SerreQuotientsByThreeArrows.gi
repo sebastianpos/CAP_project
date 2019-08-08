@@ -173,11 +173,11 @@ BindGlobal( "CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_THREE_ARROWS"
       function( obj_list )
         local honest_list, honest_sum;
         
-        honest_list := List( obj_list, UnderlyingGeneralizedObject );
+        honest_list := List( obj_list, UnderlyingHonestObject );
         
         honest_sum := CallFuncList( DirectSum, honest_list );
         
-        return AsSerreQuotientCategoryByThreeArrowsObject( category, UnderlyingHonestObject( honest_sum ) );
+        return AsSerreQuotientCategoryByThreeArrowsObject( category, honest_sum );
         
     end );
     
@@ -205,7 +205,7 @@ BindGlobal( "CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_THREE_ARROWS"
         
         underlying_direct_sum := UnderlyingHonestObject( direct_sum_object );
         
-        honest_injection := AddInjectionOfCofactorOfDirectSumWithGivenDirectSum( underlying_objects, injection_number, underlying_direct_sum );
+        honest_injection := InjectionOfCofactorOfDirectSumWithGivenDirectSum( underlying_objects, injection_number, underlying_direct_sum );
         
         return AsSerreQuotientCategoryByThreeArrowsMorphism( category, honest_injection );
         
@@ -266,7 +266,7 @@ BindGlobal( "CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_THREE_ARROWS"
         
         kernel_mor := KernelEmbedding( AssociatedMorphism( underlying_general ) );
         
-        kernel_mor := PreCompose( kernel_mor, DomainOfGeneralizedMorphism( underlying_general ) );
+        kernel_mor := PreCompose( kernel_mor, DomainEmbedding( underlying_general ) );
         
         return AsSerreQuotientCategoryByThreeArrowsMorphism( category, kernel_mor );
         
@@ -296,7 +296,7 @@ BindGlobal( "CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_THREE_ARROWS"
         
         cokernel_mor := CokernelProjection( AssociatedMorphism( underlying_general ) );
         
-        cokernel_mor := PreCompose( Codomain( underlying_general ), cokernel_mor );
+        cokernel_mor := PreCompose( CodomainProjection( underlying_general ), cokernel_mor );
         
         return AsSerreQuotientCategoryByThreeArrowsMorphism( category, cokernel_mor );
         
@@ -385,8 +385,6 @@ InstallMethodWithCacheFromObject( SerreQuotientCategoryByThreeArrows,
     
     AddMorphismRepresentation( serre_category, IsSerreQuotientCategoryByThreeArrowsMorphism );
     
-    DisableAddForCategoricalOperations( serre_category );
-    
     serre_category!.predicate_logic := category!.predicate_logic;
     
     SetFilterObj( serre_category, WasCreatedAsSerreQuotientCategoryByThreeArrows );
@@ -400,6 +398,8 @@ InstallMethodWithCacheFromObject( SerreQuotientCategoryByThreeArrows,
     SetIsAbelianCategory( serre_category, true );
     
     CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_THREE_ARROWS( serre_category );
+    
+    CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT( serre_category );
     
     Finalize( serre_category );
     

@@ -85,7 +85,13 @@ InstallMethod( IsApplicableToCategory,
 function( d, C )
   local filter;
   filter := CategoryFilter( d );
-  return Tester( filter )( C ) and filter( C );
+  if IsFilter( filter ) then
+      return Tester( filter )( C ) and filter( C );
+  elif IsFunction( filter ) then
+      return filter( C );
+  else
+      Error( "Category filter is not a filter or function" );
+  fi;
 end );
 
 InstallMethod( InstallDerivationForCategory,
@@ -261,12 +267,14 @@ InstallMethod( AddDerivation,
   function( graph, target_op, used_ops_with_multiples,
             implementations_with_extra_filters )
     local weight, category_filter, description, derivation, collected_list,
-          operations_in_graph, current_list, current_implementation, loop_multiplier;
+          operations_in_graph, current_list, current_implementation, loop_multiplier,
+          preconditions_complete;
     
     weight := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "Weight", 1 );
     category_filter := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "CategoryFilter", IsCapCategory );
     description := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "Description", "" );
     loop_multiplier := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "WeightLoopMultiple", 2 );
+    preconditions_complete := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "ConditionsListComplete", false );
     
     ## get used ops
     ## Is this the right place? Or should this only be done when no ops are given?
@@ -274,15 +282,15 @@ InstallMethod( AddDerivation,
     
     collected_list := [ ];
     
-    for current_implementation in implementations_with_extra_filters do
-        
-        current_list := CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION( current_implementation[ 1 ], operations_in_graph, loop_multiplier );
-        current_list := List( current_list, i -> [ ValueGlobal( i[ 1 ] ), i[ 2 ] ] );
-        ## TODO: Maybe move the next line to AddDerivationToCAP
-        current_list := Concatenation( current_list, CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION_FOR_MONOIDAL_CATEGORIES( current_implementation[ 1 ], loop_multiplier ) );
-        collected_list := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, current_list );
-        
-    od;
+    if preconditions_complete = false then
+        for current_implementation in implementations_with_extra_filters do
+
+            current_list := CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION( current_implementation[ 1 ], operations_in_graph, loop_multiplier, CAP_INTERNAL_METHOD_RECORD_REPLACEMENTS );
+            current_list := List( current_list, i -> [ ValueGlobal( i[ 1 ] ), i[2] ]);
+            collected_list := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, current_list );
+
+        od;
+    fi;
     
     used_ops_with_multiples := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, used_ops_with_multiples );
     
@@ -293,8 +301,8 @@ InstallMethod( AddDerivation,
                                   implementations_with_extra_filters,
                                   category_filter );
     
-    ## FIXME: Should this be obsolete since the operations are extracted above?
-    CAP_INTERNAL_DERIVATION_SANITY_CHECK( graph, derivation );
+    ## This sanity check should be obsolete
+    # CAP_INTERNAL_DERIVATION_SANITY_CHECK( graph, derivation );
     
     AddDerivation( graph, derivation );
 end );
@@ -348,12 +356,14 @@ InstallMethod( AddDerivationPair,
   function( graph, target_op1, target_op2, used_ops_with_multiples,
             implementations_with_extra_filters1, implementations_with_extra_filters2 )
     local weight, category_filter, description, derivation1, derivation2, collected_list,
-          operations_in_graph, current_list, current_implementation, loop_multiplier;
+          operations_in_graph, current_list, current_implementation, loop_multiplier,
+          preconditions_complete;
     
     weight := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "Weight", 1 );
     category_filter := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "CategoryFilter", IsCapCategory );
     description := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "Description", "" );
     loop_multiplier := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "WeightLoopMultiple", 2 );
+    preconditions_complete := CAP_INTERNAL_RETURN_OPTION_OR_DEFAULT( "ConditionsListComplete", false );
     
     ## get used ops
     ## Is this the right place? Or should this only be done when no ops are given?
@@ -361,15 +371,15 @@ InstallMethod( AddDerivationPair,
     
     collected_list := [ ];
     
-    for current_implementation in Concatenation( implementations_with_extra_filters1, implementations_with_extra_filters2 ) do
-        
-        current_list := CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION( current_implementation[ 1 ], operations_in_graph, loop_multiplier );
-        current_list := List( current_list, i -> [ ValueGlobal( i[ 1 ] ), i[ 2 ] ] );
-        ## TODO: Maybe move the next line to AddDerivationPairToCAP
-        current_list := Concatenation( current_list, CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION_FOR_MONOIDAL_CATEGORIES( current_implementation[ 1 ], loop_multiplier ) );
-        collected_list := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, current_list );
-        
-    od;
+    if preconditions_complete = false then
+        for current_implementation in Concatenation( implementations_with_extra_filters1, implementations_with_extra_filters2 ) do
+            
+            current_list := CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION( current_implementation[ 1 ], operations_in_graph, loop_multiplier, CAP_INTERNAL_METHOD_RECORD_REPLACEMENTS );
+            current_list := List( current_list, i -> [ ValueGlobal( i[ 1 ] ), i[ 2 ] ]);
+            collected_list := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, current_list );
+            
+        od;
+    fi;
     
     used_ops_with_multiples := CAP_INTERNAL_MERGE_PRECONDITIONS_LIST( collected_list, used_ops_with_multiples );
     
@@ -578,10 +588,26 @@ function( owl )
   od;
 end );
 
+InstallMethod( Saturate,
+               [ IsOperationWeightList ],
+  function( owl )
+    local current_weight_list;
+
+    while true do
+        current_weight_list := StructuralCopy( owl!.operation_weights );
+        Reevaluate( owl );
+        if current_weight_list = owl!.operation_weights then
+            break;
+        fi;
+    od;
+
+end );
+
 InstallMethod( AddPrimitiveOperation,
                [ IsOperationWeightListRep, IsString, IsInt ],
 function( owl, op_name, weight )
   owl!.operation_weights.( op_name ) := weight;
+  owl!.operation_derivations.( op_name ) := fail;
   InstallDerivationsUsingOperation( owl, op_name );
 end );
 
@@ -923,11 +949,13 @@ InstallGlobalFunction( DerivationsOfMethodByCategory,
         
         category_filter := CategoryFilter( current_derivation );
         
-        if Tester( category_filter )( category ) and not category_filter( category ) then
+        if IsFilter( category_filter ) and Tester( category_filter )( category ) and not category_filter( category ) then
             continue;
-        elif not Tester( category_filter )( category ) then
+        elif IsFilter( category_filter) and not Tester( category_filter )( category ) then
             Print( "If ", Name( category ), " would be ", NamesFilter( category_filter )[ 1 ], " then\n" );
             Print( string, " could be derived by\n" );
+        elif IsFunction( category_filter ) and not category_filter( category ) then
+            continue;
         else
             Print( string, " can be derived by\n" );
         fi;

@@ -398,6 +398,16 @@ InstallGlobalFunction( CAP_INTERNAL_REPLACE_STRINGS_WITH_FILTERS,
                   list[ i ] := MorphismFilter( category ) and IsCapCategoryMorphism;
               elif current_entry = "twocell" then
                   list[ i ] := TwoCellFilter( category ) and IsCapCategoryTwoCell;
+              elif current_entry = "other_category" then
+                  list[ i ] := IsCapCategory;
+              elif current_entry = "other_cell" then
+                  list[ i ] := IsCapCategoryCell;
+              elif current_entry = "other_object" then
+                  list[ i ] := IsCapCategoryObject;
+              elif current_entry = "other_morphism" then
+                  list[ i ] := IsCapCategoryMorphism;
+              elif current_entry = "other_twocell" then
+                  list[ i ] := IsCapCategoryTwoCell;
               else
                   Error( "filter type is not recognized, must be object, morphism, or twocell" );
               fi;
@@ -490,10 +500,48 @@ BindGlobal( "CAP_INTERNAL_MAKE_LOOP_SYMBOL_LOOK_LIKE_LOOP",
     
 end );
 
+BindGlobal( "CAP_INTERNAL_REPLACE_ADDITIONAL_SYMBOL_APPEARANCE",
+  
+  function( appearance_list, replacement_record )
+    local remove_list, new_appearances, current_appearance_nr,
+          current_appearance, current_replacement, i;
+
+    remove_list := [];
+    new_appearances := [];
+
+    for current_appearance_nr in [ 1 .. Length( appearance_list ) ] do
+        
+        current_appearance := appearance_list[ current_appearance_nr ];
+        
+        if IsBound( replacement_record.(current_appearance[ 1 ]) ) then
+            Add( remove_list, current_appearance_nr );
+            for current_replacement in replacement_record.(current_appearance[ 1 ]) do
+                Add( new_appearances, [ current_replacement[ 1 ], current_replacement[ 2 ] * current_appearance[ 2 ] ] );
+            od;
+        fi;
+
+    od;
+
+    for i in Reversed( remove_list ) do
+        Remove( appearance_list, i );
+    od;
+
+    return Concatenation( appearance_list, new_appearances );
+
+end );
+
+BindGlobal( "CAP_INTERNAL_VALUE_GLOBAL_OR_VALUE",
+  function( val )
+    if IsString( val ) then
+        return ValueGlobal( val );
+    fi;
+    return val;
+end );
+
 ##
 InstallGlobalFunction( "CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION",
   
-  function( func, symbol_list, loop_multiple )
+  function( func, symbol_list, loop_multiple, replacement_record )
     local func_as_string, func_stream, i, func_as_list, loop_power, symbol_appearance_rec, current_symbol;
     
     func_as_string := "";
@@ -522,6 +570,8 @@ InstallGlobalFunction( "CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION",
     
     symbol_appearance_rec := rec( );
     
+    symbol_list := Concatenation( symbol_list, RecNames( replacement_record ) );
+    
     for current_symbol in func_as_list do
         
         if current_symbol in symbol_list then
@@ -543,7 +593,9 @@ InstallGlobalFunction( "CAP_INTERNAL_FIND_APPEARANCE_OF_SYMBOL_IN_FUNCTION",
         
     od;
     
-    return List( RecNames( symbol_appearance_rec ), i -> [ i, symbol_appearance_rec.(i) ] );
+    symbol_appearance_rec := List( RecNames( symbol_appearance_rec ), i -> [ i, symbol_appearance_rec.(i) ] );
+    symbol_appearance_rec := CAP_INTERNAL_REPLACE_ADDITIONAL_SYMBOL_APPEARANCE( symbol_appearance_rec, replacement_record );
+    return symbol_appearance_rec;
     
 end );
 
@@ -669,7 +721,7 @@ InstallGlobalFunction( ListKnownCategoricalProperties,
     
     list := [ ];
     
-    for name in CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST!.MathematicalPropertiesOfCategories do
+    for name in Concatenation( CAP_INTERNAL_CATEGORICAL_PROPERTIES_LIST ) do
       
       if Tester( ValueGlobal( name ) )( category ) and ValueGlobal( name )( category ) then
         
@@ -744,49 +796,18 @@ InstallGlobalFunction( CachingStatistic,
             Print( "crisp cache, " );
         fi;
         Print( "hits: ", String( current_cache!.hit_counter ), ", misses: ", String( current_cache!.miss_counter ), ", " );
-        Print( String( Length( BoundPositions( current_cache!.value ) ) ), " objects stored\n" );
+        Print( String( Length( PositionsProperty( current_cache!.value, ReturnTrue ) ) ), " objects stored\n" );
     od;
     
 end );
 
-if IsPackageMarkedForLoading( "Browse", ">=0" ) then
+## Hack for making CAP work with GAP versions smaller than 4.11
+## Fixme: Remove this once we are sure we do not want compatibility
+## to GAP < 4.11 anymore.
+if not IsBound( SuspendMethodReordering ) then
+   BindGlobal( "SuspendMethodReordering", function() end );
+fi;
 
-    InstallGlobalFunction( BrowseCachingStatistic,
-      
-      function( category )
-        local operations, current_cache_name, current_cache, value_matrix, names, cols, current_list;
-        
-        value_matrix := [ ];
-        names := [ ];
-        cols := [ [ "status", "hits", "misses", "stored" ] ];
-        
-        operations := ShallowCopy( RecNames( category!.caches ) );
-        Sort( operations );
-        
-        for current_cache_name in operations do
-            Add( names, [ current_cache_name ] );
-            if not IsBound( category!.caches.(current_cache_name) ) then
-                Add( value_matrix, [ "not installed", "-", "-", "-" ] );
-                continue;
-            fi;
-            current_cache := category!.caches.(current_cache_name);
-            if IsDisabledCache( current_cache ) then
-                Add( value_matrix, [ "deactivated", "-", "-", "-" ] );
-                continue;
-            fi;
-            current_list := [ ];
-            if IsWeakCache( current_cache ) then
-                Add( current_list, "weak" );
-            elif IsCrispCache( current_cache ) then
-                Add( current_list, "crisp" );
-            fi;
-            
-            Append( current_list, [ current_cache!.hit_counter, current_cache!.miss_counter, Length( BoundPositions( current_cache!.value ) ) ] );
-            Add( value_matrix, current_list );
-        od;
-        
-        NCurses.BrowseDenseList( value_matrix, rec( labelsCol := cols, labelsRow := names ) );
-        
-    end );
-
+if not IsBound( ResumeMethodReordering ) then
+   BindGlobal( "ResumeMethodReordering", function() end );
 fi;

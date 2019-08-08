@@ -226,7 +226,7 @@ InstallMethod( GeneralizedMorphismCategoryBySpans,
         
         return;
         
-    elif not IsAbelianCategory( category ) then
+    elif not ( HasIsAbelianCategory( category ) and IsAbelianCategory( category ) ) then
         
         Error( "the category must be abelian" );
         
@@ -270,8 +270,6 @@ InstallMethod( GeneralizedMorphismCategoryBySpans,
     AddObjectRepresentation( generalized_morphism_category, IsGeneralizedMorphismCategoryBySpansObject );
     
     AddMorphismRepresentation( generalized_morphism_category, IsGeneralizedMorphismBySpan );
-    
-    DisableAddForCategoricalOperations( generalized_morphism_category );
     
     generalized_morphism_category!.predicate_logic := category!.predicate_logic;
     
@@ -547,7 +545,7 @@ InstallMethodWithCacheFromObject( CommonRestrictionOp,
 end : ArgumentNumber := 2 );
 
 ##
-InstallMethod( CombinedImageEmbedding,
+InstallMethod( GeneralizedImageEmbedding,
                [ IsGeneralizedMorphismBySpan ],
                
   function( morphism )

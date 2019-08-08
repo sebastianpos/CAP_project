@@ -70,6 +70,11 @@ DeclareCategory( "IsDerivedMethod", IsObject );
 #!  which categories the derivation is valid for.  If it is valid
 #!  for all categories, then this argument should have the value
 #!  <C>IsCapCategory</C>.
+#!  The Option <C>ConditionsListComplete</C> indicates if the manually
+#!  given list of preconditions for this derivation is complete
+#!  or should be extended by looking for categorical operations
+#!  in the function body. The value <C>false</C> indicates it is not complete,
+#!  every other value that it is complete. Default is <C>false</C>.
 #! @Arguments name, target_op, used_ops_with_multiples, weight, implementations_with_extra_filters, category_filter
 DeclareOperation( "MakeDerivation",
                   [ IsString, IsFunction, IsDenseList,
@@ -173,7 +178,7 @@ DeclareOperation( "MakeDerivationGraph", [ IsDenseList ] );
 
 
 #! @Description Adds a list of operation names <A>operations</A> to a given derivation graph <A>graph</A>.
-#!  This is used in extensions of CAP which want to have their own primitive operations,
+#!  This is used in extensions of CAP which want to have their own basic operations,
 #!  but do not want to pollute the CAP kernel any more. Please use it with caution. If
 #!  a weight list/category was created before it will not be aware of the operations.
 #! @Arguments graph, operations
@@ -298,6 +303,12 @@ DeclareOperation( "InstallDerivationsUsingOperation",
 #!  or because new derivations have been added to the graph.
 #! @Arguments owl
 DeclareOperation( "Reevaluate", [ IsOperationWeightList ] );
+
+#! @Description
+#!  Saturates the derivation graph, i.e., calls reevaluate until
+#!  no more changes in the derivation graph occur.
+#! @Arguments owl
+DeclareOperation( "Saturate", [ IsOperationWeightList ] );
 
 #! @Description
 #!  Add the operation named <A>op_name</A> to the operation weight list <A>owl</A>

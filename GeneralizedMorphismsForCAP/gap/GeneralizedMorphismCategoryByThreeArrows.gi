@@ -40,9 +40,9 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_GENERALIZED_MORPHISM_BY_THREE_ARROW
       function( generalized_morphism1, generalized_morphism2 )
         local subobject1, subobject2, factorobject1, factorobject2, isomorphism_of_subobjects, isomorphism_of_factorobjects;
         
-        subobject1 := DomainOfGeneralizedMorphism( generalized_morphism1 );
+        subobject1 := DomainEmbedding( generalized_morphism1 );
         
-        subobject2 := DomainOfGeneralizedMorphism( generalized_morphism2 );
+        subobject2 := DomainEmbedding( generalized_morphism2 );
         
         if not IsEqualAsSubobjects( subobject1, subobject2 ) then
           
@@ -50,9 +50,9 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_GENERALIZED_MORPHISM_BY_THREE_ARROW
           
         fi;
         
-        factorobject1 := Codomain( generalized_morphism1 );
+        factorobject1 := CodomainProjection( generalized_morphism1 );
         
-        factorobject2 := Codomain( generalized_morphism2 );
+        factorobject2 := CodomainProjection( generalized_morphism2 );
         
         if not IsEqualAsFactorobjects( factorobject1, factorobject2 ) then
         
@@ -248,7 +248,7 @@ InstallMethod( GeneralizedMorphismCategoryByThreeArrows,
         
         return;
         
-    elif not IsAbelianCategory( category ) then
+    elif not ( HasIsAbelianCategory( category ) and IsAbelianCategory( category ) ) then
         
         Error( "the category must be abelian" );
         
@@ -292,8 +292,6 @@ InstallMethod( GeneralizedMorphismCategoryByThreeArrows,
     AddObjectRepresentation( generalized_morphism_category, IsGeneralizedMorphismCategoryByThreeArrowsObject );
     
     AddMorphismRepresentation( generalized_morphism_category, IsGeneralizedMorphismByThreeArrows );
-    
-    DisableAddForCategoricalOperations( generalized_morphism_category );
     
     generalized_morphism_category!.predicate_logic := category!.predicate_logic;
     
@@ -441,8 +439,8 @@ InstallMethod( HonestRepresentative,
   function( generalized_morphism )
     
     return PreCompose(
-             PreCompose( Inverse( DomainOfGeneralizedMorphism( generalized_morphism ) ), AssociatedMorphism( generalized_morphism ) ), 
-             Inverse( Codomain( generalized_morphism ) ) 
+             PreCompose( Inverse( DomainEmbedding( generalized_morphism ) ), AssociatedMorphism( generalized_morphism ) ), 
+             Inverse( CodomainProjection( generalized_morphism ) ) 
            );
     
 end );
@@ -453,7 +451,7 @@ InstallMethod( HasFullCodomain,
                
   function( generalized_morphism )
     
-    return IsIsomorphism( Codomain( generalized_morphism ) );
+    return IsIsomorphism( CodomainProjection( generalized_morphism ) );
     
 end );
 
@@ -469,7 +467,7 @@ end );
 
 ###########################
 ##
-## DomainOfGeneralizedMorphism, Associated Morphism, Codomain
+## DomainEmbedding, Associated Morphism, CodomainProjection
 ##
 ###########################
 
@@ -617,7 +615,7 @@ InstallMethodWithCacheFromObject( CommonRestrictionOp,
         
     fi;
     
-    source_aid_list := List( morphism_list, DomainOfGeneralizedMorphism );
+    source_aid_list := List( morphism_list, DomainEmbedding );
     
     associated_compose_list := [ ];
     
@@ -703,7 +701,7 @@ InstallMethodWithCacheFromObject( CommonCoastrictionOp,
         
     fi;
     
-    codomain_list := List( morphism_list, Codomain );
+    codomain_list := List( morphism_list, CodomainProjection );
     
     associated_compose_list := [ ];
     

@@ -10,8 +10,19 @@ SetPackageInfo( rec(
 
 PackageName := "GradedModulePresentationsForCAP",
 Subtitle := "Presentations for graded modules",
-Version := "0.1",
-Date := "20/03/2017", # dd/mm/yyyy format
+Version := Maximum( [
+           ##
+           "2017.03.20", # Sebas version
+           ##
+           "2018.03.20", # Sepps version
+           ##
+           "2019.04.03", # Mohamed's version
+           ##
+           ] ),
+
+Date := ~.Version{[ 1 .. 10 ]},
+Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+License := "GPL-2.0-or-later",
 
 Persons := [
   rec(
@@ -19,15 +30,20 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Sebastian",
     LastName := "Gutsche",
-    WWWHome := "TODO",
+    WWWHome := "https://sebasguts.github.io",
     Email := "gutsche@mathematik.uni-siegen.de",
-    PostalAddress := "TODO",
+    PostalAddress := Concatenation(
+               "Department Mathematik\n",
+               "Universität Siegen\n",
+               "Walter-Flex-Straße 3\n",
+               "57068 Siegen\n",
+               "Germany" ),
     Place := "Siegen",
     Institution := "University of Siegen",
   ),
 ],
 
-PackageWWWHome := "http://TODO/",
+PackageWWWHome := "https://homalg-project.github.io/CAP_project/",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "GradedModulePresentationsForCAP-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
@@ -60,7 +76,9 @@ Dependencies := rec(
   GAP := ">= 4.6",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
                            [ "ModulePresentationsForCAP", ">=2017.03.20" ],
-                           [ "GradedRingForHomalg", ">=0" ] ],
+                           [ "GradedRingForHomalg", ">=2019.04.03" ],
+                           [ "ComplexesAndFilteredObjectsForCAP", ">=2016.09.19" ],
+                           [ "HomologicalAlgebraForCAP", ">=2015.05.08" ] ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),

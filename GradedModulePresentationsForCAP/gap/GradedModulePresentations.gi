@@ -12,9 +12,9 @@ InstallMethod( GradedLeftPresentations,
                [ IsHomalgGradedRing ],
                
   function( ring )
-    local category;
+    local category, to_be_finalized;
     
-    category := CreateCapCategory( Concatenation( "The category of graded f.p. modules over ", RingName( ring ) ) );
+    category := CreateCapCategory( Concatenation( "The category of graded left f.p. modules over ", RingName( ring ) ) );
     
     category!.ring_for_representation_category := ring;
     
@@ -24,12 +24,12 @@ InstallMethod( GradedLeftPresentations,
     
     SetIsAbelianCategory( category, true );
     
-    if IsCommutative( ring ) then
+    SetIsAbelianCategoryWithEnoughProjectives( category, true );
+
+    if HasIsCommutative( ring ) and IsCommutative( ring ) then
       
       SetIsSymmetricClosedMonoidalCategory( category, true );
       
-      SetIsStrictMonoidalCategory( category, true );
-    
     fi;
     
     ADD_GRADED_FUNCTIONS_FOR_LEFT_PRESENTATION( category );
@@ -56,7 +56,17 @@ InstallMethod( GradedLeftPresentations,
 #         "RelationsForGeneralModuleCategories.tex" )
 #     );
     
-    Finalize( category );
+    to_be_finalized := ValueOption( "FinalizeCategory" );
+   
+    if to_be_finalized = false then
+      
+       return category;
+    
+    else
+    
+       Finalize( category );
+      
+    fi;
     
     return category;
     
@@ -67,9 +77,9 @@ InstallMethod( GradedRightPresentations,
                [ IsHomalgRing ],
                
   function( ring )
-    local category;
+    local category, to_be_finalized;
     
-    category := CreateCapCategory( Concatenation( "The category of graded f.p. modules over ", RingName( ring ) ) );
+    category := CreateCapCategory( Concatenation( "The category of graded right f.p. modules over ", RingName( ring ) ) );
     
     category!.ring_for_representation_category := ring;
     
@@ -79,12 +89,12 @@ InstallMethod( GradedRightPresentations,
     
     SetIsAbelianCategory( category, true );
     
-    if IsCommutative( ring ) then
+    SetIsAbelianCategoryWithEnoughProjectives( category, true );
+    
+    if HasIsCommutative( ring ) and IsCommutative( ring ) then
       
       SetIsSymmetricClosedMonoidalCategory( category, true );
       
-      SetIsStrictMonoidalCategory( category, true );
-    
     fi;
     
     ADD_GRADED_FUNCTIONS_FOR_RIGHT_PRESENTATION( category );
@@ -110,7 +120,17 @@ InstallMethod( GradedRightPresentations,
 #         "RelationsForGeneralModuleCategories.tex" )
 #     );
     
-    Finalize( category );
+    to_be_finalized := ValueOption( "FinalizeCategory" );
+   
+    if to_be_finalized = false then
+      
+       return category;
+    
+    else
+    
+       Finalize( category );
+      
+    fi;
     
     return category;
     
@@ -135,6 +155,18 @@ InstallGlobalFunction( ADD_GRADED_FUNCTIONS_FOR_LEFT_PRESENTATION,
     
     ADD_GRADED_KERNEL_LEFT( category );
     
+    if CanCompute( category!.underlying_presentation_category, "Lift" ) then
+    
+        ADD_GRADED_LIFT( category, "left" );
+    
+    fi;
+    
+    if CanCompute( category!.underlying_presentation_category, "Colift" ) then
+    
+        ADD_GRADED_COLIFT( category, "left" );
+    
+    fi;
+
     ADD_GRADED_PRECOMPOSE( category );
     
     ADD_GRADED_ADDITION_FOR_MORPHISMS( category );
@@ -161,7 +193,17 @@ InstallGlobalFunction( ADD_GRADED_FUNCTIONS_FOR_LEFT_PRESENTATION,
     
     ADD_GRADED_IS_IDENTICAL_FOR_MORPHISMS( category );
     
-    if IsCommutative( category!.ring_for_representation_category ) then
+    ADD_GRADED_EPIMORPHISM_FROM_SOME_PROJECTIVE_OBJECT( category );
+
+    ADD_GRADED_LIFT_ALONG_MONOMORPHISM( category );
+
+    ADD_GRADED_COLIFT_ALONG_EPIMORPHISM( category );
+    
+    if HasIsCommutative( category!.ring_for_representation_category ) and IsCommutative( category!.ring_for_representation_category ) then
+      
+      ADD_GRADED_UNITOR( category );
+      
+      ADD_GRADED_ASSOCIATOR_LEFT( category );
       
       ADD_GRADED_TENSOR_PRODUCT_ON_OBJECTS( category );
       
@@ -190,6 +232,18 @@ InstallGlobalFunction( ADD_GRADED_FUNCTIONS_FOR_RIGHT_PRESENTATION,
     
     ADD_GRADED_KERNEL_RIGHT( category );
     
+    if CanCompute( category!.underlying_presentation_category, "Lift" ) then
+    
+        ADD_GRADED_LIFT( category, "right" );
+    
+    fi;
+    
+    if CanCompute( category!.underlying_presentation_category, "Colift" ) then
+    
+        ADD_GRADED_COLIFT( category, "right" );
+    
+    fi;
+    
     ADD_GRADED_PRECOMPOSE( category );
     
     ADD_GRADED_ADDITION_FOR_MORPHISMS( category );
@@ -216,7 +270,17 @@ InstallGlobalFunction( ADD_GRADED_FUNCTIONS_FOR_RIGHT_PRESENTATION,
     
     ADD_GRADED_IS_IDENTICAL_FOR_MORPHISMS( category );
     
-    if IsCommutative( category!.ring_for_representation_category ) then
+    ADD_GRADED_EPIMORPHISM_FROM_SOME_PROJECTIVE_OBJECT( category );
+
+    ADD_GRADED_LIFT_ALONG_MONOMORPHISM( category );
+
+    ADD_GRADED_COLIFT_ALONG_EPIMORPHISM( category );
+    
+    if HasIsCommutative( category!.ring_for_representation_category ) and IsCommutative( category!.ring_for_representation_category ) then
+      
+      ADD_GRADED_UNITOR( category );
+      
+      ADD_GRADED_ASSOCIATOR_RIGHT( category );
       
       ADD_GRADED_TENSOR_PRODUCT_ON_OBJECTS( category );
       
@@ -248,9 +312,14 @@ BindGlobal( "CAP_INTERNAL_CHECK_DEGREES_FOR_IS_WELL_DEFINED_FOR_OBJECTS",
               continue;
           fi;
           starting_element := 1;
-          while IsZero( relation_entries[ i ][ starting_element ] ) do
-              starting_element := starting_element + 1;
+          while IsZero( relation_entries[ i ][ starting_element ] ) and starting_element < Length( relation_degrees[ i ] ) do
+            starting_element := starting_element + 1;
           od;
+          
+          if starting_element = Length( relation_degrees[ i ] ) and IsZero( relation_entries[ i ][ starting_element ] ) then
+            continue;
+          fi;
+
           test_element := relation_degrees[ i ][ starting_element ] + generator_degrees[ starting_element ];
           for j in [ starting_element + 1 .. Length( relation_degrees[ i ] ) ] do
               if not IsZero( relation_entries[ i ][ j ] ) and  relation_degrees[ i ][ j ] + generator_degrees[ j ] <> test_element then
@@ -334,7 +403,8 @@ InstallGlobalFunction( ADD_GRADED_IS_WELL_DEFINED_FOR_MORPHISM_LEFT,
         required_degrees := Flat( List( GeneratorDegrees( Source( morphism ) ), i -> 
                                     List( GeneratorDegrees( Range( morphism ) ), j -> i - j ) ) );
                                     
-        return ForAll( [ 1 .. Length( matrix_entries ) ], i -> IsZero( matrix_entries[ i ] ) or ( matrix_entries_degrees[ i ] = required_degrees[ i ] ) );
+        return ForAll( [ 1 .. Length( matrix_entries ) ], 
+                    i -> IsZero( matrix_entries[ i ] ) or ( matrix_entries_degrees[ i ] = required_degrees[ i ] ) );
         
     end );
     
@@ -343,8 +413,27 @@ end );
 ##
 InstallGlobalFunction( ADD_GRADED_IS_WELL_DEFINED_FOR_MORPHISM_RIGHT,
 
-  function( category )
-    ADD_GRADED_IS_WELL_DEFINED_FOR_MORPHISM_LEFT( category );
+function( category )
+    AddIsWellDefinedForMorphisms( category,
+      function( morphism )
+        local matrix, matrix_entries, matrix_entries_degrees, required_degrees;
+        
+        if not IsWellDefined( UnderlyingPresentationMorphism( morphism ) ) then
+            return false;
+        fi;
+        
+        matrix := UnderlyingMatrix( UnderlyingPresentationMorphism( morphism ) );
+        
+        matrix_entries := Flat( EntriesOfHomalgMatrixAsListList( matrix ) );
+        
+        matrix_entries_degrees := Flat( DegreesOfEntries( matrix ) );
+        
+        required_degrees := Flat( List( GeneratorDegrees( Range( morphism ) ), i -> 
+                                    List( GeneratorDegrees( Source( morphism ) ), j -> j - i ) ) );
+                                    
+        return ForAll( [ 1 .. Length( matrix_entries ) ], 
+                    i -> IsZero( matrix_entries[ i ] ) or ( matrix_entries_degrees[ i ] = required_degrees[ i ] ) );
+    end );
 end );
 
 ##
@@ -416,20 +505,17 @@ InstallGlobalFunction( ADD_GRADED_KERNEL_LEFT,
         
     end );
     
-    AddLift( category,
-      
-      function( alpha, beta )
-        local lift;
+    AddKernelLift( category,
+    
+      function( morphism, tau )
+      local underlying_lift;
         
-        lift := Lift( UnderlyingPresentationMorphism( alpha ), UnderlyingPresentationMorphism( beta ) );
+      underlying_lift := KernelLift( UnderlyingPresentationMorphism( morphism ), UnderlyingPresentationMorphism( tau ) );
         
-        if lift = fail then
-            return fail;
-        fi;
-        
-        return GradedPresentationMorphism( Source( alpha ), lift, Source( beta ) );
+      return GradedPresentationMorphism( Source( tau ), underlying_lift, KernelObject( morphism ) );
         
     end );
+
     
 end );
 
@@ -466,22 +552,96 @@ InstallGlobalFunction( ADD_GRADED_KERNEL_RIGHT,
         
     end );
     
-    AddLift( category,
-      
-        ## TODO: Reference for the conventions for Lift
-#       function( alpha, beta )
-        function( beta, alpha )
-        local lift;
+    AddKernelLift( category,
+    
+    function( morphism, tau )
+        local underlying_lift;
         
-        lift := Lift( UnderlyingPresentationMorphism( beta ), UnderlyingPresentationMorphism( alpha ) );
+      underlying_lift := KernelLift( UnderlyingPresentationMorphism( morphism ), UnderlyingPresentationMorphism( tau ) );
         
-        if lift = fail then
-            return fail;
-        fi;
-        
-        return GradedPresentationMorphism( Source( beta ), lift, Source( alpha ) );
+      return GradedPresentationMorphism( Source( tau ), underlying_lift, KernelObject( morphism ) );
         
     end );
+    
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_LIFT,
+                       
+  function( category, left_or_right )
+    
+    AddLift( category,
+      
+      function( alpha, beta )
+        local lift, required_degrees;
+        
+        lift := Lift( UnderlyingPresentationMorphism( alpha ), UnderlyingPresentationMorphism( beta ) );
+        
+        if lift = fail then
+        
+            return fail;
+        
+        fi;
+        
+        if left_or_right = "left" then
+
+          required_degrees := List( GeneratorDegrees( Source( alpha ) ),
+                                i -> List( GeneratorDegrees( Source( beta ) ), j -> i - j ) );
+        else
+
+          required_degrees := List( GeneratorDegrees( Source( beta ) ),
+                                i -> List( GeneratorDegrees( Source( alpha ) ), j -> j - i ) );
+        fi;
+
+        lift := HomogeneousPartOfMatrix( UnderlyingMatrix( lift ), required_degrees );
+
+        return GradedPresentationMorphism( Source( alpha ), lift, Source( beta ) );
+
+    end );
+    
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_COLIFT,
+                       
+  function( category, left_or_right )
+    
+    AddColift( category,
+      
+      function( alpha, beta )
+        local colift, required_degrees;
+        
+        colift := Colift( UnderlyingPresentationMorphism( alpha ), UnderlyingPresentationMorphism( beta ) );
+        
+        if colift = fail then
+        
+          return fail;
+        
+        fi;
+        
+        if left_or_right = "left" then
+
+          required_degrees := List( GeneratorDegrees( Range( alpha ) ),
+                                i -> List( GeneratorDegrees( Range( beta ) ), j -> i - j ) );
+        else
+
+          required_degrees := List( GeneratorDegrees( Range( beta ) ),
+                                i -> List( GeneratorDegrees( Range( alpha ) ), j -> j - i ) );
+        fi;
+
+        colift := HomogeneousPartOfMatrix( UnderlyingMatrix( colift ), required_degrees );
+
+        return GradedPresentationMorphism( Range( alpha ), colift, Range( beta ) );
+
+    end );
+    
+end );
+
+InstallGlobalFunction( ADD_GRADED_EPIMORPHISM_FROM_SOME_PROJECTIVE_OBJECT, 
+    
+  function( category )
+    
+    AddEpimorphismFromSomeProjectiveObject( category, CoverByProjective );
     
 end );
 
@@ -799,6 +959,42 @@ InstallGlobalFunction( ADD_GRADED_IDENTITY,
 end );
 
 ##
+InstallGlobalFunction( ADD_GRADED_LIFT_ALONG_MONOMORPHISM,
+
+  function( category )
+    
+    AddLiftAlongMonomorphism( category,
+
+      function( iota, tau )
+        local lift;
+
+        lift := LiftAlongMonomorphism( UnderlyingPresentationMorphism( iota ), UnderlyingPresentationMorphism( tau ) );
+        
+        return GradedPresentationMorphism( Source( tau ), lift, Source( iota ) );
+
+    end );
+
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_COLIFT_ALONG_EPIMORPHISM,
+
+  function( category )
+
+    AddColiftAlongEpimorphism( category,
+
+      function( epsilon, tau )
+        local colift;
+
+        colift := ColiftAlongEpimorphism( UnderlyingPresentationMorphism( epsilon ), UnderlyingPresentationMorphism( tau ) );
+
+        return GradedPresentationMorphism( Range( epsilon ), colift, Range( tau ) );
+
+    end );
+    
+end );
+
+##
 InstallGlobalFunction( ADD_GRADED_TENSOR_PRODUCT_ON_OBJECTS,
                       
   function( category )
@@ -977,6 +1173,78 @@ InstallGlobalFunction( ADD_GRADED_INTERNAL_HOM_ON_MORPHISMS_RIGHT,
         
     end );
 
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_UNITOR,
+                      
+  function( category )
+    local unitor_func;
+    
+    unitor_func := function( A, B )
+        return IdentityMorphism( A );
+    end;
+    
+    AddLeftUnitorWithGivenTensorProduct( category, unitor_func );
+    
+    AddRightUnitorWithGivenTensorProduct( category, unitor_func );
+    
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_ASSOCIATOR_LEFT,
+                      
+  function( category )
+    local homalg_ring, associator_func;
+    
+    homalg_ring := category!.ring_for_representation_category;
+    
+    associator_func := function( source, A, B, C, range )
+        
+        return GradedPresentationMorphism(
+                  source,
+                  HomalgIdentityMatrix( NrColumns( UnderlyingMatrix( source ) ), NrColumns( UnderlyingMatrix( range ) ), homalg_ring ),
+                  range
+               );
+        
+    end;
+    
+    AddAssociatorLeftToRightWithGivenTensorProducts( category,
+      associator_func
+    );
+    
+    AddAssociatorRightToLeftWithGivenTensorProducts( category,
+      associator_func
+    );
+    
+end );
+
+##
+InstallGlobalFunction( ADD_GRADED_ASSOCIATOR_RIGHT,
+                      
+  function( category )
+    local homalg_ring, associator_func;
+    
+    homalg_ring := category!.ring_for_representation_category;
+    
+    associator_func := function( source, A, B, C, range )
+        
+        return GradedPresentationMorphism(
+                  source,
+                  HomalgIdentityMatrix( NrRows( UnderlyingMatrix( source ) ), NrRows( UnderlyingMatrix( range ) ), homalg_ring ),
+                  range
+               );
+        
+    end;
+    
+    AddAssociatorLeftToRightWithGivenTensorProducts( category,
+      associator_func
+    );
+    
+    AddAssociatorRightToLeftWithGivenTensorProducts( category,
+      associator_func
+    );
+    
 end );
 # 
 # ##

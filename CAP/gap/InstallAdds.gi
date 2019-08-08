@@ -31,6 +31,18 @@ BindGlobal( "CAP_INTERNAL_CREATE_OTHER_PAIR_FUNC",
     
 end );
 
+BindGlobal( "CAP_INTERNAL_ADD_OBJECT_OR_FAIL",
+  
+  function( category, object_or_fail )
+    
+    if object_or_fail = fail then
+        return;
+    fi;
+    
+    AddObject( category, object_or_fail );
+    
+end );
+
 BindGlobal( "CAP_INTERNAL_ADD_MORPHISM_OR_FAIL",
   
   function( category, morphism_or_fail )
@@ -43,10 +55,20 @@ BindGlobal( "CAP_INTERNAL_ADD_MORPHISM_OR_FAIL",
     
 end );
 
+BindGlobal( "CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY",
+  
+  function( function_name, category, message )
+    
+    Error( Concatenation( "in function \033[1m", function_name,
+        "\033[0m\n       of category \033[1m",
+        Name( category ), ":\033[0m\n\033[1m       ", message, "\033[0m\n" ) );
+    
+end );
+
 InstallGlobalFunction( CapInternalInstallAdd,
   
   function( record )
-    local function_name, install_name, add_name, pre_function,
+    local function_name, install_name, add_name, pre_function, pre_function_full,
           redirect_function, post_function, filter_list, caching,
           cache_name, nr_arguments, argument_list, add_function;
     
@@ -68,6 +90,12 @@ InstallGlobalFunction( CapInternalInstallAdd,
         pre_function := record.pre_function;
     else
         pre_function := function( arg ) return [ true ]; end;
+    fi;
+
+    if IsBound( record.pre_function_full ) then
+        pre_function_full := record.pre_function_full;
+    else
+        pre_function_full := pre_function;
     fi;
     
     if IsBound( record.redirect_function ) then
@@ -104,6 +132,8 @@ InstallGlobalFunction( CapInternalInstallAdd,
         add_function := AddMorphism;
     elif record.return_type = "twocell" then
         add_function := AddTwoCell;
+    elif record.return_type = "object_or_fail" then
+        add_function := CAP_INTERNAL_ADD_OBJECT_OR_FAIL;
     elif record.return_type = "morphism_or_fail" then
         add_function := CAP_INTERNAL_ADD_MORPHISM_OR_FAIL;
     else
@@ -249,13 +279,18 @@ InstallGlobalFunction( CapInternalInstallAdd,
                     fi;
                 fi;
                 
-                if category!.prefunction_check then
+                if not is_pair_func and category!.input_sanity_check_level > 0 then
                     
                     pre_func_return := CallFuncList( pre_function, arg );
                     if pre_func_return[ 1 ] = false then
-                        Error( Concatenation( "in function \033[1m", record.function_name, 
-                            "\033[0m\n       of category \033[1m",
-                            Name( category ), ":\033[0m\n\033[1m       ", pre_func_return[ 2 ], "\033[0m\n" ) );
+                        CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, pre_func_return[ 2 ] );
+                    fi;
+                    
+                    if category!.input_sanity_check_level > 1 then
+                        pre_func_return := CallFuncList( pre_function_full, arg );
+                        if pre_func_return[ 1 ] = false then
+                            CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, pre_func_return[ 2 ] );
+                        fi;
                     fi;
                     
                 fi;
@@ -266,9 +301,51 @@ InstallGlobalFunction( CapInternalInstallAdd,
                     INSTALL_TODO_FOR_LOGICAL_THEOREMS( record.function_name, arg{ argument_list }, result, category );
                 fi;
                 
-                ## Those five lines do not commute
-                if category!.add_primitive_output then
-                    add_function( category, result );
+                if (not is_derivation) then
+                    if category!.add_primitive_output then
+                        add_function( category, result );
+                    elif category!.output_sanity_check_level > 0 then
+                        if record.return_type = "object" or ( record.return_type = "object_or_fail" and result <> fail ) then
+                            if not IsCapCategoryObject( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the filter IsCapCategoryObject." );
+                            fi;
+                            if not HasCapCategory( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result has no CAP category." );
+                            fi;
+                            if not IsIdenticalObj( CapCategory( result ), category ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in this category." );
+                            fi;
+                            if not ObjectFilter( category )( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the object filter of this category." );
+                            fi;
+                        elif record.return_type = "morphism" or ( record.return_type = "morphism_or_fail" and result <> fail ) then
+                            if not IsCapCategoryMorphism( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the filter IsCapCategoryMorphism." );
+                            fi;
+                            if not HasCapCategory( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result has no CAP category." );
+                            fi;
+                            if not IsIdenticalObj( CapCategory( result ), category ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in this category." );
+                            fi;
+                            if not MorphismFilter( category )( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the morphism filter of this category." );
+                            fi;
+                        elif record.return_type = "twocell" then
+                            if not IsCapCategoryTwoCell( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the filter IsCapCategoryTwoCell." );
+                            fi;
+                            if not HasCapCategory( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result has no CAP category." );
+                            fi;
+                            if not IsIdenticalObj( CapCategory( result ), category ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in this category." );
+                            fi;
+                            if not TwoCellFilter( category )( result ) then
+                                CAP_INTERNAL_DISPLAY_ERROR_FOR_FUNCTION_OF_CATEGORY( record.function_name, category, "the result does not lie in the two cell filter of this category." );
+                            fi;
+                        fi;
+                    fi;
                 fi;
                 
                 if post_function <> false then
@@ -655,5 +732,18 @@ InstallMethod( AddTerminalObject,
     wrapped_func := function( cat ) return func(); end;
     
     AddTerminalObject( category, [ [ wrapped_func, [ ] ] ], weight );
+    
+end );
+
+##
+InstallMethod( AddDistinguishedObjectOfHomomorphismStructure,
+               [ IsCapCategory, IsFunction, IsInt ],
+               
+  function( category, func, weight )
+    local wrapped_func;
+    
+    wrapped_func := function( cat ) return func(); end;
+    
+    AddDistinguishedObjectOfHomomorphismStructure( category, [ [ wrapped_func, [ ] ] ], weight );
     
 end );

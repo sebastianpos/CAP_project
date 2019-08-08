@@ -22,8 +22,6 @@ InstallMethod( MatrixCategory,
     
     category := CreateCapCategory( Concatenation( "Category of matrices over ", RingName( homalg_field ) ) );
     
-    DisableAddForCategoricalOperations( category );
-    
     AddObjectRepresentation( category, IsVectorSpaceObject );
     
     AddMorphismRepresentation( category, IsVectorSpaceMorphism );
@@ -35,6 +33,12 @@ InstallMethod( MatrixCategory,
     SetIsRigidSymmetricClosedMonoidalCategory( category, true );
     
     SetIsStrictMonoidalCategory( category, true );
+    
+    SetIsLinearCategoryOverCommutativeRing( category, true );
+    
+    SetCommutativeRingOfLinearCategory( category, homalg_field );
+    
+    SetRangeCategoryOfHomomorphismStructure( category, category );
     
     INSTALL_FUNCTIONS_FOR_MATRIX_CATEGORY( category );
     
@@ -447,6 +451,16 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_MATRIX_CATEGORY,
         
     end );
     
+    ##
+    AddMultiplyWithElementOfCommutativeRingForMorphisms( category,
+      function( ring_element, morphism )
+        
+        return VectorSpaceMorphism( Source( morphism ),
+                                    ring_element * UnderlyingMatrix( morphism ),
+                                    Range( morphism ) );
+        
+    end );
+    
     ## Basic Operations for an Abelian category
     ##
     AddKernelObject( category,
@@ -748,6 +762,94 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_MATRIX_CATEGORY,
                                     HomalgIdentityMatrix( Dimension( object ), homalg_field ),
                                     bidual_of_object
                                   );
+        
+    end );
+    
+    ## Homomorphism structure
+    
+    ##
+    AddHomomorphismStructureOnObjects( category,
+      function( object_1, object_2 )
+        
+        return VectorSpaceObject( Dimension( object_1 ) * Dimension( object_2 ), homalg_field );
+        
+    end );
+    
+    ##
+    AddHomomorphismStructureOnMorphismsWithGivenObjects( category,
+      function( hom_source, alpha, beta, hom_range )
+        
+        return VectorSpaceMorphism( 
+          hom_source,
+          KroneckerMat( Involution( UnderlyingMatrix( alpha ) ), UnderlyingMatrix( beta ) ),
+          hom_range
+        );
+        
+    end );
+    
+    ##
+    AddDistinguishedObjectOfHomomorphismStructure( category,
+      function( )
+        
+        return VectorSpaceObject( 1, homalg_field );
+      
+    end );
+    
+    ##
+    AddInterpretMorphismAsMorphismFromDinstinguishedObjectToHomomorphismStructure( category,
+      function( alpha )
+        local matrix, m, new_matrix, c;
+        
+        matrix := UnderlyingMatrix( alpha );
+        
+        m := NrRows( matrix );
+        
+        if m > 0 then
+            
+            new_matrix := UnionOfColumns( List( [ 1 .. NrRows( matrix ) ], n -> CertainRows( matrix, [ n ] ) ) );
+            
+        else
+            
+            new_matrix := HomalgZeroMatrix( 1, 0, homalg_field );
+            
+        fi;
+            
+        return VectorSpaceMorphism(
+          VectorSpaceObject( 1, homalg_field ),
+          new_matrix,
+          VectorSpaceObject( NrColumns( new_matrix ), homalg_field )
+        );
+        
+    end );
+    
+    ##
+    AddInterpretMorphismFromDinstinguishedObjectToHomomorphismStructureAsMorphism( category,
+      function( source, range, alpha )
+        local matrix, m, n, new_matrix;
+        
+        matrix := UnderlyingMatrix( alpha );
+        
+        m := Dimension( source );
+        
+        n := Dimension( range );
+        
+        if m > 0 then
+            
+            new_matrix := UnionOfRows(
+              List( [ 0 .. m - 1 ], i -> CertainColumns( matrix, [ 1 + i*n .. n + i*n ] ) )
+            );
+        
+        else
+            
+            new_matrix := HomalgZeroMatrix( m, n, homalg_field );
+            
+        fi;
+        
+        return VectorSpaceMorphism(
+          source,
+          new_matrix,
+          range
+        );
         
     end );
     

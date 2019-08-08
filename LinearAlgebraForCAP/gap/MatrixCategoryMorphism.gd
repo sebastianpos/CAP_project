@@ -39,8 +39,8 @@ DeclareCategory( "IsVectorSpaceMorphism",
 DeclareOperation( "VectorSpaceMorphism",
                   [ IsVectorSpaceObject, IsHomalgMatrix, IsVectorSpaceObject ] );
 
-DeclareOperationWithCache( "VectorSpaceMorphism",
-                           [ IsVectorSpaceObject, IsList, IsVectorSpaceObject ] );
+DeclareOperation( "VectorSpaceMorphism",
+                  [ IsVectorSpaceObject, IsList, IsVectorSpaceObject ] );
 
 ####################################
 ##
@@ -64,15 +64,3 @@ DeclareAttribute( "UnderlyingFieldForHomalg",
 #! @Arguments alpha
 DeclareAttribute( "UnderlyingMatrix",
                   IsVectorSpaceMorphism );
-
-####################################
-##
-#! @Section Arithmetics
-##
-####################################
-
-DeclareOperation( "\*",
-                  [ IsRingElement, IsVectorSpaceMorphism ] );
-
-DeclareOperation( "\*",
-                  [ IsVectorSpaceMorphism, IsRingElement ] );

@@ -103,7 +103,16 @@ InstallMethod( Add,
             
         else
             
-            Error( "this morphism already has a category" );
+            Error(
+                Concatenation(
+                    "a morphism that lies in the CAP-category with the name\n",
+                    Name( CapCategory( morphism ) ),
+                    "\n",
+                    "was tried to be added to a different CAP-category with the name\n",
+                    Name( category ), ".\n",
+                    "(Please note that it is possible for different CAP-categories to have the same name)"
+                )
+            );
             
         fi;
         
@@ -123,7 +132,7 @@ InstallMethod( AddMorphism,
 end );
 
 InstallMethod( AddMorphism,
-               [ IsCapCategory, IsObject ],
+               [ IsCapCategory, IsAttributeStoringRep ],
                
   function( category, morphism )
     
@@ -158,6 +167,22 @@ InstallMethod( AdditiveInverse,
 AdditiveInverseForMorphisms );
 
 ##
+InstallMethod( \*,
+               [ IsRingElement, IsCapCategoryMorphism ],
+               
+MultiplyWithElementOfCommutativeRingForMorphisms );
+
+##
+InstallMethod( \*,
+               [ IsCapCategoryMorphism, IsRingElement ],
+               
+  function( mor, r )
+    
+    return MultiplyWithElementOfCommutativeRingForMorphisms( r, mor );
+    
+end );
+
+##
 InstallMethod( IsEqualForCacheForMorphisms,
                [ IsCapCategoryMorphism, IsCapCategoryMorphism ],
                
@@ -173,6 +198,27 @@ InstallMethod( AddMorphismRepresentation,
     category!.morphism_type := NewType( TheFamilyOfCapCategoryMorphisms, representation and MorphismFilter( category ) and IsCapCategoryMorphismRep );
     
 end );
+
+InstallMethod( RandomMorphismWithFixedSourceAndRange,
+    [ IsCapCategoryObject, IsCapCategoryObject, IsInt ], RandomMorphismWithFixedSourceAndRangeByInteger );
+InstallMethod( RandomMorphismWithFixedSourceAndRange,
+    [ IsCapCategoryObject, IsCapCategoryObject, IsList ], RandomMorphismWithFixedSourceAndRangeByList );
+
+InstallMethod( RandomMorphismWithFixedSource,
+    [ IsCapCategoryObject, IsInt ], RandomMorphismWithFixedSourceByInteger );
+InstallMethod( RandomMorphismWithFixedSource,
+    [ IsCapCategoryObject, IsList ], RandomMorphismWithFixedSourceByList );
+
+InstallMethod( RandomMorphismWithFixedRange,
+    [ IsCapCategoryObject, IsInt ], RandomMorphismWithFixedRangeByInteger );
+InstallMethod( RandomMorphismWithFixedRange,
+    [ IsCapCategoryObject, IsList ], RandomMorphismWithFixedRangeByList );
+
+InstallMethod( RandomMorphism,
+    [ IsCapCategory, IsInt ], RandomMorphismByInteger );
+InstallMethod( RandomMorphism,
+    [ IsCapCategory, IsList ], RandomMorphismByList );
+
 
 InstallGlobalFunction( ObjectifyMorphismForCAPWithAttributes,
                        
@@ -198,12 +244,59 @@ end );
 ##
 ######################################
 
+# This method should usually not be selected when the two morphisms belong to the same category
+InstallMethod( IsEqualForMorphisms,
+                [ IsCapCategoryMorphism, IsCapCategoryMorphism ],
+
+  function( morphism_1, morphism_2 )
+    
+    if not HasCapCategory( morphism_1 ) then
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" has no CAP category" ) );
+    fi;
+    if not HasCapCategory( morphism_2 ) then
+        Error( Concatenation( "the morphism \"", String( morphism_2 ), "\" has no CAP category" ) );
+    fi;
+    
+    if not IsIdenticalObj( CapCategory( morphism_1 ), CapCategory( morphism_2 ) ) then
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" and the morphism \"", String( morphism_2 ), "\" do not belong to the same CAP category" ) );
+    else
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" and the morphism \"", String( morphism_2 ), "\" belong to the same CAP category, but no specific method IsEqualForMorphisms is installed. Maybe you forgot to finalize the category?" ) );
+    fi;
+    
+end );
+
+# This method should usually not be selected when the two morphisms belong to the same category
+InstallMethod( IsCongruentForMorphisms,
+                [ IsCapCategoryMorphism, IsCapCategoryMorphism ],
+
+  function( morphism_1, morphism_2 )
+    
+    if not HasCapCategory( morphism_1 ) then
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" has no CAP category" ) );
+    fi;
+    if not HasCapCategory( morphism_2 ) then
+        Error( Concatenation( "the morphism \"", String( morphism_2 ), "\" has no CAP category" ) );
+    fi;
+    
+    if not IsIdenticalObj( CapCategory( morphism_1 ), CapCategory( morphism_2 ) ) then
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" and the morphism \"", String( morphism_2 ), "\" do not belong to the same CAP category" ) );
+    else
+        Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" and the morphism \"", String( morphism_2 ), "\" belong to the same CAP category, but no specific method IsCongruentForMorphisms is installed. Maybe you forgot to finalize the category?" ) );
+    fi;
+    
+end );
+
 ##
 InstallMethod( \=,
                [ IsCapCategoryMorphism, IsCapCategoryMorphism ],
                
   function( morphism_1, morphism_2 )
     
+    if CapCategory( morphism_1 )!.input_sanity_check_level > 0 or CapCategory( morphism_2 )!.input_sanity_check_level > 0  then
+        if not IsIdenticalObj( CapCategory( morphism_1 ), CapCategory( morphism_2 ) ) then
+            Error( Concatenation( "the morphism \"", String( morphism_1 ), "\" and the morphism \"", String( morphism_2 ), "\" do not belong to the same CAP category" ) );
+        fi;
+    fi;
     if not IsEqualForObjects( Source( morphism_1 ), Source( morphism_2 ) ) or not IsEqualForObjects( Range( morphism_1 ), Range( morphism_2 ) ) then
         
         return false;
@@ -339,6 +432,30 @@ InstallMethod( PostCompose,
     od;
     
     return result_morphism;
+    
+end );
+
+##
+InstallMethod( HomomorphismStructureOnMorphisms,
+               [ IsCapCategoryMorphism, IsCapCategoryMorphism ],
+               
+  function( alpha, beta )
+    
+    return HomomorphismStructureOnMorphismsWithGivenObjects(
+             HomomorphismStructureOnObjects( Range( alpha ), Source( beta ) ),
+             alpha, beta,
+             HomomorphismStructureOnObjects( Source( alpha ), Range( beta ) )
+           );
+    
+end );
+
+##
+InstallMethod( SolveLinearSystemInAbCategory,
+               [ IsList, IsList, IsList ],
+               
+  function( left_coeffs, right_coeffs, right_side )
+    
+    return SolveLinearSystemInAbCategoryOp( left_coeffs, right_coeffs, right_side, CapCategory( right_side[1] ) );
     
 end );
 

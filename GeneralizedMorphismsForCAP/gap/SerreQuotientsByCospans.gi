@@ -364,8 +364,6 @@ InstallMethodWithCacheFromObject( SerreQuotientCategoryByCospans,
     
     AddMorphismRepresentation( serre_category, IsSerreQuotientCategoryByCospansMorphism );
     
-    DisableAddForCategoricalOperations( serre_category );
-    
     serre_category!.predicate_logic := category!.predicate_logic;
     
     SetFilterObj( serre_category, WasCreatedAsSerreQuotientCategoryByCospans );
@@ -379,6 +377,8 @@ InstallMethodWithCacheFromObject( SerreQuotientCategoryByCospans,
     SetIsAbelianCategory( serre_category, true );
     
     CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT_BY_COSPANS( serre_category );
+    
+    CAP_INTERNAL_INSTALL_OPERATIONS_FOR_SERRE_QUOTIENT( serre_category );
     
     Finalize( serre_category );
     

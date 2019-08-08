@@ -50,6 +50,8 @@ DeclareGlobalFunction( "ADD_GRADED_IS_WELL_DEFINED_FOR_OBJECTS_LEFT" );
 DeclareGlobalFunction( "ADD_GRADED_INTERNAL_HOM_ON_OBJECTS_LEFT" );
 
 DeclareGlobalFunction( "ADD_GRADED_INTERNAL_HOM_ON_MORPHISMS_LEFT" );
+
+DeclareGlobalFunction( "ADD_GRADED_ASSOCIATOR_LEFT" );
 # 
 # DeclareGlobalFunction( "ADD_GRADED_BRAIDING_LEFT" );
 # 
@@ -69,6 +71,8 @@ DeclareGlobalFunction( "ADD_GRADED_IS_WELL_DEFINED_FOR_OBJECTS_RIGHT" );
 DeclareGlobalFunction( "ADD_GRADED_INTERNAL_HOM_ON_OBJECTS_RIGHT" );
 
 DeclareGlobalFunction( "ADD_GRADED_INTERNAL_HOM_ON_MORPHISMS_RIGHT" );
+
+DeclareGlobalFunction( "ADD_GRADED_ASSOCIATOR_RIGHT" );
 # 
 # DeclareGlobalFunction( "ADD_GRADED_BRAIDING_RIGHT" );
 # 
@@ -104,3 +108,16 @@ DeclareGlobalFunction( "ADD_GRADED_TENSOR_PRODUCT_ON_OBJECTS" );
 DeclareGlobalFunction( "ADD_GRADED_TENSOR_UNIT" );
 
 DeclareGlobalFunction( "ADD_GRADED_EQUAL_FOR_MORPHISMS" );
+
+DeclareGlobalFunction( "ADD_GRADED_LIFT" );
+
+DeclareGlobalFunction( "ADD_GRADED_COLIFT" );
+
+DeclareGlobalFunction( "ADD_GRADED_EPIMORPHISM_FROM_SOME_PROJECTIVE_OBJECT" );
+
+DeclareGlobalFunction( "ADD_GRADED_UNITOR" );
+
+DeclareGlobalFunction( "ADD_GRADED_LIFT_ALONG_MONOMORPHISM" );
+
+DeclareGlobalFunction( "ADD_GRADED_COLIFT_ALONG_EPIMORPHISM" );
+

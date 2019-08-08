@@ -21,6 +21,9 @@ IsAbCategory := Concatenation( [
   "SubtractionForMorphisms",
   "AdditiveInverseForMorphisms" ], ~.IsEnrichedOverCommutativeRegularSemigroup ),
 
+IsLinearCategoryOverCommutativeRing := Concatenation( [
+  "MultiplyWithElementOfCommutativeRingForMorphisms" ], ~.IsAbCategory ),
+
 IsAdditiveCategory := Concatenation( [
   "ZeroObject",
   "UniversalMorphismFromZeroObject",
@@ -43,37 +46,6 @@ IsPreAbelianCategory := Concatenation( [
 IsAbelianCategory := Concatenation( [
 "LiftAlongMonomorphism",
 "ColiftAlongEpimorphism" ], ~.IsPreAbelianCategory ),
-
-IsMonoidalCategory  := Concatenation( [
-"TensorProductOnObjects",
-"TensorProductOnMorphismsWithGivenTensorProducts",
-"TensorUnit",
-"AssociatorLeftToRightWithGivenTensorProducts",
-"AssociatorRightToLeftWithGivenTensorProducts",
-"LeftUnitorWithGivenTensorProduct",
-"LeftUnitorInverseWithGivenTensorProduct",
-"RightUnitorWithGivenTensorProduct",
-"RightUnitorInverseWithGivenTensorProduct"
-], ~.EveryCategory ),
-
-IsBraidedMonoidalCategory  := Concatenation( [
-"BraidingWithGivenTensorProducts",
-"BraidingInverseWithGivenTensorProducts"
-], ~.IsMonoidalCategory ),
-
-IsSymmetricMonoidalCategory  := Concatenation( [ ], ~.IsBraidedMonoidalCategory ),
-
-IsSymmetricClosedMonoidalCategory  := Concatenation( [ 
-"InternalHomOnObjects",
-"InternalHomOnMorphismsWithGivenInternalHoms",
-"EvaluationMorphismWithGivenSource",
-"CoevaluationMorphismWithGivenRange"
-], ~.IsSymmetricMonoidalCategory ),
-
-IsRigidSymmetricClosedMonoidalCategory  := Concatenation( [ 
-"TensorProductInternalHomCompatibilityMorphismInverseWithGivenObjects",
-"MorphismFromBidualWithGivenBidual"
-], ~.IsSymmetricClosedMonoidalCategory ),
 
 IsAbelianCategoryWithEnoughProjectives := Concatenation( [
 "EpimorphismFromSomeProjectiveObject",

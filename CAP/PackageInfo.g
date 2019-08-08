@@ -5,17 +5,23 @@ PackageName := "CAP",
 Subtitle := "Categories, Algorithms, Programming",
 
 Version := Maximum( [
-  "2017.06.02", ## Mohamed's version
+  "2019.01.29", ## Mohamed's version
   ## this line prevents merge conflicts
   "2015.04.01", ## Oystein's version
   ## this line prevents merge conflicts
-  "2018.01.26", ## Sebas' version
+  "2019.06.05", ## Sebas' version
   ## this line prevents merge conflicts
-  "2018.02.27", ## Sepp's version
+  "2019.06.07", ## Sepp's version
+  ## this line prevents merge conflicts
+  "2019.04.03", ## Fabian's version
+  ## this line prevents merge conflicts
+  "2019.04.04", ## Kamal's version
 ] ),
 
 Date := ~.Version{[ 1 .. 10 ]},
 Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+License := "GPL-2.0-or-later",
+
 
 Persons := [
   rec(
@@ -94,9 +100,9 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">= 4.6",
+  GAP := ">= 4.9.1",
   NeededOtherPackages := [ [ "AutoDoc", ">= 2016.02.16" ],
-                           [ "ToolsForHomalg", ">= 2016.01.17" ],
+                           [ "ToolsForHomalg", ">= 2018.05.22" ],
                            [ "io", ">=0" ],
   ],
   SuggestedOtherPackages := [ [ "Browse", ">=0" ] ],

@@ -46,11 +46,40 @@ InstallValue( PROPAGATION_LIST_FOR_EQUAL_OBJECTS,
 ##
 ###################################
 
+# This method should usually not be selected when the two morphisms belong to the same category
+InstallMethod( IsEqualForObjects,
+                [ IsCapCategoryObject, IsCapCategoryObject ],
+
+  function( object_1, object_2 )
+
+    if not HasCapCategory( object_1 ) then
+        Error( Concatenation( "the object \"", String( object_1 ), "\" has no CAP category" ) );
+    fi;
+    if not HasCapCategory( object_2 ) then
+        Error( Concatenation( "the object \"", String( object_2 ), "\" has no CAP category" ) );
+    fi;
+
+    if not IsIdenticalObj( CapCategory( object_1 ), CapCategory( object_2 ) ) then
+        Error( Concatenation( "the object \"", String( object_1 ), "\" and the object \"", String( object_2 ), "\" do not belong to the same CAP category" ) );
+    else
+        Error( Concatenation( "the object \"", String( object_1 ), "\" and the object \"", String( object_2 ), "\" belong to the same CAP category, but no specific method IsEqualForObjects is installed. Maybe you forgot to finalize the category?" ) );
+    fi;
+    
+end );
+
 ##
 InstallMethod( \=,
                [ IsCapCategoryObject, IsCapCategoryObject ],
+  function( object_1, object_2 )
+
+    if CapCategory( object_1 )!.input_sanity_check_level > 0 or CapCategory( object_2 )!.input_sanity_check_level > 0  then
+        if not IsIdenticalObj( CapCategory( object_1 ), CapCategory( object_2 ) ) then
+            Error( Concatenation( "the object \"", String( object_1 ), "\" and the object \"", String( object_2 ), "\" do not belong to the same CAP category" ) );
+        fi;
+    fi;
                
-  IsEqualForObjects );
+  return IsEqualForObjects( object_1, object_2 );
+end );
 
 ##
 InstallGlobalFunction( INSTALL_TODO_LIST_FOR_EQUAL_OBJECTS,
@@ -126,7 +155,16 @@ InstallMethod( Add,
             
         else
             
-            Error( "this object already has a category" );
+            Error(
+                Concatenation(
+                    "an object that lies in the CAP-category with the name\n",
+                    Name( CapCategory( object ) ),
+                    "\n",
+                    "was tried to be added to a different CAP-category with the name\n",
+                    Name( category ), ".\n",
+                    "(Please note that it is possible for different CAP-categories to have the same name)"
+                )
+            );
             
         fi;
         
@@ -146,7 +184,7 @@ InstallMethod( AddObject,
 end );
 
 InstallMethod( AddObject,
-               [ IsCapCategory, IsObject ],
+               [ IsCapCategory, IsAttributeStoringRep ],
                
   function( category, object )
     
@@ -183,6 +221,13 @@ InstallMethod( AddObjectRepresentation,
     category!.object_type := NewType( TheFamilyOfCapCategoryObjects, representation and ObjectFilter( category ) and IsCapCategoryObjectRep );
     
 end );
+
+##
+InstallMethod( RandomObject, [ IsCapCategory, IsInt ], RandomObjectByInteger );
+
+##
+InstallMethod( RandomObject, [ IsCapCategory, IsList ], RandomObjectByList );
+
 
 InstallGlobalFunction( ObjectifyObjectForCAPWithAttributes,
                        

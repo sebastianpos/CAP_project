@@ -22,15 +22,6 @@ InstallTrueMethod( IsAdditiveCategory, IsPreAbelianCategory );
 InstallTrueMethod( IsPreAbelianCategory, IsAbelianCategory );
 
 
-## for monoidal categories
-InstallTrueMethod( IsMonoidalCategory, IsBraidedMonoidalCategory );
-
-InstallTrueMethod( IsBraidedMonoidalCategory, IsSymmetricMonoidalCategory );
-
-InstallTrueMethod( IsSymmetricMonoidalCategory, IsSymmetricClosedMonoidalCategory );
-
-InstallTrueMethod( IsSymmetricClosedMonoidalCategory, IsRigidSymmetricClosedMonoidalCategory );
-
 ######################################
 ##
 ## Technical stuff
@@ -40,7 +31,8 @@ InstallTrueMethod( IsSymmetricClosedMonoidalCategory, IsRigidSymmetricClosedMono
 ##
 InstallValue( CAP_INTERNAL,
               rec(
-                   name_counter := 0
+                   name_counter := 0,
+                   default_cache_type := "weak",
               )
 );
 
@@ -155,14 +147,14 @@ InstallGlobalFunction( CREATE_CAP_CATEGORY_FILTERS,
                        
   function( category )
     local name, cell_filter, filter_name, filter;
-    
+
     name := Name( category );
     
-    filter_name := NewFilter( Concatenation( name, "InternalCategoryFilter" ) );
+    filter := NewFilter( Concatenation( name, "InternalCategoryFilter" ) );
     
-    SetCategoryFilter( category, filter_name );
+    SetCategoryFilter( category, filter );
     
-    SetFilterObj( category, filter_name );
+    SetFilterObj( category, filter );
     
     filter_name := Concatenation( name, "CellFilter" );
     
@@ -170,23 +162,17 @@ InstallGlobalFunction( CREATE_CAP_CATEGORY_FILTERS,
     
     SetCellFilter( category, cell_filter );
     
-    filter_name := NewFilter( Concatenation( name, "ObjectFilter" ) );
+    filter := NewCategory( Concatenation( name, "ObjectFilter" ), cell_filter );
     
-    InstallTrueMethod( cell_filter, filter_name );
+    SetObjectFilter( category, filter );
     
-    SetObjectFilter( category, filter_name );
+    filter := NewCategory( Concatenation( name, "MorphismFilter" ), cell_filter );
     
-    filter_name := NewFilter( Concatenation( name, "MorphismFilter" ) );
+    SetMorphismFilter( category, filter );
     
-    InstallTrueMethod( cell_filter, filter_name );
+    filter := NewCategory( Concatenation( name, "TwoCellFilter" ), cell_filter );
     
-    SetMorphismFilter( category, filter_name );
-    
-    filter_name := NewFilter( Concatenation( name, "TwoCellFilter" ) );
-    
-    InstallTrueMethod( cell_filter, filter_name );
-    
-    SetTwoCellFilter( category, filter_name );
+    SetTwoCellFilter( category, filter );
     
 end );
 
@@ -229,19 +215,33 @@ InstallGlobalFunction( "CREATE_CAP_CATEGORY_OBJECT",
                             IsEqualForMorphisms := "never",
                             IsEqualForMorphismsOnMor := "never",
                             IsEqualForCacheForObjects := "never",
-                            IsEqualForCacheForMorphisms := "never" );
+                            IsEqualForCacheForMorphisms := "never",
+                            IsWellDefinedForObjects := "never",
+                            IsWellDefinedForMorphisms := "never",
+                            IsWellDefinedForTwoCells := "never",
+                            RandomObjectByInteger := "never",
+                            RandomMorphismByInteger := "never",
+                            RandomMorphismWithFixedSourceByInteger := "never",
+                            RandomMorphismWithFixedRangeByInteger := "never",
+                            RandomMorphismWithFixedSourceAndRangeByInteger := "never",
+                            RandomObjectByList := "never",
+                            RandomMorphismByList := "never",
+                            RandomMorphismWithFixedSourceByList := "never",
+                            RandomMorphismWithFixedRangeByList := "never",
+                            RandomMorphismWithFixedSourceAndRangeByList := "never" );
     
     obj_rec!.redirects := rec( );
     
     obj_rec!.primitive_operations := rec( );
     
-    obj_rec!.default_cache_type := "weak";
+    obj_rec!.default_cache_type := CAP_INTERNAL.default_cache_type;
     
-    obj_rec!.prefunction_check := true;
+    obj_rec!.input_sanity_check_level := 1;
+    obj_rec!.output_sanity_check_level := 1;
     
     obj_rec!.predicate_logic := true;
     
-    obj_rec!.add_primitive_output := true;
+    obj_rec!.add_primitive_output := false;
     
     return obj_rec;
     
@@ -442,6 +442,34 @@ InstallGlobalFunction( DeactivateCachingOfCategory,
 end );
 
 
+InstallGlobalFunction( SetDefaultCaching,
+
+  function( type )
+    local current_name;
+
+    if not type in [ "weak", "crisp", "none" ] then
+        Error( "wrong type for caching" );
+    fi;
+
+    CAP_INTERNAL.default_cache_type := type;
+
+end );
+
+InstallGlobalFunction( SetDefaultCachingWeak,
+  function( )
+    SetDefaultCaching( "weak" );
+end );
+
+InstallGlobalFunction( SetDefaultCachingCrisp,
+  function( )
+    SetDefaultCaching( "crisp" );
+end );
+
+InstallGlobalFunction( DeactivateDefaultCaching,
+  function( )
+    SetDefaultCaching( "none" );
+end );
+
 #######################################
 ##
 ## Constructors
@@ -531,23 +559,119 @@ end );
 
 ####################################
 ##
-## Type check
+## Sanity checks
 ##
 ####################################
-
-InstallGlobalFunction( DisableBasicOperationTypeCheck,
-  
+InstallGlobalFunction( "DisableInputSanityChecks",
   function( category )
     
-    category!.prefunction_check := false;
+    category!.input_sanity_check_level := 0;
+    
+end );
+InstallGlobalFunction( "DisableOutputSanityChecks", 
+  function( category )
+    
+    category!.output_sanity_check_level := 0;
+    
+end );
+InstallGlobalFunction( "EnablePartialInputSanityChecks" ,
+  function( category )
+  
+    category!.input_sanity_check_level := 1;
+    
+end );
+InstallGlobalFunction( "EnablePartialOutputSanityChecks" ,
+  function( category )
+    
+    category!.output_sanity_check_level := 1;
+    
+end );
+InstallGlobalFunction( "EnableFullInputSanityChecks" ,
+  function( category )
+  
+    category!.input_sanity_check_level := 2;
+     
+end );
+InstallGlobalFunction( "EnableFullOutputSanityChecks" ,
+  function( category )
+    
+    category!.output_sanity_check_level := 2;
     
 end );
 
-InstallGlobalFunction( EnableBasicOperationTypeCheck,
-  
+InstallGlobalFunction( "DisableSanityChecks" ,
   function( category )
-  
-    category!.prefunction_check := true;
+    
+    DisableInputSanityChecks( category );
+    DisableOutputSanityChecks( category );
+     
+end );
+InstallGlobalFunction( "EnablePartialSanityChecks" ,
+  function( category )
+    
+    EnablePartialInputSanityChecks( category );
+    EnablePartialOutputSanityChecks( category );
+    
+end );
+InstallGlobalFunction( "EnableFullSanityChecks" ,
+  function( category )
+    
+    EnableFullInputSanityChecks( category );
+    EnableFullOutputSanityChecks( category );
+    
+end );
+
+
+InstallGlobalFunction( "DisableBasicOperationTypeCheck",
+  function( category )
+    
+    Print(
+      Concatenation(
+      "WARNING: DisableBasicOperationTypeCheck( category ) is deprecated and will not be supported after 2020.02.27. ",
+      "Please use DisableInputSanityChecks( category ) instead.\n"
+      )
+    );
+    
+    DisableInputSanityChecks( category );
+    
+end );
+InstallGlobalFunction( "EnablePartialBasicOperationTypeCheck",
+  function( category )
+    
+    Print(
+      Concatenation(
+      "WARNING: EnablePartialBasicOperationTypeCheck( category ) is deprecated and will not be supported after 2020.02.27. ",
+      "Please use EnablePartialInputSanityChecks( category ) instead.\n"
+      )
+    );
+    
+    EnablePartialInputSanityChecks( category );
+    
+end );
+InstallGlobalFunction( "EnableFullBasicOperationTypeCheck",
+  function( category )
+    
+    Print(
+      Concatenation(
+      "WARNING: EnableFullBasicOperationTypeCheck( category ) is deprecated and will not be supported after 2020.02.27. ",
+      "Please use EnableFullInputSanityChecks( category ) instead.\n"
+      )
+    );
+    
+    EnableFullInputSanityChecks( category );
+    
+end );
+InstallGlobalFunction( "EnableBasicOperationTypeCheck",
+  function( category )
+    
+    Print(
+      Concatenation(
+      "WARNING: EnableBasicOperationTypeCheck( category ) is deprecated and will not be supported after 2020.02.27. ",
+      "Please use EnablePartialInputSanityChecks( category ) instead.\n"
+      )
+    );
+    
+    EnablePartialInputSanityChecks( category );
     
 end );
 
@@ -603,7 +727,7 @@ InstallGlobalFunction( CAP_INTERNAL_INSTALL_PRINT_FUNCTION,
     
     print_graph := CreatePrintingGraph( IsCapCategory, category_function );
     
-    internal_list := CAP_INTERNAL_CAN_COMPUTE_FILTER_LIST.MathematicalPropertiesOfCategories;
+    internal_list := Concatenation( CAP_INTERNAL_CATEGORICAL_PROPERTIES_LIST );
     
     for i in internal_list do
         
@@ -616,6 +740,10 @@ InstallGlobalFunction( CAP_INTERNAL_INSTALL_PRINT_FUNCTION,
     InstallPrintFunctionsOutOfPrintingGraph( print_graph );
     
 end );
+
+InstallMethod( String,
+               [ IsCapCategory ],
+    Name );
 
 CAP_INTERNAL_INSTALL_PRINT_FUNCTION( );
 

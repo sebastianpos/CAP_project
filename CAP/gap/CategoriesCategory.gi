@@ -80,9 +80,9 @@ BindGlobal( "CAP_INTERNAL_NICE_FUNCTOR_INPUT_LIST",
             list[ i ] := [ list[ i ], false ]; ##true means opposite
         elif IsCapCategoryAsCatObject( list[ i ] ) then
             list[ i ] := [ AsCapCategory( list[ i ] ), false ];
-        elif IsList( list[ i ] ) and Length( list[ i ] ) = 2 and IsCapCategory( list[ i ][ 1 ] ) then
+        elif IsList( list[ i ] ) and Length( list[ i ] ) = 2 and IsCapCategory( list[ i ][ 1 ] ) and ( not IsBool( list[i][2] ) ) then
             list[ i ][ 2 ] := true;
-        elif IsList( list[ i ] ) and Length( list[ i ] ) = 2 and IsCapCategoryAsCatObject( list[ i ][ 1 ] ) then
+        elif IsList( list[ i ] ) and Length( list[ i ] ) = 2 and IsCapCategoryAsCatObject( list[ i ][ 1 ] ) and ( not IsBool( list[i][2] ) ) then
             list[ i ] := [ AsCapCategory( list[ i ][ 1 ] ), true ];
         fi;
         
@@ -133,11 +133,22 @@ InstallMethod( CapFunctor,
     ObjectifyWithAttributes( functor, TheTypeOfCapFunctors,
                              Name, name,
                              Source, AsCatObject( source ),
-                             Range, AsCatObject( range ) );
+                             Range, AsCatObject( range ),
+                             InputSignature, source_list );
     
     Add( CapCat, functor );
     
     return functor;
+    
+end );
+
+##
+InstallMethod( CapFunctor,
+               [ IsString, IsList, IsCapCategoryAsCatObject ],
+               
+  function( name, source_list, range )
+    
+    return CapFunctor( name, source_list, AsCapCategory( range ) );
     
 end );
 
@@ -219,7 +230,7 @@ BindGlobal( "CAP_INTERNAL_FUNCTOR_CREATE_FILTER_LIST",
   function( functor, type )
     local filter_list;
     
-    filter_list := List( functor!.input_source_list, i -> i[ 1 ] );
+    filter_list := List( InputSignature( functor ), i -> i[ 1 ] );
     
     if type = "cell" then
         
@@ -392,44 +403,155 @@ end );
 ##
 InstallGlobalFunction( ApplyFunctor,
                
-  function( arg )
-    local functor, arguments, is_object, cache, cache_return, computed_value,
-          source_list, source_value, range_list, range_value, i, tmp;
+  function( functor, arguments... )
+    local is_object, cache, cache_return, computed_value,
+          source_list, source_value, range_list, range_value, i, tmp, source_category, range_category, input_signature;
     
-    functor := arg[ 1 ];
-    
-    arguments := arg{[ 2 .. Length( arg ) ]};
-    
+    source_category := AsCapCategory( Source( functor ) );
+    range_category := AsCapCategory( Range( functor ) );
+    input_signature := InputSignature( functor );
+
+    # n-ary functor and unary argument (possibly in product category)
     if Length( arguments ) = 1 and functor!.number_arguments > 1 then
         
-        arguments := Components( arguments[ 1 ] );
+        if source_category!.input_sanity_check_level > 0 then
+            if not ( IsCapCategoryObject( arguments[ 1 ] ) or IsCapCategoryMorphism( arguments[ 1 ] ) ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does neither lie in the IsCapCategoryObject nor in the IsCapCategoryMorphism filter" ) );
+            fi;
+            if not HasCapCategory( arguments[ 1 ] ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does not have a CAP category" ) );
+            fi;
+            if not IsIdenticalObj( CapCategory( arguments[ 1 ] ), source_category ) then
+                Error( Concatenation( "the category of the argument passed to the functor \"", Name(functor), "\" does not coincide with the source of this functor" ) );
+            fi;
+            if not ( ObjectFilter( source_category )( arguments[ 1 ] ) or MorphismFilter( source_category )( arguments[ 1 ] ) ) then
+                Error( Concatenation( "the argument passed to the functor \"", Name(functor), "\" does neither lie in the object filter nor the morphism filter of the source of this functor" ) );
+            fi;
+        fi;
+
+        arguments := ShallowCopy( Components( arguments[ 1 ] ) );
         
         for i in [ 1 .. Length( arguments ) ] do
-            if functor!.input_source_list[ i ][ 2 ] = true then
+            if input_signature[ i ][ 2 ] = true then
                 arguments[ i ] := Opposite( arguments[ i ] );
             fi;
         od;
         
-    elif Length( arguments ) = 1 and functor!.input_source_list[ 1 ][ 2 ] = true and
-         IsIdenticalObj( CapCategory( arguments[ 1 ] ), Opposite( functor!.input_source_list[ 1 ][ 1 ] ) ) then
-         arguments[ 1 ] := Opposite( arguments[ 1 ] );
+    elif Length( arguments ) = 1 and input_signature[ 1 ][ 2 ] = true then
+        if source_category!.input_sanity_check_level > 0 then
+            if not ( IsCapCategoryObject( arguments[ 1 ] ) or IsCapCategoryMorphism( arguments[ 1 ] ) ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does neither lie in the IsCapCategoryObject nor in the IsCapCategoryMorphism filter" ) );
+            fi;
+            if not HasCapCategory( arguments[ 1 ] ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does not have a CAP category" ) );
+            fi;
+            if not ( IsIdenticalObj( CapCategory( arguments[ 1 ] ), source_category ) or IsIdenticalObj( CapCategory( arguments[ 1 ] ), Opposite( source_category ) ) ) then
+                Error( Concatenation( "the category of the argument passed to the functor \"", Name(functor), "\" does neither coincide with the source of this functor nor the opposite of the source of this functor" ) );
+            fi;
+            if not ( ObjectFilter( source_category )( arguments[ 1 ] ) or ObjectFilter( Opposite( source_category ) )( arguments[ 1 ] ) or MorphismFilter( source_category )( arguments[ 1 ] ) or MorphismFilter( Opposite( source_category ) )( arguments[ 1 ] ) ) then
+                Error( Concatenation( "the argument passed to the functor \"", Name(functor), "\" does neither lie in the object filter nor the morphism filter of the source of this functor or of the opposite category of the source of this functor" ) );
+            fi;
+        fi;
+
+        if IsIdenticalObj( CapCategory( arguments[ 1 ] ), Opposite( input_signature[ 1 ][ 1 ] ) ) then
+            arguments[ 1 ] := Opposite( arguments[ 1 ] );
+        fi;
+    elif Length( arguments ) = 1 then
+        if source_category!.input_sanity_check_level > 0 then
+            if not ( IsCapCategoryObject( arguments[ 1 ] ) or IsCapCategoryMorphism( arguments[ 1 ] ) ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does neither lie in the IsCapCategoryObject nor in the IsCapCategoryMorphism filter" ) );
+            fi;
+            if not HasCapCategory( arguments[ 1 ] ) then
+                Error( Concatenation("the argument passed to the functor \"", Name(functor), "\" does not have a CAP category" ) );
+            fi;
+            if not IsIdenticalObj( CapCategory( arguments[ 1 ] ), source_category ) then
+                Error( Concatenation( "the category of the argument passed to the functor \"", Name(functor), "\" does not coincide with the source of this functor" ) );
+            fi;
+            if not ( ObjectFilter( source_category )( arguments[ 1 ] ) or MorphismFilter( source_category )( arguments[ 1 ] ) ) then
+                Error( Concatenation( "the argument passed to the functor \"", Name(functor), "\" does neither lie in the object filter nor the morphism filter of the source of this functor" ) );
+            fi;
+        fi;
     fi;
+    
     
     if IsCapCategoryObject( arguments[ 1 ] ) then
         
+        if source_category!.input_sanity_check_level > 0 then
+            if not Length( input_signature ) = Length( arguments ) then
+                Error( Concatenation("expected number of arguments (=", String( Length( input_signature ) ), ") does not coincide with the provided number of arguments (=", String( Length( arguments ) ), ")" ) );
+            fi;
+
+            for i in [ 1 .. Length( input_signature ) ] do
+                if not IsCapCategoryObject( arguments[ i ] ) then
+                    Error( Concatenation("the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not lie in the IsCapCategoryObject filter" ) );
+                fi;
+                if not HasCapCategory( arguments[ i ] ) then
+                    Error( Concatenation("the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not have a CAP category" ) );
+                fi;
+                if not IsIdenticalObj( CapCategory( arguments[ i ] ), input_signature[ i ][ 1 ] ) then
+                    Error( Concatenation( "the category of the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not coincide with the ", String(i), "-th component of the source of this functor" ) );
+                fi;
+                if not ObjectFilter( input_signature[ i ][ 1 ] )( arguments[ i ] ) then
+                    Error( Concatenation( "the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not lie in the object filter of the ", String(i), "-th component of the source of this functor" ) );
+                fi;
+            od;
+        fi;
+        
         computed_value := CallFuncList( FunctorObjectOperation( functor ), arguments );
+
+        if range_category!.output_sanity_check_level > 0 and not range_category!.add_primitive_output then
+            if not IsCapCategoryObject( computed_value ) then
+                Error( Concatenation("the result of the object function of the functor \"", Name(functor), "\" does not lie in the IsCapCategoryObject filter" ) );
+            fi;
+            if not HasCapCategory( computed_value ) then
+                Error( Concatenation("the result of the object function of the functor \"", Name(functor), "\" does not have a CAP category" ) );
+            fi;
+            if not IsIdenticalObj( CapCategory( computed_value ), range_category ) then
+                Error( Concatenation( "the category of the result of the object function of the functor \"", Name(functor), "\" does not coincide with the range of this functor" ) );
+            fi;
+            if not ObjectFilter( range_category )( computed_value ) then
+                Error( Concatenation( "the result of the object function of the functor \"", Name(functor), "\" does not lie in the object filter of the range of this functor" ) );
+            fi;
+        fi;
+        
+        if range_category!.add_primitive_output then
+            
+            AddObject( range_category, computed_value );
+            
+        fi;
         
     elif IsCapCategoryMorphism( arguments[ 1 ] ) then
+
+        if source_category!.input_sanity_check_level > 0 then
+            if not Length( input_signature ) = Length( arguments ) then
+                Error( Concatenation("expected number of arguments (=", String( Length( input_signature ) ), ") does not coincide with the provided number of arguments (=", String( Length( arguments ) ), ")" ) );
+            fi;
+
+            for i in [ 1 .. Length( input_signature ) ] do
+                if not IsCapCategoryMorphism( arguments[ i ] ) then
+                    Error( Concatenation("the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not lie in the IsCapCategoryMorphism filter" ) );
+                fi;
+                if not HasCapCategory( arguments[ i ] ) then
+                    Error( Concatenation("the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not have a CAP category" ) );
+                fi;
+                if not IsIdenticalObj( CapCategory( arguments[ i ] ), input_signature[ i ][ 1 ] ) then
+                    Error( Concatenation( "the category of the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not coincide with the ", String(i), "-th component of the source of this functor" ) );
+                fi;
+                if not MorphismFilter( input_signature[ i ][ 1 ] )( arguments[ i ] ) then
+                    Error( Concatenation( "the ", String(i), "-th argument passed to the functor \"", Name(functor), "\" does not lie in the morphism filter of the ", String(i), "-th component of the source of this functor" ) );
+                fi;
+            od;
+        fi;
         
         source_list := List( arguments, Source );
         
         range_list := List( arguments, Range );
         
         for i in [ 1 .. Length( arguments ) ] do
-            if functor!.input_source_list[ i ][ 2 ] = true then
+            if InputSignature( functor )[ i ][ 2 ] = true then
                 tmp := source_list[ i ];
                 source_list[ i ] := range_list[ i ];
-                range_list[ i ] := source_list[ i ];
+                range_list[ i ] := tmp;
             fi;
         od;
         
@@ -438,14 +560,33 @@ InstallGlobalFunction( ApplyFunctor,
         range_value := CallFuncList( ApplyFunctor, Concatenation( [ functor ], range_list ) );
         
         computed_value := CallFuncList( FunctorMorphismOperation( functor ), Concatenation( [ source_value ], arguments, [ range_value ] ) );
+
+        if range_category!.output_sanity_check_level > 0 and not range_category!.add_primitive_output then
+            if not IsCapCategoryMorphism( computed_value ) then
+                Error( Concatenation("the result of the morphism function of the functor \"", Name(functor), "\" does not lie in the IsCapCategoryMorphism filter" ) );
+            fi;
+            if not HasCapCategory( computed_value ) then
+                Error( Concatenation("the result of the morphism function of the functor \"", Name(functor), "\" does not have a CAP category" ) );
+            fi;
+            if not IsIdenticalObj( CapCategory( computed_value ), range_category ) then
+                Error( Concatenation( "the category of the result of the morphism function of the functor \"", Name(functor), "\" does not coincide with the range of this functor" ) );
+            fi;
+            if not MorphismFilter( range_category )( computed_value ) then
+                Error( Concatenation( "the result of the morphism function of the functor \"", Name(functor), "\" does not lie in the morphism filter of the range of this functor" ) );
+            fi;
+        fi;
+        
+        if range_category!.add_primitive_output then
+            
+            AddMorphism( range_category, computed_value );
+            
+        fi;
         
     else
         
-        Error( "Second argument of ApplyFunctor must be a category cell" );
+        Error( "Second argument of ApplyFunctor must be a category object or morphism" );
         
     fi;
-    
-    Add( AsCapCategory( Range( functor ) ), computed_value );
     
     return computed_value;
     
@@ -679,7 +820,7 @@ InstallMethod( InstallFunctor,
     
     if HasMorphismFunctionName( functor ) then
         
-        object_name := MorphismFunctionName( functor );
+        morphism_name := MorphismFunctionName( functor );
         
     fi;
     
@@ -689,7 +830,7 @@ InstallMethod( InstallFunctor,
         
     fi;
     
-    SetObjectFunctionName( functor, morphism_name );
+    SetMorphismFunctionName( functor, morphism_name );
     
     object_filters := CAP_INTERNAL_FUNCTOR_CREATE_FILTER_LIST( functor, "object" );
     morphism_filters := CAP_INTERNAL_FUNCTOR_CREATE_FILTER_LIST( functor, "morphism" );
@@ -1003,13 +1144,13 @@ InstallGlobalFunction( ApplyNaturalTransformation,
         arguments := Components( arguments[ 1 ] );
         
         for i in [ 1 .. Length( arguments ) ] do
-            if source_functor!.input_source_list[ i ][ 2 ] = true then
+            if InputSignature( source_functor )[ i ][ 2 ] = true then
                 arguments[ i ] := Opposite( arguments[ i ] );
             fi;
         od;
         
-    elif Length( arguments ) = 1 and source_functor!.input_source_list[ 1 ][ 2 ] = true and
-         IsIdenticalObj( CapCategory( arguments[ 1 ] ), Opposite( source_functor!.input_source_list[ 1 ][ 1 ] ) ) then
+    elif Length( arguments ) = 1 and InputSignature( source_functor )[ 1 ][ 2 ] = true and
+         IsIdenticalObj( CapCategory( arguments[ 1 ] ), Opposite( InputSignature( source_functor )[ 1 ][ 1 ] ) ) then
          arguments[ 1 ] := Opposite( arguments[ 1 ] );
     fi;
     

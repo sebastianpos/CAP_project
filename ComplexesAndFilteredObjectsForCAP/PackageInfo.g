@@ -4,7 +4,7 @@ PackageName := "ComplexesAndFilteredObjectsForCAP",
 Subtitle := "Implementation of complexes, cocomplexes and filtered objects for CAP",
 
 Version := Maximum( [
-  "2016.09.19", ## Sebas' version
+  "2018.08.02", ## Sebas' version
 ## this line prevents merge conflicts
   "2015.04.15", ## Sepp's version
 ## this line prevents merge conflicts
@@ -12,6 +12,8 @@ Version := Maximum( [
 
 Date := ~.Version{[ 1 .. 10 ]},
 Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+License := "GPL-2.0-or-later",
+
 
 
 Persons := [
@@ -48,7 +50,7 @@ Persons := [
   ),
 ],
 
-PackageWWWHome := "",
+PackageWWWHome := "http://TODO/",
 
 ArchiveURL     := Concatenation( ~.PackageWWWHome, "ComplexesAndFilteredObjectsForCAP-", ~.Version ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README" ),
@@ -80,7 +82,7 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP := ">= 4.6",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
-                           [ "CAP", ">=2015.05.08" ] ],
+                           [ "CAP", ">=2018.08.02" ] ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),

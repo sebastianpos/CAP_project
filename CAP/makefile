@@ -5,6 +5,8 @@ doc: doc/manual.six
 doc/manual.six: makedoc.g \
 		PackageInfo.g \
 		doc/Intros.autodoc \
+		doc/AddFunctions.autodoc \
+		doc/Limits.autodoc \
 		gap/*.gd gap/*.gi examples/*.g*
 	        gap makedoc.g
 
@@ -13,6 +15,14 @@ clean:
 
 test:	doc
 	gap maketest.g
+
+test-with-coverage:	doc
+	OUTPUT=$$(gap --banner --quitonbreak --cover stats maketest.g 2>&1); \
+	echo "$$OUTPUT"; \
+	! echo "$$OUTPUT" | sed "s/\r//" | grep -v "Running list" | grep -v "^#I  " | grep "" > /dev/null
+	echo 'LoadPackage("profiling"); OutputJsonCoverage("stats", "coverage.json");' | gap
+
+ci-test:	test-with-coverage
 
 archive: test
 	(mkdir -p ../tar; cd ..; tar czvf tar/CAP.tar.gz --exclude ".DS_Store" --exclude "*~" CAP/doc/*.* CAP/doc/clean CAP/gap/*.{gi,gd} CAP/{PackageInfo.g,README,COPYING,VERSION,init.g,read.g,makedoc.g,makefile,maketest.g} CAP/examples/*.g CAP/examples/doc/*.g)

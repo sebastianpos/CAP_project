@@ -11,10 +11,16 @@ SetPackageInfo( rec(
 PackageName := "FreydCategoriesForCAP",
 Subtitle := "Freyd categories - Formal (co)kernels for additive categories",
 Version := Maximum( [
-  "2018.01.08", ## Sepp's version
+  "2019.03.04", ## Martin's version
+  ## this line prevents merge conflicts
+  "2019.04.08", ## Sepp's version
+  ## this line prevents merge conflicts
+  "2018.08.02", ## Mohamed's version
 ] ),
 Date := ~.Version{[ 1 .. 10 ]},
 Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+License := "GPL-2.0-or-later",
+
 
 Persons := [
   rec(
@@ -32,6 +38,23 @@ Persons := [
                "Germany" ),
     Place := "Siegen",
     Institution := "University of Siegen",
+  ),
+  rec(
+    IsAuthor := true,
+    IsMaintainer := true,
+    FirstNames := "Martin",
+    LastName := "Bies",
+    WWWHome := "https://www.ulb.ac.be/sciences/ptm/pmif/people.html",
+    Email := "martin.bies@alumni.uni-heidelberg.de",
+    PostalAddress := Concatenation(
+                 "Physique Théorique et Mathématique \n",
+                 "Université Libre de Bruxelles \n",
+                 "Campus Plaine - CP 231 \n",
+                 "Building NO - Level 6 - Office O.6.111 \n",
+                 "1050 Brussels \n",
+                 "Belgium" ), 
+    Place := "Brussels",
+    Institution := "ULB Brussels",
   ),
 ],
 
@@ -72,10 +95,12 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP := ">= 4.8",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.5" ],
-                           [ "CAP", ">= 2015.08.17" ],
+                           [ "CAP", ">= 2019.02.26" ],
                            [ "MatricesForHomalg", ">= 2017.05.24" ],
-                           [ "Bialgebroids", ">= 2017.06.13-4" ],
-                           [ "LinearAlgebraForCAP", ">= 2017.12.30" ]
+                           [ "GradedRingForHomalg", ">=2019.03.20" ],
+                           [ "LinearAlgebraForCAP", ">= 2017.12.30" ],
+                           [ "GeneralizedMorphismsForCAP", ">= 2018.06.15" ],
+                           [ "QPA", ">= 2.0" ]
                          ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],

@@ -30,6 +30,24 @@
 #! $\alpha: A \rightarrow B$, $\alpha': A' \rightarrow B'$ such that $\nu \circ \alpha \sim_{A,B'} \alpha' \circ \mu$,
 #! we obtain a morphism $\mathrm{KernelObject}( \alpha ) \rightarrow \mathrm{KernelObject}( \alpha' )$.
 
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (K) at (-\w,0) {$K$};
+#! \node (T) at (-\w,\w) {$T$};
+#! \node (A) at (0,0) {$A$};
+#! \node (B) at (\w,0) {$B$};
+#! \draw[-latex] (A) to node[pos=0.45, above] {$\alpha$} (B);
+#! \draw[-latex] (K) to node[pos=0.45, above] {$\iota$} (A);
+#! \draw[-latex] (T) to node[pos=0.45, above right] {$\tau$} (A);
+#! \draw[dashed, -latex] (T) to node[pos=0.45, left] {$\exists ! u( \tau )$} (K);
+#! \draw[-latex, dotted] (T) to [out = 0, in = 90] node[pos=0.45, above right] {$\alpha \circ \tau \sim_{T,B} 0$} (B);
+#! \draw[-latex, dotted] (K) to [out = -45, in = -135] node[pos=0.45, below] {$\alpha \circ \iota \sim_{K,B} 0$} (B);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
+
 
 ## Main Operations and Attributes
 #! @Description
@@ -272,6 +290,23 @@ DeclareOperation( "AddKernelObjectFunctorialWithGivenKernelObjects",
 #! $\alpha: A \rightarrow B$, $\alpha': A' \rightarrow B'$ such that $\nu \circ \alpha \sim_{A,B'} \alpha' \circ \mu$,
 #! we obtain a morphism $\mathrm{CokernelObject}( \alpha ) \rightarrow \mathrm{CokernelObject}( \alpha' )$.
 
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (A) at (0,0) {$A$};
+#! \node (B) at (\w,0) {$B$};
+#! \node (K) at (2*\w,0) {$K$};
+#! \node (T) at (2*\w,\w) {$T$};
+#! \draw[-latex] (A) to node[pos=0.45, above] {$\alpha$} (B);
+#! \draw[-latex] (B) to node[pos=0.45, above] {$\epsilon$} (K);
+#! \draw[-latex] (B) to node[pos=0.45, above left] {$\tau$} (T);
+#! \draw[dashed, -latex] (K) to node[pos=0.45, right] {$\exists ! u( \tau )$} (T);
+#! \draw[-latex, dotted] (A) to [out = 90, in = 180] node[pos=0.45, above left] {$\tau \circ \alpha \sim_{A, T} 0$} (T);
+#! \draw[-latex, dotted] (A) to [out = -45, in = -135] node[pos=0.45, below] {$\epsilon \circ \alpha \sim_{A,K} 0$} (K);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 
 ## Main Operations and Attributes
@@ -1132,7 +1167,7 @@ DeclareOperation( "AddInitialObjectFunctorial",
 ##
 ####################################
 
-#! For a given list $D = (S_1, \dots, S_n)$ in an Ab-category, a direct sum consists of five parts:
+#! For an integer $n \geq 1$ and a given list $D = (S_1, \dots, S_n)$ in an Ab-category, a direct sum consists of five parts:
 #! * an object $S$,
 #! * a list of morphisms $\pi = (\pi_i: S \rightarrow S_i)_{i = 1 \dots n}$,
 #! * a list of morphisms $\iota = (\iota_i: S_i \rightarrow S)_{i = 1 \dots n}$,
@@ -1143,8 +1178,8 @@ DeclareOperation( "AddInitialObjectFunctorial",
 #!  to a morphism $u_{\mathrm{out}}(\tau): S \rightarrow T$ such that
 #!   $u_{\mathrm{out}}(\tau) \circ \iota_i \sim_{S_i, T} \tau_i$ for all $i = 1, \dots, n$,
 #! such that
-#! * $\sum_{i=1}^{n} \iota_i \circ \pi_i = \mathrm{id}_S$,
-#! * $\pi_j \circ \iota_i = \delta_{i,j}$,
+#! * $\sum_{i=1}^{n} \iota_i \circ \pi_i \sim_{S,S} \mathrm{id}_S$,
+#! * $\pi_j \circ \iota_i \sim_{S_i, S_j} \delta_{i,j}$,
 #! where $\delta_{i,j} \in \mathrm{Hom}( S_i, S_j )$ is the identity if $i=j$, and $0$ otherwise.
 #! The $5$-tuple $(S, \pi, \iota, u_{\mathrm{in}}, u_{\mathrm{out}})$ is called a <Emph>direct sum</Emph> of $D$.
 #! We denote the object $S$ of such a $5$-tuple by $\bigoplus_{i=1}^n S_i$.
@@ -1154,6 +1189,47 @@ DeclareOperation( "AddInitialObjectFunctorial",
 #! $\mathrm{DirectSum}$ is a functorial operation. This means:
 #! For $(\mu_i: S_i \rightarrow S'_i)_{i=1\dots n}$,
 #! we obtain a morphism $\bigoplus_{i=1}^n S_i \rightarrow \bigoplus_{i=1}^n S_i'$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \def\a{20};
+#! \node (S) at (0,0) {$S$};
+#! \node (S1) at (-\w,0) {$S_1$};
+#! \node (S2) at (\w,0) {$S_2$};
+#! \node (T) at (0,\w) {$T$};
+#! \draw[-latex] (S) to [out = 180-\a, in = \a] node[pos=0.45, above] {$\pi_1$} (S1);
+#! \draw[-latex] (S) to [out = \a, in = 180-\a] node[pos=0.45, above] {$\pi_2$} (S2);
+#! \draw[-latex] (S1) to [out = -\a, in = -180+\a] node[pos=0.45, below] {$\iota_1$} (S);
+#! \draw[-latex] (S2) to [out = -180+\a, in = -\a] node[pos=0.45, below] {$\iota_2$} (S);
+#! \draw[-latex] (T) to [out = -180, in = 90] node[pos=0.45, above left] {$\tau_1$} (S1);
+#! \draw[-latex] (T) to [out = 0, in = 90] node[pos=0.45, above right] {$\tau_2$} (S2);
+#! \draw[dashed, -latex] (T) to node[pos=0.45, left] {$\exists u_{in} ( \tau )$} (S);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \def\a{20};
+#! \node (S) at (0,0) {$S$};
+#! \node (S1) at (-\w,0) {$S_1$};
+#! \node (S2) at (\w,0) {$S_2$};
+#! \node (T) at (0,\w) {$T$};
+#! \draw[-latex] (S) to [out = 180-\a, in = \a] node[pos=0.45, above] {$\pi_1$} (S1);
+#! \draw[-latex] (S) to [out = \a, in = 180-\a] node[pos=0.45, above] {$\pi_2$} (S2);
+#! \draw[-latex] (S1) to [out = -\a, in = -180+\a] node[pos=0.45, below] {$\iota_1$} (S);
+#! \draw[-latex] (S2) to [out = -180+\a, in = -\a] node[pos=0.45, below] {$\iota_2$} (S);
+#! \draw[-latex] (S1) to [out = 90, in = -180] node[pos=0.45, above left] {$\tau_1$} (T);
+#! \draw[-latex] (S2) to [out = 90, in = 0] node[pos=0.45, above right] {$\tau_2$} (T);
+#! \draw[dashed, -latex] (S) to node[pos=0.45, left] {$\exists u_{out} ( \tau )$} (T);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
+
 
 
 ## Main Operations and Attributes
@@ -1798,15 +1874,13 @@ DeclareProperty( "IS_IMPLIED_DIRECT_SUM",
 
 #! @Chapter Universal Objects
 
-
-
 ####################################
 ##
 #! @Section Coproduct
 ##
 ####################################
 
-#! For a given list of objects $D = ( I_1, \dots, I_n )$, a coproduct of $D$ consists of three parts:
+#! For an integer $n \geq 1$ and a given list of objects $D = ( I_1, \dots, I_n )$, a coproduct of $D$ consists of three parts:
 #! * an object $I$,
 #! * a list of morphisms $\iota = ( \iota_i: I_i \rightarrow I )_{i = 1 \dots n}$
 #! * a dependent function $u$ mapping each list of morphisms $\tau = ( \tau_i: I_i \rightarrow T )$
@@ -1821,6 +1895,22 @@ DeclareProperty( "IS_IMPLIED_DIRECT_SUM",
 #! For $(\mu_i: I_i \rightarrow I'_i)_{i=1\dots n}$,
 #! we obtain a morphism $\bigsqcup_{i=1}^n I_i \rightarrow \bigsqcup_{i=1}^n I_i'$.
 
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (I) at (0,0) {$I$};
+#! \node (I1) at (-\w,0) {$I_1$};
+#! \node (I2) at (\w,0) {$I_2$};
+#! \node (T) at (0,\w) {$T$};
+#! \draw[-latex] (S1) to node[pos=0.45, below] {$\iota_1$} (S);
+#! \draw[-latex] (S2) to node[pos=0.45, below] {$\iota_2$} (S);
+#! \draw[-latex] (S1) to [out = 90, in = -180] node[pos=0.45, above left] {$\tau_1$} (T);
+#! \draw[-latex] (S2) to [out = 90, in = 0] node[pos=0.45, above right] {$\tau_2$} (T);
+#! \draw[dashed, -latex] (S) to node[pos=0.45, left] {$\exists ! u ( \tau )$} (T);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 
 ## Main Operations and Attributes
@@ -2075,14 +2165,13 @@ DeclareOperation( "AddCoproductFunctorialWithGivenCoproducts",
 
 #! @Chapter Universal Objects
 
-
 ####################################
 ##
 #! @Section Direct Product
 ##
 ####################################
 
-#! For a given list of objects $D = ( P_1, \dots, P_n )$, a direct product of $D$ consists of three parts:
+#! For an integer $n \geq 1$ and a given list of objects $D = ( P_1, \dots, P_n )$, a direct product of $D$ consists of three parts:
 #! * an object $P$,
 #! * a list of morphisms $\pi = ( \pi_i: P \rightarrow P_i )_{i = 1 \dots n}$ 
 #! * a dependent function $u$ mapping each list of morphisms $\tau = ( \tau_i: T \rightarrow P_i )_{i = 1, \dots, n}$ 
@@ -2096,6 +2185,23 @@ DeclareOperation( "AddCoproductFunctorialWithGivenCoproducts",
 #! $\mathrm{DirectProduct}$ is a functorial operation. This means:
 #! For $(\mu_i: P_i \rightarrow P'_i)_{i=1\dots n}$,
 #! we obtain a morphism $\prod_{i=1}^n P_i \rightarrow \prod_{i=1}^n P_i'$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (P) at (0,0) {$P$};
+#! \node (P1) at (-\w,0) {$P_1$};
+#! \node (P2) at (\w,0) {$P_2$};
+#! \node (T) at (0,\w) {$T$};
+#! \draw[-latex] (P) to node[pos=0.45, above] {$\pi_1$} (P1);
+#! \draw[-latex] (P) to node[pos=0.45, above] {$\pi_2$} (P2);
+#! \draw[-latex] (T) to [out = -180, in = 90] node[pos=0.45, above left] {$\tau_1$} (P1);
+#! \draw[-latex] (T) to [out = 0, in = 90] node[pos=0.45, above right] {$\tau_2$} (P2);
+#! \draw[dashed, -latex] (T) to node[pos=0.45, left] {$\exists ! u ( \tau )$} (P);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 
 ## Main Operations and Attributes
@@ -2321,11 +2427,583 @@ DeclareOperation( "AddDirectProductFunctorialWithGivenDirectProducts",
 
 ####################################
 ##
+#! @Section Equalizer
+##
+####################################
+
+#! For an integer $n \geq 1$ and a given list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$,
+#! an equalizer of $D$ consists of three parts:
+#! * an object $E$,
+#! * a morphism $\iota: E \rightarrow A $ such that
+#!  $\beta_i \circ \iota  \sim_{E, B} \beta_j \circ \iota$ for all pairs $i,j$.
+#! * a dependent function $u$ mapping each morphism
+#!  $\tau = ( \tau: T \rightarrow A )$ such that
+#!  $\beta_i \circ \tau  \sim_{T, B} \beta_j \circ \tau$ for all pairs $i,j$
+#!  to a morphism $u( \tau ): T \rightarrow E$ such that
+#!  $\iota \circ u( \tau ) \sim_{T, A} \tau$.
+#! The triple $( E, \iota, u )$ is called an <Emph>equalizer</Emph> of $D$ if the morphisms $u( \tau )$ are uniquely determined up to
+#! congruence of morphisms.
+#! We denote the object $E$ of such a triple by $\mathrm{Equalizer}(D)$.
+#! We say that the morphism $u( \tau )$ is induced by the
+#! <Emph>universal property of the equalizer</Emph>.
+#! $\\ $
+#! $\mathrm{Equalizer}$ is a functorial operation. This means:
+#! For a second diagram $D' = (\beta_i': A' \rightarrow B')_{i = 1 \dots n}$ and a natural morphism
+#! between equalizer diagrams (i.e., a collection of morphisms
+#! $\mu: A \rightarrow A'$ and $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \mu \sim_{A,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$)
+#! we obtain a morphism $\mathrm{Equalizer}( D ) \rightarrow \mathrm{Equalizer}( D' )$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (E) at (-\w,0) {$E$};
+#! \node (T) at (-\w,\w) {$T$};
+#! \node (A) at (0,0) {$A$};
+#! \node (B) at (\w,0) {$B$};
+#! \draw[-latex] (A) to [out = 20, in = 180-20] node[pos=0.45, above] {$\beta_1$} (B);
+#! \draw[-latex] (A) to [out = -20, in = -180+20] node[pos=0.45, below] {$\beta_2$} (B);
+#! \draw[-latex] (E) to node[pos=0.45, above] {$\iota$} (A);
+#! \draw[-latex] (T) to node[pos=0.45, above right] {$\tau$} (A);
+#! \draw[dashed, -latex] (T) to node[pos=0.45, left] {$\exists ! u( \tau )$} (E);
+#! \draw[-latex, dotted] (T) to [out = 0, in = 90] node[pos=0.45, above right] {$\beta_2 \circ \tau \sim_{T,B} \beta_1 \circ \tau$} (B);
+#! \draw[-latex, dotted] (E) to [out = -45, in = -135] node[pos=0.45, below] {$\beta_2 \circ \iota \sim_{E,B} \beta_1 \circ \iota$} (B);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
+
+
+## Main Operations and Attributes
+
+#! @Description
+#! This is a convenience method.
+#! There are two different ways to use this method:
+#! * The argument is a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$.
+#! * The arguments are morphisms $\beta_1: A \rightarrow B, \dots, \beta_n: A \rightarrow B$.
+#! The output is the equalizer $\mathrm{Equalizer}(D)$.
+#! @Returns an object
+DeclareGlobalFunction( "Equalizer" );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is the equalizer $\mathrm{Equalizer}(D)$.
+#! @Returns an object
+#! @Arguments D, method_selection_morphism
+DeclareOperationWithCache( "EqualizerOp",
+                           [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$.
+#! The output is the equalizer embedding
+#! $\iota: \mathrm{Equalizer}(D) \rightarrow A$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{Equalizer}(D), A )$
+#! @Arguments D
+DeclareOperation( "EmbeddingOfEqualizer",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$.
+#! and a morphism for method selection.
+#! The output is the equalizer embedding
+#! $\iota: \mathrm{Equalizer}(D) \rightarrow A$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{Equalizer}(D), A )$
+#! @Arguments D,method_selection_morphism
+DeclareOperation( "EmbeddingOfEqualizerOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$,
+#! and an object $E = \mathrm{Equalizer}(D)$.
+#! The output is the equalizer embedding
+#! $\iota: E \rightarrow A$.
+#! @Returns a morphism in $\mathrm{Hom}( E, A )$
+#! @Arguments D,E
+DeclareOperation( "EmbeddingOfEqualizerWithGivenEqualizer",
+                  [ IsList, IsCapCategoryObject ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$
+#! and a morphism $ \tau: T \rightarrow A $
+#! such that $\beta_i \circ \tau  \sim_{T, B} \beta_j \circ \tau$ for all pairs $i,j$.
+#! The output is the morphism
+#! $u( \tau ): T \rightarrow \mathrm{Equalizer}(D)$
+#! given by the universal property of the equalizer.
+#! @Returns a morphism in $\mathrm{Hom}( T, \mathrm{Equalizer}(D) )$
+#! @Arguments D, tau
+DeclareOperation( "UniversalMorphismIntoEqualizer",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: A \rightarrow B )_{i = 1 \dots n}$,
+#! a morphism $\tau: T \rightarrow A )$
+#! such that $\beta_i \circ \tau  \sim_{T, B} \beta_j \circ \tau$ for all pairs $i,j$,
+#! and an object $E = \mathrm{Equalizer}(D)$.
+#! The output is the morphism
+#! $u( \tau ): T \rightarrow E$
+#! given by the universal property of the equalizer.
+#! @Returns a morphism in $\mathrm{Hom}( T, E )$
+#! @Arguments D, tau, E
+DeclareOperation( "UniversalMorphismIntoEqualizerWithGivenEqualizer",
+                  [ IsList, IsCapCategoryMorphism, IsCapCategoryObject ] );
+
+## Add Operations
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>Equalizer</C>.
+#! $F: ( (\beta_i: A \rightarrow B)_{i = 1 \dots n} ) \mapsto E$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddEqualizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddEqualizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddEqualizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddEqualizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>EmbeddingOfEqualizer</C>.
+#! $F: ( (\beta_i: A \rightarrow B)_{i = 1 \dots n}, k ) \mapsto \iota$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddEmbeddingOfEqualizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>EmbeddingOfEqualizerWithGivenEqualizer</C>.
+#! $F: ( (\beta_i: A \rightarrow B)_{i = 1 \dots n},E ) \mapsto \iota$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddEmbeddingOfEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddEmbeddingOfEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>UniversalMorphismIntoEqualizer</C>.
+#! $F: ( (\beta_i: A \rightarrow B)_{i = 1 \dots n}, \tau  ) \mapsto u(\tau)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddUniversalMorphismIntoEqualizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>UniversalMorphismIntoEqualizerWithGivenEqualizer</C>.
+#! $F: ( (\beta_i: A \rightarrow B)_{i = 1 \dots n}, \tau, E  ) \mapsto u(\tau)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddUniversalMorphismIntoEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismIntoEqualizerWithGivenEqualizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a list of morphisms
+#! $L_s = (\beta_i: A \rightarrow B)_{i = 1 \dots n}$,
+#! a morphism
+#! $\mu: A \rightarrow A'$,
+#! and a list of morphisms
+#! $L_r = (\beta_i': A' \rightarrow B')_{i = 1 \dots n}$
+#! such that there exists a morphism $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \mu \sim_{A,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$.
+#! The output is the morphism
+#! $\mathrm{Equalizer}( ( \beta_i )_{i=1 \dots n} ) \rightarrow \mathrm{Equalizer}( ( \beta_i' )_{i=1 \dots n} )$
+#! given by the functorality of the equalizer.
+#! @Returns a morphism in $\mathrm{Hom}(\mathrm{Equalizer}( ( \beta_i )_{i=1 \dots n} ), \mathrm{Equalizer}( ( \beta_i' )_{i=1 \dots n} ))$
+#! @Arguments Ls, mu, Lr
+DeclareOperation( "EqualizerFunctorial",
+                  [ IsList, IsCapCategoryMorphism, IsList ] );
+
+##
+DeclareOperation( "EqualizerFunctorial",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are an object $s = \mathrm{Equalizer}( ( \beta_i )_{i=1 \dots n} )$,
+#! a list of morphisms
+#! $L_s = (\beta_i: A \rightarrow B)_{i = 1 \dots n}$,
+#! a morphism
+#! $\mu: A \rightarrow A'$,
+#! and a list of morphisms
+#! $L_r = (\beta_i': A' \rightarrow B')_{i = 1 \dots n}$
+#! such that there exists a morphism $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \mu \sim_{A,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$,
+#! and an object $r = \mathrm{Equalizer}( ( \beta_i' )_{i=1 \dots n} )$.
+#! The output is the morphism
+#! $s \rightarrow r$
+#! given by the functorality of the equalizer.
+#! @Returns a morphism in $\mathrm{Hom}(s, r)$
+#! @Arguments s, Ls, mu, Lr, r
+DeclareOperation( "EqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryMorphism, IsList, IsCapCategoryObject ] );
+
+##
+DeclareOperation( "EqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryObject ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>EqualizerFunctorialWithGivenEqualizers</C>.
+#! $F: ( \mathrm{Equalizer}( ( \beta_i )_{i=1 \dots n} ), ( \beta_i: A \rightarrow B )_{i = 1 \dots n}, \mu: A \rightarrow A', ( \beta_i': A' \rightarrow B' )_{i = 1 \dots n}, \mathrm{Equalizer}( ( \beta_i' )_{i=1 \dots n} ) ) \mapsto (\mathrm{Equalizer}( ( \beta_i )_{i=1 \dots n} ) \rightarrow \mathrm {Equalizer}( ( \beta_i' )_{i=1 \dots n} ) )$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddEqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddEqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddEqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddEqualizerFunctorialWithGivenEqualizers",
+                  [ IsCapCategory, IsList ] );
+
+#! @Chapter Universal Objects
+
+####################################
+##
+#! @Section Coequalizer
+##
+####################################
+
+#! For an integer $n \geq 1$ and a given list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! a coequalizer of $D$ consists of three parts:
+#! * an object $C$,
+#! * a morphism $\pi: A \rightarrow C $ such that
+#!  $\pi \circ \beta_i \sim_{B,C} \pi \circ \beta_j$ for all pairs $i,j$,
+#! * a dependent function $u$ mapping the morphism
+#!  $\tau: A \rightarrow T $ such that
+#!  $\tau \circ \beta_i \sim_{B,T} \tau \circ \beta_j$
+#!  to a morphism $u( \tau ): C \rightarrow T$ such that
+#!  $u( \tau ) \circ \pi \sim_{A, T} \tau$.
+#! The triple $( C, \pi, u )$ is called a <Emph>coequalizer</Emph> of $D$ if the morphisms $u( \tau )$ are uniquely determined up to
+#! congruence of morphisms.
+#! We denote the object $C$ of such a triple by $\mathrm{Coequalizer}(D)$.
+#! We say that the morphism $u( \tau )$ is induced by the
+#! <Emph>universal property of the coequalizer</Emph>.
+#! $\\ $
+#! $\mathrm{Coequalizer}$ is a functorial operation. This means:
+#! For a second diagram $D' = (\beta_i': B' \rightarrow A')_{i = 1 \dots n}$ and a natural morphism
+#! between coequalizer diagrams (i.e., a collection of morphisms
+#! $\mu: A \rightarrow A'$ and $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \beta \sim_{B, A'} \mu \circ \beta_i$ for $i = 1, \dots n$)
+#! we obtain a morphism $\mathrm{Coequalizer}( D ) \rightarrow \mathrm{Coequalizer}( D' )$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (B) at (0,0) {$B$};
+#! \node (A) at (\w,0) {$A$};
+#! \node (C) at (2*\w,0) {$C$};
+#! \node (T) at (2*\w,\w) {$T$};
+#! \draw[-latex] (B) to [out = 20, in = 180-20] node[pos=0.45, above] {$\beta_1$} (A);
+#! \draw[-latex] (B) to [out = -20, in = -180+20] node[pos=0.45, below] {$\beta_2$} (A);
+#! \draw[-latex] (A) to node[pos=0.45, above] {$\pi$} (C);
+#! \draw[-latex] (A) to node[pos=0.45, above left] {$\tau$} (T);
+#! \draw[dashed, -latex] (C) to node[pos=0.45, right] {$\exists ! u( \tau )$} (T);
+#! \draw[-latex, dotted] (B) to [out = 90, in = 180] node[pos=0.45, above left] {$\tau \circ \beta_1 \sim_{B,T} \tau \circ \beta_2$} (T);
+#! \draw[-latex, dotted] (B) to [out = -45, in = -135] node[pos=0.45, below] {$\pi \circ \beta_1 \sim_{B,C} \pi \circ \beta_2$} (C);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
+
+## Main Operations and Attributes
+
+
+#! @Description
+#! This is a convenience method.
+#! There are two different ways to use this method:
+#! * The argument is a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$.
+#! * The arguments are morphisms $\beta_1: B \rightarrow A, \dots, \beta_n: B \rightarrow A$.
+#! The output is the coequalizer $\mathrm{Coequalizer}(D)$.
+#! @Returns an object
+DeclareGlobalFunction( "Coequalizer" );
+
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is the coequalizer $\mathrm{Coequalizer}(D)$.
+#! @Returns an object
+#! @Arguments D, method_selection_morphism
+DeclareOperationWithCache( "CoequalizerOp",
+                           [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$.
+#! The output is the projection
+#! $\pi: A \rightarrow \mathrm{Coequalizer}( D )$.
+#! @Returns a morphism in $\mathrm{Hom}( A, \mathrm{Coequalizer}( D ) )$.
+#! @Arguments D
+DeclareOperation( "ProjectionOntoCoequalizer",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! and a morphism for method selection.
+#! The output is the projection
+#! $\pi: A \rightarrow \mathrm{Coequalizer}( D )$.
+#! @Returns a morphism in $\mathrm{Hom}( A, \mathrm{Coequalizer}( D ) )$.
+#! @Arguments D,method_selection_morphism
+DeclareOperation( "ProjectionOntoCoequalizerOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! and an object $C = \mathrm{Coequalizer}(D)$.
+#! The output is the projection
+#! $\pi: A \rightarrow C$.
+#! @Returns a morphism in $\mathrm{Hom}( A, C )$.
+#! @Arguments D,C
+DeclareOperation( "ProjectionOntoCoequalizerWithGivenCoequalizer",
+                  [ IsList, IsCapCategoryObject ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$
+#! and a morphism $\tau: A \rightarrow T $ such that
+#! $\tau \circ \beta_i \sim_{B,T} \tau \circ \beta_j$ for all pairs $i,j$.
+#! The output is the morphism
+#! $u( \tau ): \mathrm{Coequalizer}(D) \rightarrow T$
+#! given by the universal property of the coequalizer.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{Coequalizer}(D), T )$
+#! @Arguments D, tau
+DeclareOperation( "UniversalMorphismFromCoequalizer",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! a morphism $\tau: A \rightarrow T $ such that
+#! $\tau \circ \beta_i \sim_{B,T} \tau \circ \beta_j$,
+#! and an object $C = \mathrm{Coequalizer}(D)$.
+#! The output is the morphism
+#! $u( \tau ): C \rightarrow T$
+#! given by the universal property of the coequalizer.
+#! @Returns a morphism in $\mathrm{Hom}( C, T )$
+#! @Arguments D, tau, C
+DeclareOperation( "UniversalMorphismFromCoequalizerWithGivenCoequalizer",
+                  [ IsList, IsCapCategoryMorphism, IsCapCategoryObject ] );
+
+## Add Operations
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>Coequalizer</C>.
+#! $F: ( (\beta_i: B \rightarrow A)_{i = 1 \dots n} ) \mapsto C$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddCoequalizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddCoequalizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddCoequalizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddCoequalizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>ProjectionOntoCoequalizer</C>.
+#! $F: ( (\beta_i: B \rightarrow A)_{i = 1 \dots n}, k ) \mapsto \pi$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddProjectionOntoCoequalizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>ProjectionOntoCoequalizerWithGivenCoequalizer</C>.
+#! $F: ( (\beta_i: B \rightarrow A)_{i = 1 \dots n}, C) \mapsto \pi$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddProjectionOntoCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddProjectionOntoCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>UniversalMorphismFromCoequalizer</C>.
+#! $F: ( (\beta_i: B \rightarrow A)_{i = 1 \dots n}, \tau ) \mapsto u(\tau)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddUniversalMorphismFromCoequalizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizer",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>UniversalMorphismFromCoequalizerWithGivenCoequalizer</C>.
+#! $F: ( (\beta_i: B \rightarrow A)_{i = 1 \dots n}, \tau, C ) \mapsto u(\tau)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddUniversalMorphismFromCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddUniversalMorphismFromCoequalizerWithGivenCoequalizer",
+                  [ IsCapCategory, IsList ] );
+
+
+#! @Description
+#! The arguments are a list of morphisms
+#! $L_s = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! a morphism
+#! $\mu: A \rightarrow A'$,
+#! and a list of morphisms
+#! $L_r = ( \beta_i': B' \rightarrow A' )_{i = 1 \dots n}$
+#! such that there exists a morphism $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \beta \sim_{B, A'} \mu \circ \beta_i$ for $i = 1, \dots n$.
+#! The output is the morphism
+#! $\mathrm{Coequalizer}( ( \beta_i )_{i=1}^n ) \rightarrow \mathrm{Coequalizer}( ( \beta_i' )_{i=1}^n )$
+#! given by the functorality of the coequalizer.
+#! @Returns a morphism in $\mathrm{Hom}(\mathrm{Coequalizer}( ( \beta_i )_{i=1 \dots n} ), \mathrm{Coequalizer}( ( \beta_i' )_{i=1 \dots n} ))$
+#! @Arguments Ls, mu, Lr
+DeclareOperation( "CoequalizerFunctorial",
+                  [ IsList, IsCapCategoryMorphism, IsList ] );
+
+##
+DeclareOperation( "CoequalizerFunctorial",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are an object $s = \mathrm{Coequalizer}( ( \beta_i )_{i=1}^n )$,
+#! a list of morphisms
+#! $L_s = ( \beta_i: B \rightarrow A )_{i = 1 \dots n}$,
+#! a morphism
+#! $\mu: A \rightarrow A'$,
+#! and a list of morphisms
+#! $L_r = ( \beta_i': B' \rightarrow A' )_{i = 1 \dots n}$
+#! such that there exists a morphism $\beta: B \rightarrow B'$
+#! such that $\beta_i' \circ \beta \sim_{B, A'} \mu \circ \beta_i$ for $i = 1, \dots n$,
+#! and an object $r = \mathrm{Coequalizer}( ( \beta_i' )_{i=1}^n )$.
+#! The output is the morphism
+#! $s \rightarrow r$
+#! given by the functorality of the coequalizer.
+#! @Returns a morphism in $\mathrm{Hom}(s, r)$
+#! @Arguments s, Ls, mu, Lr, r
+DeclareOperation( "CoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryMorphism, IsList, IsCapCategoryObject ] );
+
+##
+DeclareOperation( "CoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryObject ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>CoequalizerFunctorialWithGivenCoequalizers</C>.
+#! $F: ( \mathrm{Coequalizer}( ( \beta_i )_{i=1}^n ), ( \beta_i: B \rightarrow A )_{i = 1 \dots n}, \mu: A \rightarrow A', ( \beta_i': B' \rightarrow A' )_{i = 1 \dots n}, \mathrm{Coequalizer}( ( \beta_i' )_{i=1}^n ) ) \mapsto (\mathrm{Coequalizer}( ( \beta_i )_{i=1}^n ) \rightarrow \mathrm{Coequalizer}( ( \beta_i' )_{i=1}^n ) )$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddCoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddCoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddCoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddCoequalizerFunctorialWithGivenCoequalizers",
+                  [ IsCapCategory, IsList ] );
+
+#! @Chapter Universal Objects
+
+####################################
+##
 #! @Section Fiber Product
 ##
 ####################################
 
-#! For a given list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$, 
+#! For an integer $n \geq 1$ and a given list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$,
 #! a fiber product of $D$ consists of three parts:
 #! * an object $P$,
 #! * a list of morphisms $\pi = ( \pi_i: P \rightarrow P_i )_{i = 1 \dots n}$ such that
@@ -2347,6 +3025,26 @@ DeclareOperation( "AddDirectProductFunctorialWithGivenDirectProducts",
 #! $(\mu_i: P_i \rightarrow P'_i)_{i=1\dots n}$ and $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \mu_i \sim_{P_i,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$)
 #! we obtain a morphism $\mathrm{FiberProduct}( D ) \rightarrow \mathrm{FiberProduct}( D' )$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (T) at (-\w,2*\w) {$T$};
+#! \node (P) at (0,\w) {$P$};
+#! \node (P1) at (0,0) {$P_1$};
+#! \node (B) at (\w,0) {$B$};
+#! \node (P2) at (\w,\w) {$P_2$};
+#! \draw[-latex] (P) to node[pos=0.45, left] {$\pi_1$} (P1);
+#! \draw[-latex] (P) to node[pos=0.45, above] {$\pi_2$} (P2);
+#! \draw[-latex] (P1) to node[pos=0.45, below] {$\beta_1$} (B);
+#! \draw[-latex] (P2) to node[pos=0.45, right] {$\beta_2$} (B);
+#! \draw[-latex] (T) to [out = -90, in = 180] node[pos=0.45, left] {$\tau_1$} (P1);
+#! \draw[-latex] (T) to [out = 0, in = 90] node[pos=0.45, above] {$\tau_2$} (P2);
+#! \draw[-latex, dashed] (T) to node[pos=0.45, above right] {$\exists ! u ( \tau )$} (P);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 ## Main Operations and Attributes
 
@@ -2433,6 +3131,87 @@ DeclareOperation( "AddIsomorphismFromKernelOfDiagonalDifferenceToFiberProduct",
 DeclareOperation( "AddIsomorphismFromKernelOfDiagonalDifferenceToFiberProduct",
                   [ IsCapCategory, IsList ] );
 
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$.
+#! The output is a morphism
+#! $\mathrm{FiberProduct}(D) \rightarrow \Delta$,
+#! where $\Delta$ denotes the equalizer of the product diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}(\mathrm{FiberProduct}(D), \Delta)$
+#! @Arguments D
+DeclareOperation( "IsomorphismFromFiberProductToEqualizerOfDirectProductDiagram",
+                  [ IsList ] );
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is a morphism
+#! $\mathrm{FiberProduct}(D) \rightarrow \Delta$,
+#! where $\Delta$ denotes the equalizer of the product diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}(\mathrm{FiberProduct}(D), \Delta)$
+#! @Arguments D, method_selection_morphism
+DeclareOperation( "IsomorphismFromFiberProductToEqualizerOfDirectProductDiagramOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>IsomorphismFromFiberProductToEqualizerOfDirectProductDiagram</C>.
+#! $F: ( ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n} ) \mapsto \mathrm{FiberProduct}(D) \rightarrow \Delta$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddIsomorphismFromFiberProductToEqualizerOfDirectProductDiagram",
+                  [ IsCapCategory, IsFunction ] );
+##
+DeclareOperation( "AddIsomorphismFromFiberProductToEqualizerOfDirectProductDiagram",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromFiberProductToEqualizerOfDirectProductDiagram",
+                  [ IsCapCategory, IsList, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromFiberProductToEqualizerOfDirectProductDiagram",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$.
+#! The output is a morphism
+#! $\Delta \rightarrow \mathrm{FiberProduct}(D)$,
+#! where $\Delta$ denotes the equalizer of the product diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}(\Delta, \mathrm{FiberProduct}(D))$
+#! @Arguments D
+DeclareOperation( "IsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct",
+                  [ IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is a morphism
+#! $\Delta \rightarrow \mathrm{FiberProduct}(D)$,
+#! where $\Delta$ denotes the equalizer of the product diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}(\Delta, \mathrm{FiberProduct}(D))$
+#! @Arguments D
+DeclareOperation( "IsomorphismFromEqualizerOfDirectProductDiagramToFiberProductOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>IsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct</C>.
+#! $F: ( ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n} ) \mapsto \Delta \rightarrow \mathrm{FiberProduct}(D)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddIsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct",
+                  [ IsCapCategory, IsFunction ] );
+
+##
+DeclareOperation( "AddIsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+##
+DeclareOperation( "AddIsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+##
+DeclareOperation( "AddIsomorphismFromEqualizerOfDirectProductDiagramToFiberProduct",
+                  [ IsCapCategory, IsList ] );
 
 #! @Description
 #! The argument is a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$.
@@ -2568,8 +3347,37 @@ DeclareOperation( "ProjectionInFactorOfFiberProductWithGivenFiberProduct",
                   [ IsList, IsInt, IsCapCategoryObject ] );
 
 #! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$.
+#! The output is the composition $\mu: \mathrm{FiberProduct}(D) \rightarrow B$
+#! of the $1$-st projection $\pi_1: \mathrm{FiberProduct}(D) \rightarrow P_1$ and $\beta_1$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{FiberProduct}(D), B )$
+#! @Arguments D
+DeclareOperation( "MorphismFromFiberProductToSink",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is the composition $\mu: \mathrm{FiberProduct}(D) \rightarrow B$
+#! of the $1$-st projection $\pi_1: \mathrm{FiberProduct}(D) \rightarrow P_1$ and $\beta_1$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{FiberProduct}(D), B )$
+#! @Arguments D,method_selection_morphism
+DeclareOperation( "MorphismFromFiberProductToSinkOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$
+#! and an object $P = \mathrm{FiberProduct}(D)$.
+#! The output is the composition $\mu: P \rightarrow B$
+#! of the $1$-st projection $\pi_1: P \rightarrow P_1$ and $\beta_1$.
+#! @Returns a morphism in $\mathrm{Hom}( P, B )$
+#! @Arguments D,k,P
+DeclareOperation( "MorphismFromFiberProductToSinkWithGivenFiberProduct",
+                  [ IsList, IsCapCategoryObject ] );
+
+#! @Description
 #! This is a convenience method.
-#! There are three different ways to use this method:
+#! There are two different ways to use this method:
 #! * The arguments are a list of morphisms $D = ( \beta_i: P_i \rightarrow B )_{i = 1 \dots n}$
 #!  and a list of morphisms $\tau = ( \tau_i: T \rightarrow P_i )$
 #!  such that $\beta_i \circ \tau_i  \sim_{T, B} \beta_j \circ \tau_j$ for all pairs $i,j$.
@@ -2673,6 +3481,45 @@ DeclareOperation( "AddProjectionInFactorOfFiberProductWithGivenFiberProduct",
 #! @Description
 #! The arguments are a category $C$ and a function $F$.
 #! This operations adds the given function $F$
+#! to the category for the basic operation <C>MorphismFromFiberProductToSink</C>.
+#! $F: ( (\beta_i: P_i \rightarrow B)_{i = 1 \dots n} ) \mapsto \mu$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddMorphismFromFiberProductToSink",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSink",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSink",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSink",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>MorphismFromFiberProductToSinkWithGivenFiberProduct</C>.
+#! $F: ( (\beta_i: P_i \rightarrow B)_{i = 1 \dots n}, P ) \mapsto \mu$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddMorphismFromFiberProductToSinkWithGivenFiberProduct",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSinkWithGivenFiberProduct",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSinkWithGivenFiberProduct",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddMorphismFromFiberProductToSinkWithGivenFiberProduct",
+                  [ IsCapCategory, IsList ] );
+
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
 #! to the category for the basic operation <C>UniversalMorphismIntoFiberProduct</C>.
 #! $F: ( (\beta_i: P_i \rightarrow B)_{i = 1 \dots n}, \tau  ) \mapsto u(\tau)$
 #! @Returns nothing
@@ -2710,22 +3557,33 @@ DeclareOperation( "AddUniversalMorphismIntoFiberProductWithGivenFiberProduct",
                   [ IsCapCategory, IsList ] );
 
 #! @Description
-#! The argument is a list of triples of morphisms
-#! $L = ( (\beta_i: P_i \rightarrow B, \mu_i: P_i \rightarrow P_i', \beta_i': P_i' \rightarrow B')_{i = 1 \dots n} )$
+#! The arguments are three lists of morphisms
+#! $L_s = ( \beta_i: P_i \rightarrow B)_{i = 1 \dots n}$,
+#! $L_m = ( \mu_i: P_i \rightarrow P_i' )_{i = 1 \dots n}$,
+#! $L_r = ( \beta_i': P_i' \rightarrow B')_{i = 1 \dots n}$
+#! having the same length $n$
 #! such that there exists a morphism $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \mu_i \sim_{P_i,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$.
 #! The output is the morphism
 #! $\mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ) \rightarrow \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} )$
 #! given by the functoriality of the fiber product.
 #! @Returns a morphism in $\mathrm{Hom}(\mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ), \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} ))$
-#! @Arguments L
+#! @Arguments Ls, Lm, Lr
+DeclareOperation( "FiberProductFunctorial",
+                  [ IsList, IsList, IsList ] );
+
+##
 DeclareOperation( "FiberProductFunctorial",
                   [ IsList ] );
 
+
 #! @Description
 #! The arguments are an object $s = \mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} )$,
-#! a list of triples of morphisms
-#! $L = ( (\beta_i: P_i \rightarrow B, \mu_i: P_i \rightarrow P_i', \beta_i': P_i' \rightarrow B')_{i = 1 \dots n} )$
+#! three lists of morphisms
+#! $L_s = ( \beta_i: P_i \rightarrow B)_{i = 1 \dots n}$,
+#! $L_m = ( \mu_i: P_i \rightarrow P_i' )_{i = 1 \dots n}$,
+#! $L_r = ( \beta_i': P_i' \rightarrow B')_{i = 1 \dots n}$
+#! having the same length $n$
 #! such that there exists a morphism $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \mu_i \sim_{P_i,B'} \beta \circ \beta_i$ for $i = 1, \dots, n$,
 #! and an object $r = \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} )$.
@@ -2733,15 +3591,20 @@ DeclareOperation( "FiberProductFunctorial",
 #! $s \rightarrow r$
 #! given by the functoriality of the fiber product.
 #! @Returns a morphism in $\mathrm{Hom}(s, r)$
-#! @Arguments s, L, r
+#! @Arguments s, Ls, Lm, Lr, r
+DeclareOperation( "FiberProductFunctorialWithGivenFiberProducts",
+                  [ IsCapCategoryObject, IsList, IsList, IsList, IsCapCategoryObject ] );
+
+##
 DeclareOperation( "FiberProductFunctorialWithGivenFiberProducts",
                   [ IsCapCategoryObject, IsList, IsCapCategoryObject ] );
+
 
 #! @Description
 #! The arguments are a category $C$ and a function $F$.
 #! This operations adds the given function $F$
 #! to the category for the basic operation <C>FiberProductFunctorialWithGivenFiberProducts</C>.
-#! $F: ( \mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ), (\beta_i: P_i \rightarrow B, \mu_i: P_i \rightarrow P_i', \beta_i': P_i' \rightarrow B')_{i = 1 \dots n}, \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} ) ) \mapsto (\mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ) \rightarrow \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} ) )$
+#! $F: ( \mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ), (\beta_i: P_i \rightarrow B)_{i = 1 \dots n}, (\mu_i: P_i \rightarrow P_i')_{i = 1 \dots n}, (\beta_i': P_i' \rightarrow B')_{i = 1 \dots n}, \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} ) ) ) \mapsto (\mathrm{FiberProduct}( ( \beta_i )_{i=1 \dots n} ) \rightarrow \mathrm{FiberProduct}( ( \beta_i' )_{i=1 \dots n} ) )$
 #! @Returns nothing
 #! @Arguments C, F
 DeclareOperation( "AddFiberProductFunctorialWithGivenFiberProducts",
@@ -2764,7 +3627,7 @@ DeclareOperation( "AddFiberProductFunctorialWithGivenFiberProducts",
 ##
 ####################################
 
-#! For a given list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$,
+#! For an integer $n \geq 1$ and a given list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$,
 #! a pushout of $D$ consists of three parts:
 #! * an object $I$,
 #! * a list of morphisms $\iota = ( \iota_i: I_i \rightarrow I )_{i = 1 \dots n}$ such that
@@ -2786,6 +3649,26 @@ DeclareOperation( "AddFiberProductFunctorialWithGivenFiberProducts",
 #! $(\mu_i: I_i \rightarrow I'_i)_{i=1\dots n}$ and $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \beta \sim_{B, I_i'} \mu_i \circ \beta_i$ for $i = 1, \dots n$)
 #! we obtain a morphism $\mathrm{Pushout}( D ) \rightarrow \mathrm{Pushout}( D' )$.
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (B) at (0,0) {$B$};
+#! \node (I1) at (\w,0) {$I_1$};
+#! \node (I2) at (0,\w) {$I_2$};
+#! \node (I) at (\w,\w) {$I$};
+#! \node (T) at (2*\w,2*\w) {$T$};
+#! \draw[-latex] (B) to node[pos=0.45, below] {$\beta_1$} (I1);
+#! \draw[-latex] (B) to node[pos=0.45, left] {$\beta_2$} (I2);
+#! \draw[-latex] (I1) to node[pos=0.45, left] {$\iota_1$} (I);
+#! \draw[-latex] (I2) to node[pos=0.45, above] {$\iota_2$} (I);
+#! \draw[-latex] (I1) to [out = 0, in = -90] node[pos=0.45, right] {$\tau_1$} (T);
+#! \draw[-latex] (I2) to [out = 90, in = 180] node[pos=0.45, above] {$\tau_2$} (T);
+#! \draw[-latex, dashed] (I) to node[pos=0.45, above left] {$\exists ! u ( \tau )$} (T);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 #! @Description
 #! The argument is a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$.
@@ -2865,6 +3748,86 @@ DeclareOperation( "AddIsomorphismFromCokernelOfDiagonalDifferenceToPushout",
                   [ IsCapCategory, IsList, IsInt ] );
 ##
 DeclareOperation( "AddIsomorphismFromCokernelOfDiagonalDifferenceToPushout",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$.
+#! The output is a morphism
+#! $\mathrm{Pushout}(D) \rightarrow \Delta$,
+#! where $\Delta$ denotes the coequalizer of the coproduct diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{Pushout}(D), \Delta)$
+#! @Arguments D
+DeclareOperation( "IsomorphismFromPushoutToCoequalizerOfCoproductDiagram",
+                  [ IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is a morphism
+#! $\mathrm{Pushout}(D) \rightarrow \Delta$,
+#! where $\Delta$ denotes the coequalizer of the coproduct diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{Pushout}(D), \Delta)$
+#! @Arguments D, method_selection_morphism
+DeclareOperation( "IsomorphismFromPushoutToCoequalizerOfCoproductDiagramOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>IsomorphismFromPushoutToCoequalizerOfCoproductDiagram</C>.
+#! $F: ( ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n} ) \mapsto (\mathrm{Pushout}(D) \rightarrow \Delta)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddIsomorphismFromPushoutToCoequalizerOfCoproductDiagram",
+                  [ IsCapCategory, IsFunction ] );
+##
+DeclareOperation( "AddIsomorphismFromPushoutToCoequalizerOfCoproductDiagram",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromPushoutToCoequalizerOfCoproductDiagram",
+                  [ IsCapCategory, IsList, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromPushoutToCoequalizerOfCoproductDiagram",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$.
+#! The output is a morphism
+#! $\Delta \rightarrow \mathrm{Pushout}(D)$,
+#! where $\Delta$ denotes the coequalizer of the coproduct diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}( \Delta, \mathrm{Pushout}(D))$
+#! @Arguments D
+DeclareOperation( "IsomorphismFromCoequalizerOfCoproductDiagramToPushout",
+                  [ IsList ] );
+
+#! @Description
+#! The argument is a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is a morphism
+#! $\Delta \rightarrow \mathrm{Pushout}(D)$,
+#! where $\Delta$ denotes the coequalizer of the coproduct diagram of the morphisms $\beta_i$.
+#! @Returns a morphism in $\mathrm{Hom}( \Delta, \mathrm{Pushout}(D))$
+#! @Arguments D, method_selection_morphism
+DeclareOperation( "IsomorphismFromCoequalizerOfCoproductDiagramToPushoutOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>IsomorphismFromCoequalizerOfCoproductDiagramToPushout</C>.
+#! $F: ( ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n} ) \mapsto (\Delta \rightarrow \mathrm{Pushout}(D))$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddIsomorphismFromCoequalizerOfCoproductDiagramToPushout",
+                  [ IsCapCategory, IsFunction ] );
+##
+DeclareOperation( "AddIsomorphismFromCoequalizerOfCoproductDiagramToPushout",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromCoequalizerOfCoproductDiagramToPushout",
+                  [ IsCapCategory, IsList, IsInt ] );
+##
+DeclareOperation( "AddIsomorphismFromCoequalizerOfCoproductDiagramToPushout",
                   [ IsCapCategory, IsList ] );
 
 #! @Description
@@ -3001,15 +3964,44 @@ DeclareOperation( "InjectionOfCofactorOfPushoutOp",
 #! an integer $k$,
 #! and an object $I = \mathrm{Pushout}(D)$.
 #! The output is the $k$-th injection
-#! $\iota_k: I_k \rightarrow \mathrm{Pushout}( D )$.
-#! @Returns a morphism in $\mathrm{Hom}( I_k, \mathrm{Pushout}( D ) )$.
+#! $\iota_k: I_k \rightarrow I$.
+#! @Returns a morphism in $\mathrm{Hom}( I_k, I )$.
 #! @Arguments D, k, I
 DeclareOperation( "InjectionOfCofactorOfPushoutWithGivenPushout",
                   [ IsList, IsInt, IsCapCategoryObject ] );
 
 #! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$.
+#! The output is the composition $\mu: B \rightarrow \mathrm{Pushout}(D)$
+#! of $\beta_1$ and the $1$-st injection $\iota_1: I_1 \rightarrow \mathrm{Pushout}( D )$.
+#! @Returns a morphism in $\mathrm{Hom}( B, \mathrm{Pushout}( D ) )$.
+#! @Arguments D
+DeclareOperation( "MorphismFromSourceToPushout",
+                  [ IsList ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$
+#! and a morphism for method selection.
+#! The output is the composition $\mu: B \rightarrow \mathrm{Pushout}(D)$
+#! of $\beta_1$ and the $1$-st injection $\iota_1: I_1 \rightarrow \mathrm{Pushout}( D )$.
+#! @Returns a morphism in $\mathrm{Hom}( B, \mathrm{Pushout}( D ) )$.
+#! @Arguments D, method_selection_morphism
+DeclareOperation( "MorphismFromSourceToPushoutOp",
+                  [ IsList, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$
+#! and an object $I = \mathrm{Pushout}(D)$.
+#! The output is the composition $\mu: B \rightarrow I$
+#! of $\beta_1$ and the $1$-st injection $\iota_1: I_1 \rightarrow I$.
+#! @Returns a morphism in $\mathrm{Hom}( B, I )$.
+#! @Arguments D, I
+DeclareOperation( "MorphismFromSourceToPushoutWithGivenPushout",
+                  [ IsList, IsCapCategoryObject ] );
+
+#! @Description
 #! This is a convenience method.
-#! There are three different ways to use this method:
+#! There are two different ways to use this method:
 #! * The arguments are a list of morphisms $D = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$
 #!  and a list of morphisms $\tau = ( \tau_i: I_i \rightarrow T )_{i = 1 \dots n}$ such that
 #!  $\tau_i \circ \beta_i \sim_{B,T} \tau_j \circ \beta_j$.
@@ -3113,6 +4105,45 @@ DeclareOperation( "AddInjectionOfCofactorOfPushoutWithGivenPushout",
 #! @Description
 #! The arguments are a category $C$ and a function $F$.
 #! This operations adds the given function $F$
+#! to the category for the basic operation <C>MorphismFromSourceToPushout</C>.
+#! $F: ( (\beta_i: B \rightarrow I_i)_{i = 1 \dots n}, k ) \mapsto \mu$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddMorphismFromSourceToPushout",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushout",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushout",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushout",
+                  [ IsCapCategory, IsList ] );
+
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>MorphismFromSourceToPushoutWithGivenPushout</C>.
+#! $F: ( (\beta_i: B \rightarrow I_i)_{i = 1 \dots n}, k, I ) \mapsto \mu$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddMorphismFromSourceToPushoutWithGivenPushout",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushoutWithGivenPushout",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushoutWithGivenPushout",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddMorphismFromSourceToPushoutWithGivenPushout",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
 #! to the category for the basic operation <C>UniversalMorphismFromPushout</C>.
 #! $F: ( (\beta_i: B \rightarrow I_i)_{i = 1 \dots n}, \tau ) \mapsto u(\tau)$
 #! @Returns nothing
@@ -3150,22 +4181,33 @@ DeclareOperation( "AddUniversalMorphismFromPushoutWithGivenPushout",
 
 
 #! @Description
-#! The argument is a list
-#! $L = ( ( \beta_i: B \rightarrow I_i, \mu_i: I_i \rightarrow I_i', \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n} )$
+#! The arguments are three lists of morphisms
+#! $L_s = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$,
+#! $L_m = ( \mu_i: I_i \rightarrow I_i' )_{i = 1 \dots n}$,
+#! $L_r = (  \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n}$
+#! having the same length $n$
 #! such that there exists a morphism $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \beta \sim_{B, I_i'} \mu_i \circ \beta_i$ for $i = 1, \dots n$.
 #! The output is the morphism
 #! $\mathrm{Pushout}( ( \beta_i )_{i=1}^n ) \rightarrow \mathrm{Pushout}( ( \beta_i' )_{i=1}^n )$
 #! given by the functoriality of the pushout.
 #! @Returns a morphism in $\mathrm{Hom}(\mathrm{Pushout}( ( \beta_i )_{i=1}^n ), \mathrm{Pushout}( ( \beta_i' )_{i=1}^n ))$
-#! @Arguments L
+#! @Arguments Ls, Lm, Lr
+DeclareOperation( "PushoutFunctorial",
+                  [ IsList, IsList, IsList ] );
+
+##
 DeclareOperation( "PushoutFunctorial",
                   [ IsList ] );
 
+
 #! @Description
 #! The arguments are an object $s = \mathrm{Pushout}( ( \beta_i )_{i=1}^n )$,
-#! a list
-#! $L = ( ( \beta_i: B \rightarrow I_i, \mu_i: I_i \rightarrow I_i', \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n} )$
+#! three lists of morphisms
+#! $L_s = ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}$,
+#! $L_m = ( \mu_i: I_i \rightarrow I_i' )_{i = 1 \dots n}$,
+#! $L_r = ( \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n}$
+#! having the same length $n$
 #! such that there exists a morphism $\beta: B \rightarrow B'$
 #! such that $\beta_i' \circ \beta \sim_{B, I_i'} \mu_i \circ \beta_i$ for $i = 1, \dots n$,
 #! and an object $r = \mathrm{Pushout}( ( \beta_i' )_{i=1}^n )$.
@@ -3173,7 +4215,11 @@ DeclareOperation( "PushoutFunctorial",
 #! $s \rightarrow r$
 #! given by the functoriality of the pushout.
 #! @Returns a morphism in $\mathrm{Hom}(s, r)$
-#! @Arguments s, L, r
+#! @Arguments s, Ls, Lm, Lr, r
+DeclareOperation( "PushoutFunctorialWithGivenPushouts",
+                  [ IsCapCategoryObject, IsList, IsList, IsList, IsCapCategoryObject ] );
+
+##
 DeclareOperation( "PushoutFunctorialWithGivenPushouts",
                   [ IsCapCategoryObject, IsList, IsCapCategoryObject ] );
 
@@ -3181,7 +4227,7 @@ DeclareOperation( "PushoutFunctorialWithGivenPushouts",
 #! The arguments are a category $C$ and a function $F$.
 #! This operations adds the given function $F$
 #! to the category for the basic operation <C>PushoutFunctorial</C>.
-#! $F: ( \mathrm{Pushout}( ( \beta_i )_{i=1}^n ), ( \beta_i: B \rightarrow I_i, \mu_i: I_i \rightarrow I_i', \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n}, \mathrm{Pushout}( ( \beta_i' )_{i=1}^n ) ) \mapsto (\mathrm{Pushout}( ( \beta_i )_{i=1}^n ) \rightarrow \mathrm{Pushout}( ( \beta_i' )_{i=1}^n ) )$
+#! $F: ( \mathrm{Pushout}( ( \beta_i )_{i=1}^n ), ( \beta_i: B \rightarrow I_i )_{i = 1 \dots n}, ( \mu_i: I_i \rightarrow I_i' )_{i = 1 \dots n}, ( \beta_i': B' \rightarrow I_i' )_{i = 1 \dots n}, \mathrm{Pushout}( ( \beta_i' )_{i=1}^n ) ) ) \mapsto (\mathrm{Pushout}( ( \beta_i )_{i=1}^n ) \rightarrow \mathrm{Pushout}( ( \beta_i' )_{i=1}^n ) )$
 #! @Returns nothing
 #! @Arguments C, F
 DeclareOperation( "AddPushoutFunctorialWithGivenPushouts",
@@ -3219,6 +4265,24 @@ DeclareOperation( "AddPushoutFunctorialWithGivenPushouts",
 #! We say that the morphism $u( \tau )$ is induced by the
 #! <Emph>universal property of the image</Emph>.
 ## Main Operations and Attributes
+
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (A) at (-\w,0) {$A$};
+#! \node (B) at (\w,0) {$B$};
+#! \node (I) at (0,-\w) {$I$};
+#! \node (T) at (0,-2*\w) {$T$};
+#! \draw[-latex] (A) to node[pos=0.45, above] {$\alpha$} (B);
+#! \draw[-latex] (A) to node[pos=0.45, above right] {$c$} (I);
+#! \draw[right hook-latex] (I) to node[pos=0.45, above left] {$\iota$} (B);
+#! \draw[-latex] (A) to [out = -90, in = 180] node[pos=0.45, below left] {$\tau_1$} (T);
+#! \draw[right hook-latex] (T) to [out = 0, in = -90] node[pos=0.45, right] {$\tau_2$} (B);
+#! \draw[-latex, dashed] (I) to node[pos=0.45, right] {$u( \tau )$} (T);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 #! @Description
 #! The argument is a morphism $\alpha$.
@@ -3511,6 +4575,23 @@ DeclareOperation( "AddUniversalMorphismFromImageWithGivenImageObject",
 #! We say that the morphism $u( \tau )$ is induced by the
 #! <Emph>universal property of the coimage</Emph>.
 
+#! @BeginLatexOnly
+#! \begin{center}
+#! \begin{tikzpicture}
+#! \def\w{2};
+#! \node (A) at (-\w,0) {$A$};
+#! \node (B) at (\w,0) {$B$};
+#! \node (C) at (0,-\w) {$C$};
+#! \node (T) at (0,-2*\w) {$T$};
+#! \draw[-latex] (A) to node[pos=0.45, above] {$\alpha$} (B);
+#! \draw[-twohead] (A) to node[pos=0.45, above right] {$\pi$} (C);
+#! \draw[-latex] (C) to node[pos=0.45, above left] {$a$} (B);
+#! \draw[-twohead] (A) to [out = -90, in = 180] node[pos=0.45, below left] {$\tau_1$} (T);
+#! \draw[-latex] (T) to [out = 0, in = -90] node[pos=0.45, right] {$\tau_2$} (B);
+#! \draw[-latex, dashed] (T) to node[pos=0.45, right] {$u( \tau )$} (C);
+#! \end{tikzpicture}
+#! \end{center}
+#! @EndLatexOnly
 
 #! @Description
 #! The argument is a morphism $\alpha: A \rightarrow B$.
@@ -3882,6 +4963,165 @@ DeclareOperation( "AddUniversalMorphismIntoCoimageWithGivenCoimage",
 
 DeclareOperation( "AddUniversalMorphismIntoCoimageWithGivenCoimage",
                   [ IsCapCategory, IsList ] );
+
+
+#! @Chapter Universal Objects
+
+####################################
+##
+#! @Section Homology objects
+##
+####################################
+
+#! In an abelian category, we can define the operation
+#! that takes as an input a pair of morphisms $\alpha: A \rightarrow B$, $\beta: B \rightarrow C$
+#! and outputs the subquotient of $B$ given by
+#! * $H := \mathrm{KernelObject}( \beta )/ (\mathrm{KernelObject}( \beta ) \cap \mathrm{ImageObject( \alpha )}$).
+#! This object is called a <Emph>homology object</Emph> of the pair $\alpha, \beta$.
+#! Note that we do not need the precomposition of $\alpha$ and $\beta$ to be zero
+#! in order to make sense of this notion.
+
+#! Moreover, given a second pair $\gamma: D \rightarrow E$, $\delta: E \rightarrow F$ of morphisms,
+#! and a morphism $\epsilon: B \rightarrow E$ such that
+#! there exists $\omega_1: A \rightarrow D$, $\omega_2: C \rightarrow F$
+#! with $\epsilon \circ \alpha \sim_{A,E} \gamma \circ \omega_1$
+#! and $\omega_2 \circ \beta \sim_{B,F} \delta \circ \epsilon$
+#! there is a functorial way to obtain from these data a morphism between the two corresponding homology objects.
+
+## Main Operations and Attributes
+#! @Description
+#! The arguments are two morphisms $\alpha: A \rightarrow B, \beta: B \rightarrow C$.
+#! The output is the homology object $H$ of this pair.
+#! @Returns an object
+#! @Arguments alpha, beta
+DeclareOperation( "HomologyObject",
+                  [ IsCapCategoryMorphism, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The argument are five morphisms $\alpha: A \rightarrow B$, $\beta: B \rightarrow C$,
+#! $\epsilon: B \rightarrow E$,
+#! $\gamma: D \rightarrow E, \delta: E \rightarrow F$
+#! such that
+#! there exists $\omega_1: A \rightarrow D$, $\omega_2: C \rightarrow F$
+#! with $\epsilon \circ \alpha \sim_{A,E} \gamma \circ \omega_1$
+#! and $\omega_2 \circ \beta \sim_{B,F} \delta \circ \epsilon$.
+#! The output is the functorial morphism induced by $\epsilon$ between the corresponding homology objects $H_1$ and $H_2$,
+#! where $H_1$ denotes the homology object of the pair $\alpha, \beta$,
+#! and $H_2$ denotes the homology object of the pair $\gamma, \delta$.
+#! @Returns a morphism in $\mathrm{Hom}( H_1, H_2 )$
+#! @Arguments alpha, beta, epsilon, gamma, delta
+DeclareOperation( "HomologyObjectFunctorial",
+                  [ IsCapCategoryMorphism, IsCapCategoryMorphism, IsCapCategoryMorphism, IsCapCategoryMorphism, IsCapCategoryMorphism ] );
+
+#! @Description
+#! @Description
+#! The arguments are an object $H_1$, a list $L$ consisting of five morphisms $\alpha: A \rightarrow B$, $\beta: B \rightarrow C$,
+#! $\epsilon: B \rightarrow E$,
+#! $\gamma: D \rightarrow E, \delta: E \rightarrow F$,
+#! and an object $H_2$, such that
+#! $H_1 = \mathrm{HomologyObject}( \alpha, \beta )$
+#! and $H_2 = \mathrm{HomologyObject}( \gamma, \delta )$,
+#! and such that there exists $\omega_1: A \rightarrow D$, $\omega_2: C \rightarrow F$
+#! with $\epsilon \circ \alpha \sim_{A,E} \gamma \circ \omega_1$
+#! and $\omega_2 \circ \beta \sim_{B,F} \delta \circ \epsilon$.
+#! The output is the functorial morphism induced by $\epsilon$ between the corresponding homology objects $H_1$ and $H_2$,
+#! where $H_1$ denotes the homology object of the pair $\alpha, \beta$,
+#! and $H_2$ denotes the homology object of the pair $\gamma, \delta$.
+#! @Returns a morphism in $\mathrm{Hom}( H_1, H_2 )$
+#! @Arguments H_1, L, H_2
+DeclareOperation( "HomologyObjectFunctorialWithGivenHomologyObjects",
+                  [ IsCapCategoryObject, IsList, IsCapCategoryObject ] );
+
+#! @Description
+#! The arguments are two morphisms $\alpha: A \rightarrow B, \beta: B \rightarrow C$.
+#! The output is the natural isomorphism from the homology object $H$ of $\alpha$ and $\beta$
+#! to the construction of the homology object as
+#! $\mathrm{ImageObject}( \mathrm{PreCompose}( \mathrm{KernelEmbedding}( \beta ), \mathrm{CokernelProjection}( \alpha ) ) )$,
+#! denoted by $I$.
+#! @Returns a morphism in $\mathrm{Hom}( \mathrm{HomologyObject}( \alpha, \beta ), I )$
+#! @Arguments alpha, beta
+DeclareOperation( "IsomorphismFromHomologyObjectToItsConstructionAsAnImageObject",
+                  [ IsCapCategoryMorphism, IsCapCategoryMorphism ] );
+
+#! @Description
+#! The arguments are two morphisms $\alpha: A \rightarrow B, \beta: B \rightarrow C$.
+#! The output is the natural isomorphism from the construction of the homology object as
+#! $\mathrm{ImageObject}( \mathrm{PreCompose}( \mathrm{KernelEmbedding}( \beta ), \mathrm{CokernelProjection}( \alpha ) ) )$,
+#! denoted by $I$,
+#! to the homology object $H$ of $\alpha$ and $\beta$.
+#! @Returns a morphism in $\mathrm{Hom}( I, \mathrm{HomologyObject}( \alpha, \beta ) )$
+#! @Arguments alpha, beta
+DeclareOperation( "IsomorphismFromItsConstructionAsAnImageObjectToHomologyObject",
+                  [ IsCapCategoryMorphism, IsCapCategoryMorphism ] );
+
+## Add Operations
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>HomologyObject</C>.
+#! $F: (\alpha, \beta) \mapsto \mathrm{HomologyObject}(\alpha, \beta)$.
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddHomologyObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddHomologyObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddHomologyObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddHomologyObject",
+                  [ IsCapCategory, IsList ] );
+
+#! @Description
+#! The arguments are a category $C$ and a function $F$.
+#! This operations adds the given function $F$
+#! to the category for the basic operation <C>AddHomologyObjectFunctorialWithGivenHomologyObjects</C>.
+#! $F: (H_1, \alpha, \beta, \epsilon, \gamma, \delta, H_2) \mapsto (H_1 \rightarrow H_2)$
+#! @Returns nothing
+#! @Arguments C, F
+DeclareOperation( "AddHomologyObjectFunctorialWithGivenHomologyObjects",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddHomologyObjectFunctorialWithGivenHomologyObjects",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddHomologyObjectFunctorialWithGivenHomologyObjects",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddHomologyObjectFunctorialWithGivenHomologyObjects",
+                  [ IsCapCategory, IsList ] );
+
+
+DeclareOperation( "AddIsomorphismFromHomologyObjectToItsConstructionAsAnImageObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddIsomorphismFromHomologyObjectToItsConstructionAsAnImageObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddIsomorphismFromHomologyObjectToItsConstructionAsAnImageObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddIsomorphismFromHomologyObjectToItsConstructionAsAnImageObject",
+                  [ IsCapCategory, IsList ] );
+
+
+DeclareOperation( "AddIsomorphismFromItsConstructionAsAnImageObjectToHomologyObject",
+                  [ IsCapCategory, IsFunction ] );
+
+DeclareOperation( "AddIsomorphismFromItsConstructionAsAnImageObjectToHomologyObject",
+                  [ IsCapCategory, IsFunction, IsInt ] );
+
+DeclareOperation( "AddIsomorphismFromItsConstructionAsAnImageObjectToHomologyObject",
+                  [ IsCapCategory, IsList, IsInt ] );
+
+DeclareOperation( "AddIsomorphismFromItsConstructionAsAnImageObjectToHomologyObject",
+                  [ IsCapCategory, IsList ] );
+
+
+
 
 #! @Chapter Universal Objects
 

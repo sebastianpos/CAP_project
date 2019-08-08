@@ -230,7 +230,7 @@ InstallMethod( GeneralizedMorphismCategoryByCospans,
         
         return;
         
-    elif not IsAbelianCategory( category ) then
+    elif not ( HasIsAbelianCategory( category ) and IsAbelianCategory( category ) ) then
         
         Error( "the category must be abelian" );
         
@@ -274,8 +274,6 @@ InstallMethod( GeneralizedMorphismCategoryByCospans,
     AddObjectRepresentation( generalized_morphism_category, IsGeneralizedMorphismCategoryByCospansObject );
     
     AddMorphismRepresentation( generalized_morphism_category, IsGeneralizedMorphismByCospan );
-    
-    DisableAddForCategoricalOperations( generalized_morphism_category );
     
     generalized_morphism_category!.predicate_logic := category!.predicate_logic;
     
