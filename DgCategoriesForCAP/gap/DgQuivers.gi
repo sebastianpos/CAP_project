@@ -62,7 +62,7 @@ end );
 
 ##
 InstallMethod( DgQuiverObject,
-               [ IsVertex, IsDgQuiver ],
+               [ IsQuiverVertex, IsDgQuiver ],
                
   function( vertex, dg_quiver )
     local object;
@@ -182,7 +182,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
         
         for i in [ 1 .. n ] do
         
-        coefficient := (-1)^(Sum( [ 1 .. i - 1 ], j -> degree[ArrowNumber( arrow_list[j] )] mod 2 ) ) / field;
+        coefficient := (-1)^(Sum( [ 1 .. i - 1 ], j -> degree[ArrowIndex( arrow_list[j] )] mod 2 ) ) / field;
         
         if i > 1 then
             
@@ -198,7 +198,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
             
         fi;
         
-        d := differential[ ArrowNumber( arrow_list[i] ) ];
+        d := differential[ ArrowIndex( arrow_list[i] ) ];
         
         if i < n then
             
@@ -228,7 +228,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_DG_QUIVERS,
       
       arrow_list := ArrowList( path );
       
-      return Sum( arrow_list, a -> degree[ArrowNumber(a)] );
+      return Sum( arrow_list, a -> degree[ArrowIndex(a)] );
       
     end;
     

@@ -35,7 +35,7 @@ DeclareOperation( "DgQuiver",
                   [ IsQuiverAlgebra, IsList, IsList ] );
 
 DeclareOperation( "DgQuiverObject",
-                  [ IsVertex, IsDgQuiver ] );
+                  [ IsQuiverVertex, IsDgQuiver ] );
 
 DeclareOperation( "DgQuiverMorphism",
                   [ IsDgQuiverObject, IsQuiverAlgebraElement, IsDgQuiverObject, IsInt ] );
