@@ -26,7 +26,7 @@ InstallMethod( LocalizationProblemFunctionForPrimeIdeal,
                 
                 if not IsZero( DecideZeroRows( A, column_for_ideal ) ) then
                     
-                    return CertainRows( HomalgIdentityMatrix( ring, nr_cols ), [ i ] );
+                    return CertainRows( HomalgIdentityMatrix( nr_cols, ring ), [ i ] );
                     
                 fi;
                 

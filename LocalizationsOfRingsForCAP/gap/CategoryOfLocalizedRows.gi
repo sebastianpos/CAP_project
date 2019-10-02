@@ -35,7 +35,7 @@ InstallMethod( CategoryOfLocalizedRows,
     
     AddMorphismRepresentation( category, IsCategoryOfLocalizedRowsMorphism );
     
-    INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS( category );
+    INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS( category, witness_tester_function );
     
     to_be_finalized := ValueOption( "FinalizeCategory" );
       
@@ -150,7 +150,7 @@ end );
 
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
   
-  function( category )
+  function( category, witness_tester_function )
     local ring, one, minusone, is_integral_domain,
     CATEGORY_OF_LOCALIZED_ROWS_denominator_helper_function, CATEGORY_OF_LOCALIZED_ROWS_binary_application;
     
@@ -645,13 +645,32 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
     end );
     
 ## TODO: Lifts and Colifts
-#     ##
-#     AddIsLiftable( category,
-#       function( alpha, beta )
+    ##
+    AddIsLiftable( category,
+      function( B, A )
+        local rows_B, relations, annihilator, b;
         
-#         return IsZero( DecideZeroRows( NumeratorOfLocalizedRowsMorphism( alpha ), NumeratorOfLocalizedRowsMorphism( beta ) ) )
+        rows_B := NumeratorOfLocalizedRowsMorphism( B );
         
-#     end );
+        rows_B := List( [ 1 .. NrRows( rows_B ) ], i -> CertainRows( rows_B, [ i ] ) );
+        
+        relations := NumeratorOfLocalizedRowsMorphism( A );
+        
+        for b in rows_B do
+          
+          annihilator := ReducedSyzygiesOfRows( b, relations );
+          
+          if witness_tester_function( annihilator ) = false then
+            
+            return false;
+            
+          fi;
+          
+        od;
+        
+        return true;
+        
+    end );
     
 #     ##
 #     AddLift( category,

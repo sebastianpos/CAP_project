@@ -62,4 +62,15 @@ IsCongruentForMorphisms( alpha,
     )
 );
 #! true
+b := AsCategoryOfLocalizedRowsMorphism( HomalgMatrix( "[x]", 1, 1, R ), LRows );;
+A := AsCategoryOfLocalizedRowsMorphism( HomalgMatrix( "[x^2 + x]", 1, 1, R ), LRows );;
+IsLiftable( b, A );
+#! true
+b2 := AsCategoryOfLocalizedRowsMorphism( HomalgMatrix( "[x+1]", 1, 1, R ), LRows );;
+IsLiftable( b2, A );
+#! false
+IsLiftable( UniversalMorphismFromDirectSum( b, b2 ), A );
+#! false
+IsLiftable( UniversalMorphismFromDirectSum( b, b2 ), UniversalMorphismFromDirectSum( A, b2 ) );
+#! true
 #! @EndExample
