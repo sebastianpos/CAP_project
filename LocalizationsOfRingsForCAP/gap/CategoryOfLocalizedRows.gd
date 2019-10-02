@@ -35,7 +35,7 @@ DeclareCategory( "IsCategoryOfLocalizedRows",
 ####################################
 
 DeclareOperation( "CategoryOfLocalizedRows",
-                  [ IsHomalgRing, IsFunction ] );
+                  [ IsHomalgRing, IsRecord ] );
 
 KeyDependentOperation( "CategoryOfLocalizedRowsObject",
                        IsCategoryOfLocalizedRows, IsInt, ReturnTrue );

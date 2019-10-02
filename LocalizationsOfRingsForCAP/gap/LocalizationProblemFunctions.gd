@@ -7,5 +7,5 @@
 #!
 #############################################################################
 
-DeclareOperation( "LocalizationProblemFunctionForPrimeIdeal",
+DeclareOperation( "LocalizationAtPrimeIdealData",
                   [ IsHomalgRing, IsHomalgMatrix ] );

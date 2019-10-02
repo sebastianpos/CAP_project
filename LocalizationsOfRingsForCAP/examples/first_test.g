@@ -7,7 +7,7 @@ LoadPackage( "LocalizationsOfRingsForCAP" );
 #! @Example
 R := HomalgFieldOfRationalsInSingular() * "x,y,z";;
 prime := HomalgMatrix( "[x,y]", 1, 1, R );;
-loc_func := LocalizationProblemFunctionForPrimeIdeal( R, prime );;
+loc_func := LocalizationAtPrimeIdealData( R, prime );;
 LRows := CategoryOfLocalizedRows( R, loc_func );;
 R1 := CategoryOfLocalizedRowsObject( LRows, 1 );;
 R2 := CategoryOfLocalizedRowsObject( LRows, 2 );;

@@ -12,9 +12,9 @@
 
 ##
 InstallMethod( CategoryOfLocalizedRows,
-               [ IsHomalgRing, IsFunction ],
+               [ IsHomalgRing, IsRecord ],
                
-  function( homalg_ring, witness_tester_function )
+  function( homalg_ring, localization_data )
     local category, to_be_finalized;
     
     if not ( HasIsCommutative( homalg_ring ) and IsCommutative( homalg_ring ) ) then
@@ -35,7 +35,7 @@ InstallMethod( CategoryOfLocalizedRows,
     
     AddMorphismRepresentation( category, IsCategoryOfLocalizedRowsMorphism );
     
-    INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS( category, witness_tester_function );
+    INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS( category, localization_data );
     
     to_be_finalized := ValueOption( "FinalizeCategory" );
       
@@ -150,9 +150,14 @@ end );
 
 InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
   
-  function( category, witness_tester_function )
+  function( category, localization_data )
     local ring, one, minusone, is_integral_domain,
-    CATEGORY_OF_LOCALIZED_ROWS_denominator_helper_function, CATEGORY_OF_LOCALIZED_ROWS_binary_application;
+    CATEGORY_OF_LOCALIZED_ROWS_denominator_helper_function, CATEGORY_OF_LOCALIZED_ROWS_binary_application,
+    intersectionIdealSBool;
+    
+    if IsBound( localization_data.IntersectionIdealSBool ) then
+      intersectionIdealSBool := localization_data.IntersectionIdealSBool;
+    fi;
     
     ring := UnderlyingRing( category );
     
@@ -660,7 +665,7 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
           
           annihilator := ReducedSyzygiesOfRows( b, relations );
           
-          if witness_tester_function( annihilator ) = false then
+          if intersectionIdealSBool( annihilator ) = false then
             
             return false;
             
