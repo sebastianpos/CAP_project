@@ -9,3 +9,6 @@
 
 DeclareOperation( "LocalizationAtPrimeIdealData",
                   [ IsHomalgRing, IsHomalgMatrix ] );
+
+DeclareOperation( "LocalizationAtPolynomialsNotMeetingThePolydisk",
+                  [ IsHomalgRing ] );

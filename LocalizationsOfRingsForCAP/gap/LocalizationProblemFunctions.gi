@@ -57,3 +57,40 @@ InstallMethod( LocalizationAtPrimeIdealData,
                 end,
         );
 end );
+
+##
+InstallMethod( LocalizationAtPolynomialsNotMeetingThePolydisk,
+               [ IsHomalgRing ],
+    function( ring )
+        local maple_stream, path;
+        
+        maple_stream := LaunchCAS( "HOMALG_IO_Maple" );
+        
+        path := PackageInfo( "LocalizationsOfRingsForCAP" )[1].InstallationPath;
+        
+        homalgSendBlocking( 
+            Concatenation(
+                "read \"",
+                path,
+                """/maple/IntersectionPolydisk.mpl""",
+                "\" "
+            ),
+            maple_stream,
+            "need_command" );
+        
+        return
+            rec(
+                IntersectionIdealSBool := function( mat )
+                    local str, output;
+                    
+                    ## Depending on <ring>, this string might have to be adjusted
+                    str := String( EntriesOfHomalgMatrix( mat ) );
+                    
+                    output := homalgSendBlocking( Concatenation( "IntersectionPolydisk( ", str, ")" ), maple_stream, "need_output" );
+                    
+                    return output = "true";
+                    
+                end
+            );
+        
+end );
