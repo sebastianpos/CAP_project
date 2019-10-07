@@ -4,6 +4,8 @@
 ##
 #############################################################################
 
+BindGlobal( "InfoLocalizationsOfRingsForCAP", NewInfoClass( "InfoLocalizationsOfRingsForCAP" ) );
+
 ####################################
 ##
 ## Constructors
@@ -28,6 +30,11 @@ InstallMethod( CategoryOfLocalizedRows,
     SetFilterObj( category, IsCategoryOfLocalizedRows );
     
     SetIsAdditiveCategory( category, true );
+    
+    SetIsLinearCategoryOverCommutativeRing( category, true );
+    
+    ## this category is regarded as an R-linear category (the ring S^(-1)R does not exist on a technical level as a homalg ring)
+    SetCommutativeRingOfLinearCategory( category, homalg_ring );
     
     SetUnderlyingRing( category, homalg_ring );
     
@@ -141,6 +148,20 @@ InstallMethod( CategoryOfLocalizedRowsMorphism,
     
 end );
 
+InstallMethod( \/,
+               [ IsCategoryOfLocalizedRowsMorphism, IsRingElement ],
+    
+    function( morphism, ring_element )
+      
+      return CategoryOfLocalizedRowsMorphism(
+                Source( morphism ),
+                NumeratorOfLocalizedRowsMorphism( morphism ),
+                ring_element * DenominatorOfLocalizedRowsMorphism( morphism ),
+                Range( morphism )
+        );
+      
+end );
+
 # ####################################
 # ##
 # ## Basic operations
@@ -153,10 +174,14 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
   function( category, localization_data )
     local ring, one, minusone, is_integral_domain,
     CATEGORY_OF_LOCALIZED_ROWS_denominator_helper_function, CATEGORY_OF_LOCALIZED_ROWS_binary_application,
-    intersectionIdealSBool;
+    intersectionIdealSBool, intersectionIdealSWitness;
     
     if IsBound( localization_data.IntersectionIdealSBool ) then
       intersectionIdealSBool := localization_data.IntersectionIdealSBool;
+    fi;
+    
+    if IsBound( localization_data.IntersectionIdealSWitness ) then
+      intersectionIdealSWitness := localization_data.IntersectionIdealSWitness;
     fi;
     
     ring := UnderlyingRing( category );
@@ -239,6 +264,8 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
             ## TODO: Add test
             
         fi;
+        
+        ## TODO: membership test for denominator
         
         # all tests passed, so it is well-defined
         return true;
@@ -379,6 +406,19 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
                  HomalgZeroMatrix( RankOfObject( source ), RankOfObject( range ), ring ),
                  one,
                  range );
+        
+    end );
+    
+    ##
+    AddMultiplyWithElementOfCommutativeRingForMorphisms( category,
+      function( ring_element, morphism )
+        
+        return CategoryOfLocalizedRowsMorphism(
+                Source( morphism ),
+                ring_element * NumeratorOfLocalizedRowsMorphism( morphism ),
+                DenominatorOfLocalizedRowsMorphism( morphism ),
+                Range( morphism )
+        );
         
     end );
     
@@ -650,49 +690,113 @@ InstallGlobalFunction( INSTALL_FUNCTIONS_FOR_CATEGORY_OF_LOCALIZED_ROWS,
     end );
     
 ## TODO: Lifts and Colifts
-    ##
-    AddIsLiftable( category,
-      function( B, A )
-        local rows_B, relations, annihilator, b;
-        
-        rows_B := NumeratorOfLocalizedRowsMorphism( B );
-        
-        rows_B := List( [ 1 .. NrRows( rows_B ) ], i -> CertainRows( rows_B, [ i ] ) );
-        
-        relations := NumeratorOfLocalizedRowsMorphism( A );
-        
-        for b in rows_B do
-          
-          annihilator := ReducedSyzygiesOfRows( b, relations );
-          
-          if intersectionIdealSBool( annihilator ) = false then
+
+    if not IsBound( intersectionIdealSBool ) then
+      Info( InfoLocalizationsOfRingsForCAP, 2,
+            "The operation IsLiftable could not be installed because IntersectionIdealSBool is not given in the localization data" );
+    else
+        ##
+        AddIsLiftable( category,
+          function( B, A )
+            local rows_B, relations, annihilator, b;
             
-            return false;
+            rows_B := NumeratorOfLocalizedRowsMorphism( B );
             
-          fi;
-          
-        od;
+            rows_B := List( [ 1 .. NrRows( rows_B ) ], i -> CertainRows( rows_B, [ i ] ) );
+            
+            relations := NumeratorOfLocalizedRowsMorphism( A );
+            
+            return ForAll( rows_B, b -> intersectionIdealSBool( ReducedSyzygiesOfRows( b, relations ) ) );
+            
+        end );
         
-        return true;
-        
-    end );
+    fi;
     
-#     ##
-#     AddLift( category,
-#       function( alpha, beta )
-#         local right_divide;
+    if localization_data.zero_in_S then
+        Info( InfoLocalizationsOfRingsForCAP, 2,
+            "The operation IsLift could not be installed because zero lies in S" );
+    elif not IsBound( intersectionIdealSWitness ) then
+        Info( InfoLocalizationsOfRingsForCAP, 2,
+            "The operation IsLiftable could not be installed because IntersectionIdealSWitness is not given in the localization data" );
+    else
         
-#         right_divide := RightDivide( NumeratorOfLocalizedRowsMorphism( alpha ), NumeratorOfLocalizedRowsMorphism( beta ) )
+        ##
+        AddLift( category,
+          function( B, A )
+            local rows_B, nr_rows, relations, data_for_lift, b, solution, nr_columns, annihilator,
+            L, linear_combination, lift, R1, range, l, numerator, denominator;
+            
+            rows_B := NumeratorOfLocalizedRowsMorphism( B );
+            
+            nr_rows := NrRows( rows_B );
+            
+            if nr_rows = 0 then
+              return ZeroMorphism( Source( B ), Source( A ) );
+            fi;
+            
+            rows_B := List( [ 1 .. nr_rows ], i -> CertainRows( rows_B, [ i ] ) );
+            
+            relations := NumeratorOfLocalizedRowsMorphism( A );
+            
+            data_for_lift := [];
+            
+            for b in rows_B do
+                
+                solution := ReducedSyzygiesOfRows( UnionOfRows( b, relations ) );
+                
+                nr_columns := NrColumns( solution );
+                
+                if not (nr_columns > 0 and NrRows( solution ) > 0) then ## since 0 not in S
+                  return false;
+                fi;
+                
+                annihilator := CertainColumns( solution, [ 1 ] );
+                
+                L := CertainColumns( solution, [ 2 .. nr_columns ] );
+                
+                linear_combination := intersectionIdealSWitness( annihilator );
+                
+                if linear_combination = false then
+                  return false;
+                fi;
+                
+                Add( data_for_lift, [ linear_combination, annihilator, L ] );
+                
+            od;
+            
+            lift := [];
+            
+            R1 := CategoryOfLocalizedRowsObject( category, 1 );
+            
+            range := Source( A );
+            
+            for l in data_for_lift do
+                
+                linear_combination := l[1];
+                annihilator := l[2];
+                L := l[3];
+                
+                nr_rows := NrRows( L );
+                
+                numerator := linear_combination * L;
+                
+                denominator := EntriesOfHomalgMatrix( MinusOne( ring ) * linear_combination * annihilator )[1];
+                
+                Add( lift, CategoryOfLocalizedRowsMorphism( R1, numerator, denominator, range ) );
+                
+            od;
+            
+            lift := UniversalMorphismFromDirectSum( lift );
+            
+            numerator := DenominatorOfLocalizedRowsMorphism( A );
+            
+            denominator := DenominatorOfLocalizedRowsMorphism( B );
+            
+            return (numerator * lift )/denominator;
+            
+        end );
         
-#         if right_divide = fail then
-          
-#           return fail;
-          
-#         fi;
-        
-#         return CategoryOfLocalizedRowsMorphism( Source( alpha ), right_divide, Source( beta ) );
-        
-#     end );
+    fi;
     
     ##
     AddInjectionOfBiasedWeakPushout( category,

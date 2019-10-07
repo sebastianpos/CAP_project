@@ -46,7 +46,7 @@ IsCongruentForMorphisms( u, sigma123 );
 up := UniversalMorphismFromDirectSum( [ sigma1, sigma2, sigma3 ] );;
 IsCongruentForMorphisms( up, sigma123p );
 #! true
-alpha := CategoryOfLocalizedRowsMorphism( R3, HomalgMatrix( "[ x,y,z ]", 3, 1, R ), "x"/R, R1 );;
+alpha := CategoryOfLocalizedRowsMorphism( R3, HomalgMatrix( "[ x,y,z ]", 3, 1, R ), "z"/R, R1 );;
 tau := CategoryOfLocalizedRowsMorphism( R1, HomalgMatrix( "[ -y^2, x*y, 0 ]", 1, 3, R ), One( R ), R3 );;
 IsCongruentForMorphisms( PreCompose( WeakKernelLift( alpha, tau ), WeakKernelEmbedding( alpha ) ), tau );
 #! true
@@ -72,5 +72,18 @@ IsLiftable( b2, A );
 IsLiftable( UniversalMorphismFromDirectSum( b, b2 ), A );
 #! false
 IsLiftable( UniversalMorphismFromDirectSum( b, b2 ), UniversalMorphismFromDirectSum( A, b2 ) );
+#! true
+
+B := UniversalMorphismFromDirectSum( b, b2 );;
+A := UniversalMorphismFromDirectSum( A, b2 );;
+IsCongruentForMorphisms( PreCompose( Lift( B, A ), A ), B );
+#! true
+R4 := DirectSum( R2, R2 );;
+B := CategoryOfLocalizedRowsMorphism( R2, HomalgMatrix( "[ x,y,z, x*y, x+1, z^2 ]", 2, 3, R ), "(x+1)*z"/R, R3 );;
+A := CategoryOfLocalizedRowsMorphism( R3, HomalgMatrix( "[ 1 + x*z, 0, x*y, z,  y, z + x, 3*z, y^2*z + x,  -2, z^8, x + y + 2*z, z^3 ]", 3, 4, R ), "z^4 + 1"/R, R4 );;
+B := PreCompose( B, A );;
+IsCongruentForMorphisms( PreCompose( Lift( B, A ), A ), B );
+#! true
+IsLiftable( B, A );
 #! true
 #! @EndExample

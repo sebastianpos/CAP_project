@@ -10,6 +10,31 @@
 ##
 ####################################
 
+## localization_data
+## a record specifying the multiplicatively closed set S
+##
+## Specifications of the record entries
+##
+## zero_in_S
+## Description
+## Boolean value, describes if S contains zero. If yes, one deals with modules over the zero ring.
+
+## IntersectionIdealSWitness:
+## Description
+## A function.
+## The argument is an $(n \times 1)$ homalg matrix $A$.
+## The output is a $(1 \times n)$ row $B$ such that $B \cdot A$ is an element in $S$.
+## If no such $B$ exists, the output is <C>false</C>.
+#! @Arguments a column matrix
+#! @Returns a row matrix or false
+
+## IntersectionIdealSBool:
+## Description
+## A function.
+## Like <C>IntersectionIdealSWitness</C>, but in the case where $B$ exists, the output is <C>true</C>.
+#! @Arguments a column matrix
+#! @Returns a boolean
+
 ##
 InstallMethod( LocalizationAtPrimeIdealData,
                [ IsHomalgRing, IsHomalgMatrix ],
@@ -17,17 +42,18 @@ InstallMethod( LocalizationAtPrimeIdealData,
         
         return 
             rec(
+                zero_in_S := false,
                 IntersectionIdealSWitness := function( mat )
-                    local nr_cols, i, A;
-                    nr_cols := NrColumns( mat );
+                    local nr_rows, i, A;
+                    nr_rows := NrRows( mat );
                     
-                    for i in [ 1 .. nr_cols ] do
+                    for i in [ 1 .. nr_rows ] do
                         
-                        A := CertainColumns( mat, [ i ] );
+                        A := CertainRows( mat, [ i ] );
                         
                         if not IsZero( DecideZeroRows( A, column_for_ideal ) ) then
                             
-                            return CertainRows( HomalgIdentityMatrix( nr_cols, ring ), [ i ] );
+                            return CertainRows( HomalgIdentityMatrix( nr_rows, ring ), [ i ] );
                             
                         fi;
                         
@@ -37,12 +63,12 @@ InstallMethod( LocalizationAtPrimeIdealData,
                     
                 end,
                 IntersectionIdealSBool := function( mat )
-                    local nr_cols, i, A;
-                    nr_cols := NrColumns( mat );
+                    local nr_rows, i, A;
+                    nr_rows := NrRows( mat );
                     
-                    for i in [ 1 .. nr_cols ] do
+                    for i in [ 1 .. nr_rows ] do
                         
-                        A := CertainColumns( mat, [ i ] );
+                        A := CertainRows( mat, [ i ] );
                         
                         if not IsZero( DecideZeroRows( A, column_for_ideal ) ) then
                             
@@ -80,6 +106,7 @@ InstallMethod( LocalizationAtPolynomialsNotMeetingThePolydisk,
         
         return
             rec(
+                zero_in_S := false,
                 IntersectionIdealSBool := function( mat )
                     local str, output;
                     

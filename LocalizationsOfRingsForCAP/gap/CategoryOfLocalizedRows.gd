@@ -46,6 +46,9 @@ DeclareOperation( "AsCategoryOfLocalizedRowsMorphism",
 DeclareOperation( "CategoryOfLocalizedRowsMorphism",
                   [ IsCategoryOfLocalizedRowsObject, IsHomalgMatrix, IsHomalgRingElement, IsCategoryOfLocalizedRowsObject ] );
 
+DeclareOperation( "\/",
+                  [ IsCategoryOfLocalizedRowsMorphism, IsRingElement ] );
+
 ####################################
 ##
 #! @Section Attributes
