@@ -7,3 +7,5 @@
 ReadPackage( "LocalizationsOfRingsForCAP", "gap/CategoryOfLocalizedRows.gd" );
 
 ReadPackage( "LocalizationsOfRingsForCAP", "gap/LocalizationProblemFunctions.gd" );
+
+ReadPackage( "LocalizationsOfRingsForCAP", "gap/SpecificOperations.gd" );

@@ -152,6 +152,7 @@ InstallMethod( CategoryOfLocalizedRowsMorphism,
     
 end );
 
+##
 InstallMethod( \/,
                [ IsCategoryOfLocalizedRowsMorphism, IsRingElement ],
     
@@ -164,6 +165,26 @@ InstallMethod( \/,
                 Range( morphism )
         );
       
+end );
+
+##
+InstallMethod( NrRows,
+               [ IsCategoryOfLocalizedRowsMorphism ],
+  
+  function( mor )
+    
+    return NrRows( NumeratorOfLocalizedRowsMorphism( mor ) );
+    
+end );
+
+##
+InstallMethod( NrColumns,
+               [ IsCategoryOfLocalizedRowsMorphism ],
+  
+  function( mor )
+    
+    return NrColumns( NumeratorOfLocalizedRowsMorphism( mor ) );
+    
 end );
 
 # ####################################

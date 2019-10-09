@@ -67,3 +67,8 @@ DeclareAttribute( "NumeratorOfLocalizedRowsMorphism",
 DeclareAttribute( "DenominatorOfLocalizedRowsMorphism",
                   IsCategoryOfLocalizedRowsMorphism );
 
+DeclareAttribute( "NrRows",
+                  IsCategoryOfLocalizedRowsMorphism );
+
+DeclareAttribute( "NrColumns",
+                  IsCategoryOfLocalizedRowsMorphism );
